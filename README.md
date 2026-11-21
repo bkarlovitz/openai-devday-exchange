@@ -296,3 +296,30 @@ The shared development app is [Council Check](https://council-checker-dev.snapnd
 `npm run build:extension` writes `apps/extension/dist`, `dist/council-check-extension.zip`, and the generated web download. The generated ZIP is not committed; `npm run build`, `npm run dev` and `npm run deploy:dev` recreate it. The manifest includes a public key so the unpacked extension ID stays `fhfebjohcmngiobjfcamkcknhmfhafbk` across teammates. The Worker permits that exact origin by default; EXTENSION_ORIGINS can override it with a comma-separated list. The extension host permission and API URL target the development deployment; update both and the Worker origin configuration when changing environments.
 
 The [supplied extension design](docs/design/README.md) is retained as HTML and PDF. TASK-010 maps the design to real submission, progress, verdict and evidence states. The time-boxed deliverable prioritizes the core layout and working interactions. Remaining roadmap tasks are still tracked in `.viktor/tasks.json`.
+
+### Importar un tramo de YouTube
+
+`POST /api/runs/youtube` acepta un enlace de vídeo de YouTube (página `watch` o `youtu.be`), un inicio y fin en segundos enteros y el UUID de la solicitud. El intervalo máximo es de 180 segundos. El Worker devuelve `202` con el mismo `{ runId, url }` que una entrada de texto. En los reintentos usa el mismo UUID y los mismos parámetros.
+
+El binario de extracción corre fuera de Cloudflare Workers. En local, instala la dependencia y ejecuta el proceso Python en paralelo a `npm run dev`:
+
+```sh
+.venv/bin/pip install -r scripts/requirements-youtube.txt
+# Exporta el mismo YOUTUBE_IMPORT_TOKEN en ambos procesos.
+.venv/bin/python scripts/youtube_import.py
+# En la terminal que ejecuta npm run dev:
+export YOUTUBE_IMPORT_URL=http://127.0.0.1:8791/youtube
+npm run dev
+```
+
+Para usar **Cloudflare Containers**, configura `YOUTUBE_IMPORT_CONTAINER=true` y `YOUTUBE_IMPORT_TOKEN` en el entorno de Alchemy. Con Docker en marcha, `npm run dev` prueba el binding local y `npm run deploy:dev` construye y despliega la imagen con el Worker. El Worker inicia un contenedor privado mediante un Durable Object. El mismo token se transmite al proceso Python al iniciarlo.
+
+También puedes configurar `YOUTUBE_IMPORT_URL` para un servicio HTTPS externo con el mismo secreto. Para repetir una demo con una pista previamente obtenida en un importador ejecutado por separado, monta el directorio privado con archivos `<videoId>.json3` y configura `YOUTUBE_CAPTIONS_DIR` en el proceso Python. Cualquier otro vídeo usa `yt-dlp`. Chrome llama únicamente al Worker.
+
+```sh
+curl -i http://127.0.0.1:8787/api/runs/youtube \
+  -H 'Content-Type: application/json' \
+  -d '{"url":"https://youtu.be/DEJF6IGRuxA","fromSeconds":120,"toSeconds":180,"submissionKey":"f363c747-8f5f-4a61-9dbc-4ad431c09dc3","explanationLanguage":"ca"}'
+```
+
+El importador trabaja con subtítulos. Incluye las intervenciones de la pista que se solapan con el intervalo, de modo que un subtítulo en el borde puede empezar un poco antes o acabar un poco después. Los tiempos guardados son absolutos respecto al vídeo. Un intervalo sin subtítulos utilizables devuelve `422`. Los fallos de acceso a YouTube o del importador devuelven `503`.

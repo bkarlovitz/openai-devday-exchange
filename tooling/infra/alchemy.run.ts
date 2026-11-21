@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import alchemy from "alchemy";
 import {
   Assets,
+  Container,
   DurableObjectNamespace,
   Hyperdrive,
   R2Bucket,
@@ -50,6 +51,23 @@ const evidenceDb = evidenceOrigin
     })
   : undefined;
 
+const useYoutubeContainer = process.env.YOUTUBE_IMPORT_CONTAINER === "true";
+if (useYoutubeContainer && !process.env.YOUTUBE_IMPORT_TOKEN) {
+  throw new Error("Configure YOUTUBE_IMPORT_TOKEN to enable the YouTube container.");
+}
+const youtubeImporter = useYoutubeContainer
+  ? await Container("youtube-importer", {
+      className: "YoutubeImporter",
+      maxInstances: 1,
+      instanceType: "lite",
+      build: {
+        context: path.join(root, "scripts"),
+        dockerfile: "youtube-import.Dockerfile",
+        platform: "linux/amd64",
+      },
+    })
+  : undefined;
+
 const worker = await Worker("app", {
   name,
   entrypoint: path.join(root, "apps/api/src/index.ts"),
@@ -78,6 +96,15 @@ const worker = await Worker("app", {
       process.env.EXTENSION_ORIGINS ?? "chrome-extension://fhfebjohcmngiobjfcamkcknhmfhafbk",
     ...(process.env.OPENAI_API_KEY
       ? { OPENAI_API_KEY: alchemy.secret(process.env.OPENAI_API_KEY) }
+      : {}),
+    ...(youtubeImporter ? { YOUTUBE_IMPORTER: youtubeImporter } : {}),
+    ...((youtubeImporter || process.env.YOUTUBE_IMPORT_URL) && process.env.YOUTUBE_IMPORT_TOKEN
+      ? {
+          ...(process.env.YOUTUBE_IMPORT_URL
+            ? { YOUTUBE_IMPORT_URL: process.env.YOUTUBE_IMPORT_URL }
+            : {}),
+          YOUTUBE_IMPORT_TOKEN: alchemy.secret(process.env.YOUTUBE_IMPORT_TOKEN),
+        }
       : {}),
     ASSETS: await Assets({ path: path.join(root, "apps/web/dist") }),
   },
