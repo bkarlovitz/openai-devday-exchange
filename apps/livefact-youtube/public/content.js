@@ -426,12 +426,18 @@
         return;
       }
       const fromSeconds = message.fromSeconds;
-      const toSeconds = Math.min(
-        fromSeconds + 30,
-        Math.floor(clock(video).end ?? fromSeconds + 30),
-        86400,
-      );
-      if (!Number.isInteger(fromSeconds) || fromSeconds < 0 || toSeconds <= fromSeconds) {
+      const videoEnd = clock(video).end;
+      const toSeconds =
+        message.toSeconds ??
+        Math.min(fromSeconds + 30, Math.floor(videoEnd ?? fromSeconds + 30), 86400);
+      if (
+        !Number.isInteger(fromSeconds) ||
+        fromSeconds < 0 ||
+        !Number.isInteger(toSeconds) ||
+        toSeconds <= fromSeconds ||
+        toSeconds > 86400 ||
+        (videoEnd !== null && fromSeconds >= videoEnd)
+      ) {
         setFeedback("El inicio elegido está fuera del vídeo.");
         reply(false);
         return;

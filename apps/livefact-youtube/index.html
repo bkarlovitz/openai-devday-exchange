@@ -17,6 +17,49 @@
         </div>
         <h2 id="video">Abre un vídeo de YouTube</h2>
       </section>
+      <div class="mode-options" role="group" aria-label="Modo de análisis">
+        <button id="mode-live" type="button" aria-pressed="true">En directo</button>
+        <button id="mode-link" type="button" aria-pressed="false">Por enlace</button>
+      </div>
+      <label class="backend"
+        >Servidor
+        <select id="backend">
+          <option value="local">Local · localhost:8787</option>
+          <option value="team">Desarrollo del equipo</option>
+        </select>
+      </label>
+      <section class="link-import" id="link-panel" aria-label="Analizar enlace de YouTube" hidden>
+        <form id="link-form">
+          <label
+            >Enlace de YouTube<input
+              id="link-url"
+              type="url"
+              required
+              placeholder="https://youtu.be/…"
+          /></label>
+          <label
+            >Desde el segundo<input
+              id="link-start"
+              type="number"
+              step="1"
+              min="0"
+              max="86399"
+              placeholder="Minuto del enlace o del vídeo"
+          /></label>
+          <label
+            >Hasta el segundo<input
+              id="link-end"
+              type="number"
+              step="1"
+              min="1"
+              max="86400"
+              placeholder="30 segundos después"
+          /></label>
+          <button class="primary" type="submit">Analizar tramo</button>
+          <span id="link-message" role="status"></span>
+        </form>
+      </section>
+      <p id="feedback" role="status"></p>
       <section aria-labelledby="timeline-title" class="timeline" id="timeline" hidden>
         <div class="timeline-head">
           <h2 id="timeline-title">Línea de tiempo</h2>
@@ -49,17 +92,9 @@
       </section>
       <p class="empty" id="empty">Las citas y sus fuentes aparecerán aquí mientras ves el vídeo.</p>
       <section class="controls" aria-label="Controles de verificación" id="controls" hidden>
-        <p id="feedback" role="status"></p>
         <button id="live" class="primary" disabled>Iniciar análisis en directo</button>
         <details class="options">
           <summary>Opciones y ensayo</summary>
-          <label class="backend"
-            >Servidor
-            <select id="backend">
-              <option value="local">Local · localhost:8787</option>
-              <option value="team">Desarrollo del equipo</option>
-            </select>
-          </label>
           <button id="capture" class="secondary" disabled>Analizar subtítulos recientes</button>
           <a
             class="saved-clip"
@@ -71,29 +106,6 @@
           <button id="demo" class="secondary" disabled>Probar con un ejemplo</button>
         </details>
       </section>
-      <details class="options link-import">
-        <summary>Analizar enlace de YouTube</summary>
-        <form id="link-form">
-          <label
-            >Enlace de YouTube<input
-              id="link-url"
-              type="url"
-              required
-              placeholder="https://youtu.be/…"
-          /></label>
-          <label
-            >Desde el segundo<input
-              id="link-start"
-              type="number"
-              step="1"
-              min="0"
-              max="86399"
-              placeholder="Minuto del enlace o del vídeo"
-          /></label>
-          <button class="secondary" type="submit">Analizar 30 segundos</button>
-          <span id="link-message" role="status"></span>
-        </form>
-      </details>
     </main>
     <script type="module" src="./panel.ts"></script>
   </body>
