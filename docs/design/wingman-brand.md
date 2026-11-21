@@ -14,8 +14,9 @@ Mascot: `packages/ui/assets/wingman-judge.png`. Generated with the built-in imag
 
 - [Checks out](night-broadcast/References/04-supported-motion.png) shows the pigeon judge stamping the exhibit and celebrating a supported verdict.
 - [Jury’s still out](night-broadcast/References/05-unresolved-motion.png) shows two sequences, one for mixed evidence and one for insufficient evidence.
+- [Spectacular miss](night-broadcast/References/13-contradicted-motion.png) shows the Contradicted sequence through recovery at 3.2 seconds.
 
-The [motion timing notes](night-broadcast/Motion/Timing%20and%20performance.txt) cover pacing and the reduced motion treatment.
+The [motion timing notes](night-broadcast/Motion/Timing%20and%20performance.txt) cover pacing and the reduced motion treatment. They also include an earlier timing draft for the Contradicted sequence.
 
 ## Verification
 
