@@ -1,0 +1,13 @@
+{
+  "name": "@council/infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "alchemy dev alchemy.run.ts",
+    "deploy:dev": "alchemy deploy alchemy.run.ts --stage dev"
+  },
+  "dependencies": {
+    "alchemy": "0.94.0",
+    "dotenv": "^17.0.0"
+  }
+}

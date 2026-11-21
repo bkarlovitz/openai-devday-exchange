@@ -36,3 +36,7 @@ Run npm install, npm run typecheck, npm run lint, and npm run build. Run npm run
 ## Completion Notes
 
 When complete, set done to true for this task in .viktor/tasks.json, append actual changes and validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Never mark validation complete when credentials or external access prevented it.
+
+### Completed implementation
+
+Implemented the submission path and validated it with Alchemy local bindings, an actual browser, and API requests. See .viktor/logs/LOG.md for commands and outcomes. Claim extraction and database integration can now proceed as TASK-002 and TASK-012.

@@ -1,0 +1,9 @@
+# Task log
+
+### TASK-001: Scaffold the workspace and run a persisted text submission
+
+- **Timestamp** 2026-11-21T11:49:03.983009+00:00
+- **Outcome** done
+- **Summary** Added the strict TypeScript/npm workspace, React/Vite submission UI, Hono/Effect API, Effect Schema contracts, coordinator-owned run state, R2 storage, and an Alchemy-provisioned scaffold Workflow. Adopted engineering standards v0.1.1 with pinned source receipts and reference-source configuration. Preserved the Python/PostgreSQL data component.
+- **Validation** npm install, typecheck, lint/format checks, and web/Worker dry-run build passed. Alchemy local smoke ran with real emulated R2, SQLite Durable Object, and Workflow bindings. Browser checks passed for submit, visible empty-text validation, exact saved text, reload, and mobile layout. API checks passed for concurrent duplicate requests, replay after a lost response, unchanged timestamp/revision, conflicting key reuse (409), missing IDs (404), optional metadata, 200,000-character Unicode input, and oversized rejection. The configured Vitest runner has no unit test files at this milestone. Vendor sync/status passed for four important direct libraries.
+- **Implementation choices** Alchemy 0.94.0 is pinned with compatibility date 2026-07-15 to match its emulator. A local-only emulator account identity permits credential-free local startup. Deployment setup is documented for a Cloudflare development account; cloud deployment was outside this task's local validation.

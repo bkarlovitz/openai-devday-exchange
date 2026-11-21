@@ -3,7 +3,7 @@
     "id": "TASK-001",
     "title": "Scaffold the workspace and run a persisted text submission",
     "milestone": "M0: Runnable submission app",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-001.md"
   },
   {

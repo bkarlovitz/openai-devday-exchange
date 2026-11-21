@@ -3,3 +3,13 @@
 __pycache__/
 
 /compose.override.yaml
+node_modules/
+repos/
+.env.*
+!.env.example
+.dev.vars*
+.alchemy/
+.wrangler/
+dist/
+playwright-report/
+test-results/

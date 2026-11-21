@@ -1,0 +1,10 @@
+{
+  "standards": {
+    "repository": "https://github.com/uwchlanventures/engineering-standards",
+    "revision": "cea0aa4d507980affc1bebd4f5d6489b9b28d550"
+  },
+  "vendorTool": {
+    "repository": "https://github.com/bkarlovitz/vendor-sync-util",
+    "revision": "c994c1264cbc18b7cbb560611c043547ce0dff1e"
+  }
+}

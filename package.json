@@ -1,0 +1,35 @@
+{
+  "name": "council-claim-checker",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build --workspace @council/web && npm run dev --workspace @council/infra",
+    "build": "npm run build --workspace @council/web && wrangler deploy --dry-run --config apps/api/wrangler.jsonc --outdir dist/worker",
+    "typecheck": "tsc --noEmit -p apps/api && tsc --noEmit -p apps/web && tsc --noEmit -p tooling/infra",
+    "lint": "oxlint apps packages tooling && oxfmt --check apps packages tooling package.json tsconfig.json",
+    "format": "oxfmt apps packages tooling package.json tsconfig.json",
+    "test": "vitest run",
+    "deploy:dev": "npm run build --workspace @council/web && npm run deploy:dev --workspace @council/infra",
+    "vendor:sync": "node tools/vendor/sync.ts sync",
+    "vendor:status": "node tools/vendor/sync.ts status"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261121.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1",
+    "wrangler": "^4.166.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  }
+}

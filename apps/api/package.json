@@ -1,0 +1,10 @@
+{
+  "name": "@council/api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@council/contracts": "*",
+    "effect": "3.22.5",
+    "hono": "^4.0.0"
+  }
+}

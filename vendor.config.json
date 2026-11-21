@@ -1,0 +1,33 @@
+{
+  "outDir": "repos",
+  "entries": [
+    {
+      "package": "effect",
+      "version": "3.22.5",
+      "repo": "https://github.com/Effect-TS/effect",
+      "ref": "f3df39b561789fa2dfbf3fe77b5a3545d96e09a5",
+      "dir": "effect"
+    },
+    {
+      "package": "@effect-atom/atom-react",
+      "version": "0.7.0",
+      "repo": "https://github.com/tim-smart/effect-atom",
+      "ref": "60bcae0d6824af59b5887fd09466c5dca6a07855",
+      "dir": "effect-atom"
+    },
+    {
+      "package": "hono",
+      "version": "4.13.19",
+      "repo": "https://github.com/honojs/hono",
+      "ref": "676c8f80fcafc49e6e74c847a8f0d9c44cc7faee",
+      "dir": "hono"
+    },
+    {
+      "package": "@tanstack/react-router",
+      "version": "1.170.46",
+      "repo": "https://github.com/TanStack/router",
+      "ref": "5637925f4dc6d14525e3a497138fe163cfcc40bf",
+      "dir": "tanstack-router"
+    }
+  ]
+}
