@@ -605,7 +605,7 @@ summary:focus-visible {
 .panel-header {
   padding: 8px 8px 8px 16px;
   min-height: 61px;
-  border-color: #e5dfd1;
+  border-color: var(--line);
 }
 .icon-button {
   width: 44px;
@@ -620,7 +620,7 @@ summary:focus-visible {
 }
 .check-overview {
   padding: 0 16px 14px;
-  border-color: #e5dfd1;
+  border-color: var(--line);
 }
 .check-overview .claim-overview {
   padding-top: 4px;
@@ -634,12 +634,12 @@ summary:focus-visible {
 .panel-footer {
   padding: 8px 16px 12px;
   min-height: 60px;
-  border-color: #e5dfd1;
+  border-color: var(--line);
   font-size: 11px;
   background: #fff;
 }
 .panel-footer a {
-  color: #176a96;
+  color: var(--accent);
 }
 .footer-state {
   color: #45536a;
@@ -651,7 +651,7 @@ summary:focus-visible {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
-  color: #112344;
+  color: var(--ink);
 }
 .composer .muted {
   font-size: 13px;
@@ -667,7 +667,7 @@ summary:focus-visible {
   border-radius: 10px;
 }
 .composer .primary {
-  background: #112344;
+  background: var(--ink);
   border-radius: 10px;
   min-height: 44px;
   font-size: 13px;
@@ -694,7 +694,7 @@ summary:focus-visible {
   font-size: 12px;
 }
 .web-handoff a {
-  color: #176a96;
+  color: var(--accent);
 }
 .pipeline-status {
   font-size: 11px;
@@ -725,28 +725,37 @@ summary:focus-visible {
   border-radius: 8px;
   padding: 8px;
   background: #fff;
-  color: #176a96;
+  color: var(--accent);
 }
 
 /* Wingman panel shell. Content and verdicts use the shared theme. */
 body {
-  background: #fff5df;
-  color: #112344;
+  background: var(--desk);
+  color: var(--ink);
 }
 .panel-header {
-  background: #fff5df;
-  border-bottom: 3px solid #47b1e4;
+  background: var(--ink);
+  border-bottom: 3px solid var(--sky);
   min-height: 70px;
   padding-left: 18px;
+}
+.panel-header .icon-button {
+  color: var(--desk);
+}
+.panel-header .icon-button:hover {
+  background: var(--accent);
+}
+.panel-header .icon-button:focus-visible {
+  outline-color: var(--sky);
 }
 .composer {
   padding: 20px 22px 28px;
 }
 .composer-mascot {
   height: 156px;
-  background: #dff0f8;
+  background: var(--sky-light);
   border-radius: 90px 90px 8px 8px;
-  border-bottom: 8px solid #112344;
+  border-bottom: 8px solid var(--ink);
   overflow: hidden;
   margin-bottom: 22px;
 }
@@ -763,16 +772,16 @@ body {
   font-size: 29px;
   line-height: 1.12;
   letter-spacing: -0.04em;
-  color: #112344;
+  color: var(--ink);
 }
 .composer textarea {
-  background: #fffdf7;
-  color: #112344;
+  background: var(--paper);
+  color: var(--ink);
   border-color: #d9d4c9;
 }
 .composer .primary {
-  background: #112344;
-  color: #fff5df;
+  background: var(--ink);
+  color: var(--desk);
   border-radius: 7px;
 }
 .composer .primary:hover {
@@ -782,13 +791,13 @@ body {
   margin-top: 20px;
 }
 .source-context {
-  background: #fffdf7;
+  background: var(--paper);
   margin-bottom: 12px;
-  border-bottom: 1px solid #e5dfd1;
+  border-bottom: 1px solid var(--line);
 }
 .panel-footer {
-  background: #fff5df;
-  border-top: 2px solid #47b1e4;
+  background: var(--desk);
+  border-top: 2px solid var(--sky);
 }
 .result-item .preview-quote {
   font-size: 16px;

@@ -1,17 +1,11 @@
 @import "../../packages/ui/src/brand-fonts.css";
+@import "../../packages/ui/src/brand-tokens.css";
 @import "../../packages/ui/src/pigeon-expressions.css";
 @import "../../packages/ui/src/verdict-motion.css";
 
 :root {
   color-scheme: light;
-  --canvas: #fff5df;
-  --paper: #fffdf7;
-  --ink: #112344;
-  --muted: #5b6575;
-  --line: #e5dfd1;
-  --accent: #176a96;
-  --font-body: "IBM Plex Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: Archivo, Inter, sans-serif;
+  --canvas: var(--desk);
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   font: 14px/1.45 var(--font-body);
 }
@@ -158,10 +152,10 @@ main {
 }
 body[data-live="true"] .source-badge {
   background: #fdecec;
-  color: #a22c24;
+  color: var(--contradicted);
 }
 body[data-live="true"] .source-dot {
-  background: #bd352c;
+  background: var(--contradicted);
   animation: pulse 1.6s infinite;
 }
 .context-domain {
@@ -389,8 +383,8 @@ output {
 }
 .row {
   --state: #5b6575;
-  --wash: #fffdf7;
-  --edge: #e5dfd1;
+  --wash: var(--paper);
+  --edge: var(--line);
   --chip: #ebebe7;
   --score: #e9e1d2;
   --score-ink: #5b6575;
@@ -400,39 +394,39 @@ output {
   overflow-wrap: anywhere;
 }
 .row[data-status="supported"] {
-  --state: #21623e !important;
-  --wash: #fffdf7 !important;
+  --state: var(--supported) !important;
+  --wash: var(--paper) !important;
   --edge: #b5d6c1 !important;
   --chip: #e1f0e5;
-  --score: #26774f;
+  --score: var(--supported);
   --score-ink: #fff;
 }
 .row[data-status="mixed"] {
   --chip: #fcebb8;
-  --score: #efb52d;
-  --score-ink: #112344;
+  --score: var(--unresolved);
+  --score-ink: var(--ink);
 }
 .row[data-status="context"] {
   --state: #7a5000 !important;
   --wash: #fff9e8 !important;
   --edge: #f0d486 !important;
   --chip: #fcebb8;
-  --score: #efb52d;
+  --score: var(--unresolved);
   --score-ink: #2e2000;
 }
 .row[data-status="contradicted"] {
-  --state: #a22c24 !important;
-  --wash: #fffdf7 !important;
+  --state: var(--contradicted) !important;
+  --wash: var(--paper) !important;
   --edge: #e7b6ac !important;
   --chip: #fbe6df;
-  --score: #bd352c;
+  --score: var(--contradicted);
   --score-ink: #fff;
 }
 .row[data-status="unavailable"],
 .row[data-status="pending"] {
   --state: #5b6575 !important;
-  --wash: #fffdf7 !important;
-  --edge: #e5dfd1 !important;
+  --wash: var(--paper) !important;
+  --edge: var(--line) !important;
 }
 .entry-meta {
   display: flex;
@@ -445,7 +439,7 @@ output {
   display: inline-flex;
   align-items: center;
   height: 28px;
-  background: #dff0f8;
+  background: var(--sky-light);
   border: 0;
   color: var(--accent);
   padding: 0 7px;
@@ -537,6 +531,7 @@ summary::-webkit-details-marker {
   content: " ⌃";
 }
 .detail {
+  display: flow-root;
   padding: 12px;
   border-top: 1px solid #0001;
   color: #263951;
@@ -580,8 +575,8 @@ summary::-webkit-details-marker {
 .source-detail {
   padding: 8px;
   margin-top: 6px;
-  background: #fff9;
-  border: 1px solid #0001;
+  background: var(--sky-light);
+  border: 1px solid var(--line);
   border-radius: 8px;
 }
 .context-detail {
@@ -614,7 +609,7 @@ summary::-webkit-details-marker {
 #feedback {
   font-size: 12px;
   color: #5b6575;
-  background: #fffdf7;
+  background: var(--paper);
   border-radius: 8px;
   padding: 8px 10px;
 }
@@ -643,11 +638,11 @@ summary::-webkit-details-marker {
   flex: none;
 }
 body[data-live="true"] .footer-dot {
-  background: #bd352c;
+  background: var(--contradicted);
   animation: pulse 1.6s infinite;
 }
 body[data-busy="true"] .footer-dot {
-  background: #176a96;
+  background: var(--accent);
   animation: pulse 1.6s infinite;
 }
 .client-name {
@@ -811,22 +806,39 @@ body[data-busy="true"] .footer-dot {
 
 /* Wingman courtroom identity. Live analysis controls retain their existing layout. */
 .brand {
-  background: #fff5df;
-  border-bottom: 3px solid #47b1e4;
+  background: var(--ink);
+  border-bottom: 3px solid var(--sky);
   min-height: 70px;
 }
+.brand .toggle {
+  color: var(--desk);
+}
+.brand .toggle input {
+  background: var(--ink);
+  border-color: var(--steel);
+}
+.brand .toggle input:checked {
+  background: var(--sky);
+  border-color: var(--sky);
+}
+.brand .toggle input:checked::after {
+  background: var(--ink);
+}
+.brand :focus-visible {
+  outline-color: var(--sky);
+}
 .panel-footer {
-  background: #fff5df;
-  border-top: 2px solid #47b1e4;
+  background: var(--desk);
+  border-top: 2px solid var(--sky);
 }
 .empty-mark {
   width: 180px;
   height: 170px;
   border-radius: 90px 90px 8px 8px;
-  background: #dff0f8;
-  border-bottom: 8px solid #112344;
+  background: var(--sky-light);
+  border-bottom: 8px solid var(--ink);
   overflow: hidden;
-  color: #112344;
+  color: var(--ink);
 }
 .empty-mark img {
   object-fit: contain;
@@ -837,8 +849,7 @@ body[data-busy="true"] .footer-dot {
   box-shadow: 0 3px 10px #11234406;
 }
 .row .claim {
-  font-family: "Source Serif 4", Georgia, serif;
-  font-style: italic;
+  font-family: var(--font-body);
 }
 
 .summary-footer {
@@ -849,21 +860,18 @@ body[data-busy="true"] .footer-dot {
   margin-left: auto;
 }
 .ruling {
-  font:
-    italic 12px "Source Serif 4",
-    Georgia,
-    serif;
+  font: 700 13px/1.3 var(--font-display);
   color: var(--ink);
 }
 .row[data-status="mixed"],
 .row[data-status="context"] {
-  border-left: 3px solid #e5a823;
+  border-left: 3px solid var(--unresolved);
 }
 .row[data-status="supported"] {
-  border-left: 3px solid #339761;
+  border-left: 3px solid var(--supported);
 }
 .row[data-status="contradicted"] {
-  border-left: 3px solid #d83e2f;
+  border-left: 3px solid var(--contradicted);
 }
 .row[data-status="contradicted"] .status-symbol {
   clip-path: polygon(28% 0, 72% 0, 100% 28%, 100% 72%, 72% 100%, 28% 100%, 0 72%, 0 28%);

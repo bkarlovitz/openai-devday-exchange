@@ -1,0 +1,16 @@
+:root {
+  --ink: #101f3c;
+  --sky: #38b4e7;
+  --desk: #fbf3e1;
+  --sky-light: #d7eff9;
+  --steel: #a6b8c8;
+  --accent: #175572;
+  --supported: #176144;
+  --unresolved: #f1ad20;
+  --contradicted: #ac2e23;
+  --paper: color-mix(in srgb, var(--desk) 35%, white);
+  --line: color-mix(in srgb, var(--steel) 50%, var(--desk));
+  --muted: #5b6575;
+  --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+}
