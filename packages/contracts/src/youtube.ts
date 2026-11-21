@@ -1,6 +1,8 @@
 import { Schema } from "effect";
 import { Language } from "./languages";
 
+export const YOUTUBE_MAX_INTERVAL_SECONDS = 180;
+
 const seconds = Schema.Int.pipe(Schema.between(0, 86400));
 
 export const YoutubeSubmission = Schema.Struct({
@@ -11,8 +13,10 @@ export const YoutubeSubmission = Schema.Struct({
   explanationLanguage: Schema.optional(Language),
 }).pipe(
   Schema.filter(
-    (input) => input.toSeconds > input.fromSeconds && input.toSeconds - input.fromSeconds <= 180,
-    { message: () => "Select an interval of at most 180 seconds." },
+    (input) =>
+      input.toSeconds > input.fromSeconds &&
+      input.toSeconds - input.fromSeconds <= YOUTUBE_MAX_INTERVAL_SECONDS,
+    { message: () => `Select an interval of at most ${YOUTUBE_MAX_INTERVAL_SECONDS} seconds.` },
   ),
 );
 

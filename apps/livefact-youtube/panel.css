@@ -473,3 +473,22 @@ select {
   border-radius: 6px;
   padding: 6px 8px;
 }
+
+.mode-options {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0;
+}
+.mode-options button {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 6px 8px;
+}
+.mode-options [aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}

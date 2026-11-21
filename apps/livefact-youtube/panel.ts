@@ -1,4 +1,4 @@
-import { youtubeVideoId } from "@council/contracts";
+import { YOUTUBE_MAX_INTERVAL_SECONDS, youtubeVideoId } from "@council/contracts";
 import type { Claim, ClaimDetail } from "@council/contracts";
 
 type Status = "pending" | "supported" | "context" | "contradicted" | "mixed" | "unavailable";
@@ -62,6 +62,7 @@ const capture = el<HTMLButtonElement>("capture");
 const backend = el<HTMLSelectElement>("backend");
 const filters = el("filters");
 let filter: Filter = "all";
+let panelMode: "live" | "link" = "live";
 let activeTab: number | undefined;
 const claimDetails = new Map<string, Promise<ClaimDetail>>();
 let lastKey = "";
@@ -412,7 +413,7 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
       ? "YouTube · Ensayo"
       : "YouTube";
   el("timeline").hidden = !snapshot?.ready;
-  el("controls").hidden = !snapshot?.ready;
+  el("controls").hidden = panelMode !== "live" || !snapshot?.ready;
   el("empty").textContent = !snapshot?.ready
     ? "Al abrir un vídeo, podrás revisar las citas y volver a su minuto desde este panel."
     : "Activa CC y analiza un fragmento para ver sus afirmaciones en la línea de tiempo.";
@@ -501,10 +502,22 @@ capture.addEventListener("click", () => {
 });
 const linkForm = el<HTMLFormElement>("link-form");
 const linkUrl = el<HTMLInputElement>("link-url");
-linkForm.closest("details")!.addEventListener("toggle", () => {
-  if (!linkUrl.value && lastSnapshot?.ready)
+const liveModeButton = el<HTMLButtonElement>("mode-live");
+const linkModeButton = el<HTMLButtonElement>("mode-link");
+
+function selectMode(mode: typeof panelMode) {
+  panelMode = mode;
+  liveModeButton.setAttribute("aria-pressed", String(mode === "live"));
+  linkModeButton.setAttribute("aria-pressed", String(mode === "link"));
+  el("controls").hidden = mode !== "live" || !lastSnapshot?.ready;
+  el("link-panel").hidden = mode !== "link";
+  if (mode === "link" && !linkUrl.value && lastSnapshot?.ready) {
     linkUrl.value = "https://www.youtube.com/watch?v=" + lastSnapshot.videoKey;
-});
+  }
+}
+
+liveModeButton.addEventListener("click", () => selectMode("live"));
+linkModeButton.addEventListener("click", () => selectMode("link"));
 linkForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const status = el("link-message");
@@ -525,8 +538,19 @@ linkForm.addEventListener("submit", async (event) => {
   const fromSeconds = start
     ? Number(start)
     : (at ?? (same ? Math.floor(lastSnapshot!.clock.position) : 0));
-  if (fromSeconds >= 86400) {
-    status.textContent = "El inicio elegido está fuera de rango.";
+  const end = el<HTMLInputElement>("link-end").value;
+  const toSeconds = end ? Number(end) : undefined;
+  if (
+    !Number.isInteger(fromSeconds) ||
+    fromSeconds < 0 ||
+    fromSeconds >= 86400 ||
+    (toSeconds !== undefined &&
+      (!Number.isInteger(toSeconds) ||
+        toSeconds <= fromSeconds ||
+        toSeconds > 86400 ||
+        toSeconds - fromSeconds > YOUTUBE_MAX_INTERVAL_SECONDS))
+  ) {
+    status.textContent = `Elige un intervalo válido de hasta ${YOUTUBE_MAX_INTERVAL_SECONDS} segundos.`;
     return;
   }
   const targetBackend = backend.value;
@@ -545,7 +569,7 @@ linkForm.addEventListener("submit", async (event) => {
       const snapshot = await send<Snapshot>({ type: "snapshot" }, target);
       if (snapshot?.ready && snapshot.videoKey === id) {
         const accepted = await send<boolean>(
-          { type: "importLink", backend: targetBackend, videoId: id, fromSeconds },
+          { type: "importLink", backend: targetBackend, videoId: id, fromSeconds, toSeconds },
           target,
         );
         status.textContent = accepted
