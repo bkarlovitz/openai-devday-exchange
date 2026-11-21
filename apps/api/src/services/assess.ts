@@ -5,6 +5,8 @@ import type { Env } from "../env";
 import { calculate } from "../research/calculate";
 import { generateObject } from "./generate-object";
 
+const CorrectedAssessment = Assessment.pipe(Schema.omit("calculations"));
+
 const insufficientText = {
   en: "The retrieved evidence is insufficient to assess this claim within its stated scope.",
   es: "La evidencia recuperada es insuficiente para evaluar esta afirmación en su ámbito declarado.",
@@ -113,7 +115,7 @@ export function assessClaim(
     Effect.flatMap(({ validated, repaired }) => {
       if (!repaired) return Effect.succeed(validated);
       return generateObject(env, {
-        schema: JSONSchema.make(Assessment),
+        schema: JSONSchema.make(CorrectedAssessment),
         name: "assessment_with_calculations",
         input: {
           claim,
@@ -123,27 +125,18 @@ export function assessClaim(
         },
         instructions:
           instructions +
-          " Use the supplied computedCalculations unchanged. Correct the explanation to agree with those computed results.",
+          " Correct the verdict and explanation if needed to agree with the supplied computed results, retaining every operand citation. The application attaches the calculations.",
         model: env.EXPLAIN_MODEL ?? "gpt-5.4-mini",
       }).pipe(
         Effect.flatMap((proposal) =>
           Effect.try({
             try: () => {
-              const result = validateAssessment(proposal, evidence, decision);
-              const signature = (assessment: Assessment) =>
-                JSON.stringify(
-                  assessment.calculations.map(({ operation, operands }) => ({
-                    operation,
-                    operands: operands.map(({ value, unit, evidenceId }) => ({
-                      value,
-                      unit,
-                      evidenceId,
-                    })),
-                  })),
-                );
-              if (signature(result) !== signature(validated))
-                throw new Error("The corrected explanation changed verified calculation inputs.");
-              return { ...result, calculations: validated.calculations };
+              const corrected = Schema.decodeUnknownSync(CorrectedAssessment)(proposal);
+              return validateAssessment(
+                { ...corrected, calculations: validated.calculations },
+                evidence,
+                decision,
+              );
             },
             catch: (cause) =>
               cause instanceof Error ? cause : new Error("Invalid corrected assessment."),

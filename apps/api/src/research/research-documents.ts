@@ -3,14 +3,14 @@ import type { Claim, Evidence } from "@council/contracts";
 import type { Env } from "../env";
 import { generateObject } from "../services/generate-object";
 import { readDocumentPassage, searchDocuments } from "./query-documents";
-import { documentCollections } from "./sources";
+import type { sourceCollection } from "./sources";
 
 const SearchTerms = Schema.Struct({ query: Schema.String });
 
 export function researchStoredDocuments(
   env: Env,
   claim: Claim,
-  collection: (typeof documentCollections)[string],
+  collection: NonNullable<ReturnType<typeof sourceCollection>["document"]>,
 ) {
   return Effect.gen(function* () {
     const fileNumber = claim.assertion.match(/\b\d{2}[a-z]{2}\d{4}\b/i)?.[0];

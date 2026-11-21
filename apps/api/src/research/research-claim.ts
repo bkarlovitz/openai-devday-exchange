@@ -15,7 +15,7 @@ import { queryDataset } from "./query-dataset";
 import { readSource, verifyExcerpt } from "./read-source";
 import { researchStoredDocuments } from "./research-documents";
 import { searchSources } from "./search";
-import { datasetGuidance, documentCollections } from "./sources";
+import { datasetGuidance, sourceCollection } from "./sources";
 
 const QueryPlan = Schema.Struct({
   queries: Schema.Array(
@@ -222,7 +222,7 @@ function researchWeb(env: Env, claim: Claim, topic: string, usedActions = 0) {
 
 function researchOfficialRecords(env: Env, claim: Claim, topic: string) {
   return Effect.gen(function* () {
-    const collection = documentCollections[topic];
+    const collection = sourceCollection(topic).document;
     if (!collection || !env.EVIDENCE_DB) return yield* researchWeb(env, claim, topic);
     const stored = yield* researchStoredDocuments(env, claim, collection);
     if (stored.evidence.length) {
