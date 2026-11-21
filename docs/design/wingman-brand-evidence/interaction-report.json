@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-21",
+  "fixture": "Fictional library timetable. No live API or AI calls.",
+  "checks": [
+    "desktop and mobile layout",
+    "mascot and brand fonts load",
+    "CTA anchor",
+    "paste enables submission",
+    "subtitle file import",
+    "four verdicts preserve distinct labels",
+    "expand evidence and source links",
+    "checking and reviewed filters",
+    "text panel at 400px and 320px",
+    "YouTube panel at 400px",
+    "no JavaScript page errors"
+  ],
+  "errors": []
+}

@@ -1,3 +1,4 @@
+import { WingmanMascot, VerdictLegend } from "@council/ui";
 import { useRef, useState } from "react";
 import type { Submission } from "@council/contracts";
 import { inferTranscriptPassages } from "../services/transcript";
@@ -72,12 +73,54 @@ export function SubmissionPage() {
   }
 
   return (
-    <main className="page">
-      <section className="intro">
-        <h1>Start with the statement.</h1>
-        <p>Paste text or import a transcript from a council debate, video, or document.</p>
+    <main className="page submission-page">
+      <section className="wingman-hero" aria-labelledby="hero-title">
+        <div className="hero-copy">
+          <p className="eyebrow">
+            <span /> YOUR SECOND PAIR OF EYES
+          </p>
+          <h1 id="hero-title">
+            Every claim
+            <br />
+            gets its turn.
+          </h1>
+          <p className="hero-deck">
+            Big statements. Small print.
+            <br />
+            Your Wingman checks the evidence.
+          </p>
+          <div className="hero-actions">
+            <a className="button-link" href="#check">
+              Check a statement <ArrowRight size={17} />
+            </a>
+            <a className="hero-secondary" href="/extension-install.html">
+              Take Wingman with you <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <p className="hero-caption">Select a statement. Open the exhibit.</p>
+        </div>
+        <div className="hero-stage">
+          <span className="stage-note">LET’S SEE THE EVIDENCE.</span>
+          <WingmanMascot />
+          <div className="judge-bench">
+            <span>THE EVIDENCE DESK</span>
+            <i aria-hidden="true">W</i>
+          </div>
+        </div>
       </section>
-      <form className="surface" onSubmit={submit}>
+      <VerdictLegend />
+      <section className="check-heading" id="check">
+        <div>
+          <p className="eyebrow">BRING YOUR RECEIPTS</p>
+          <h2>Put a statement on the record.</h2>
+        </div>
+        <p>
+          Paste a passage or import a transcript.
+          <br />
+          We’ll find the claims and show our sources.
+        </p>
+      </section>
+      <form className="surface submission-form" onSubmit={submit}>
         <div className="transcript-import">
           <label htmlFor="transcript-file">Import text or subtitles</label>
           <input
@@ -183,7 +226,7 @@ export function SubmissionPage() {
       <p className="scope-note">
         Check selected text from any page with the Chrome extension.{" "}
         <a href="/downloads/wingman-extension.zip" download>
-          Download extension
+          Get Wingman for Chrome
         </a>
         {" · "}
         <a href="/extension-install.html">Installation instructions</a>

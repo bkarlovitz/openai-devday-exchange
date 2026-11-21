@@ -7,6 +7,7 @@ import { MAX_TEXT_CHARACTERS } from "@council/contracts";
 import type { Claim } from "@council/contracts";
 import {
   BrandMark,
+  WingmanMascot,
   ClaimOverview,
   ClaimPreview,
   CheckabilityNotice,
@@ -354,7 +355,11 @@ function Panel() {
         />
       ) : (
         <section className="composer">
-          <h1>{saving ? "Starting your check" : "Check a passage"}</h1>
+          <div className="composer-mascot">
+            <WingmanMascot />
+          </div>
+          <p className="eyebrow">YOUR SECOND PAIR OF EYES</p>
+          <h1>{saving ? "Opening the exhibit…" : "Every claim gets its turn."}</h1>
           <p className="muted">
             Select text on a page, right-click and choose “Check claims”, or paste it here.
           </p>

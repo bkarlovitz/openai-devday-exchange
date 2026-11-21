@@ -103,7 +103,7 @@
     const label = item.label || status.label;
     root.innerHTML = `<style>
       button{display:block;width:100%;padding:11px 14px;border-radius:13px;border:1px solid var(--edge);border-inline-start:4px solid var(--state);box-sizing:border-box;
-      background:var(--wash);color:#302d27;box-shadow:0 2px 5px #221b1b16,0 6px 20px #221b1b26;font:600 13px/1.35 system-ui;text-align:left;cursor:pointer}
+      background:var(--wash);color:#112344;box-shadow:0 2px 5px #221b1b16,0 6px 20px #221b1b26;font:600 13px/1.35 system-ui;text-align:left;cursor:pointer}
       button:focus-visible{outline:2px solid var(--state);outline-offset:2px}
       .top,.foot{display:flex;align-items:center;gap:6px}
       .top{width:fit-content;max-width:100%;box-sizing:border-box;border-radius:14px;padding:3px 9px 3px 5px;
@@ -111,7 +111,7 @@
       i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:#fff;color:var(--state);font:700 12px/1 system-ui}
       .subject{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;
       overflow-wrap:anywhere;margin:7px 0;font-size:clamp(14px,5.4cqi,19px);font-weight:680;line-height:1.28}
-      .foot{font-size:11px;color:#554f46;font-variant-numeric:tabular-nums}
+      .foot{font-size:11px;color:#45536a;font-variant-numeric:tabular-nums}
       .action{margin-left:auto;color:var(--state)}
       @media(prefers-reduced-motion:no-preference){button{animation:enter .15s ease-out}@keyframes enter{from{opacity:0;transform:translateY(-3px)}}}
     </style><button type="button" aria-describedby="subject"><span class="top"><i aria-hidden="true"></i><span class="state"></span></span><span class="subject" id="subject"></span><span class="foot"><span class="origin"></span><span class="action"></span></span></button>`;

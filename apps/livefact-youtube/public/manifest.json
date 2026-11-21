@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Wingman · YouTube",
-  "version": "0.4.8",
+  "name": "Wingman \u00b7 YouTube",
+  "version": "0.4.9",
   "minimum_chrome_version": "116",
-  "description": "Vuelve al momento de una afirmación y consulta su contexto mientras ves YouTube.",
+  "description": "Vuelve al momento de una afirmaci\u00f3n y consulta su contexto mientras ves YouTube.",
   "permissions": ["storage", "sidePanel"],
   "host_permissions": [
     "http://localhost:8787/*",
