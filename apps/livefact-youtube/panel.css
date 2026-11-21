@@ -452,3 +452,24 @@ select {
   margin: 9px 0;
   font-size: 12px;
 }
+
+.link-import {
+  margin-top: 10px;
+}
+#link-form,
+#link-form label {
+  display: grid;
+  gap: 5px;
+}
+#link-form {
+  gap: 8px;
+  margin-top: 8px;
+}
+#link-form input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 6px 8px;
+}

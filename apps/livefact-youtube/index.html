@@ -71,6 +71,29 @@
           <button id="demo" class="secondary" disabled>Probar con un ejemplo</button>
         </details>
       </section>
+      <details class="options link-import">
+        <summary>Analizar enlace de YouTube</summary>
+        <form id="link-form">
+          <label
+            >Enlace de YouTube<input
+              id="link-url"
+              type="url"
+              required
+              placeholder="https://youtu.be/…"
+          /></label>
+          <label
+            >Desde el segundo<input
+              id="link-start"
+              type="number"
+              step="1"
+              min="0"
+              max="86399"
+              placeholder="Minuto del enlace o del vídeo"
+          /></label>
+          <button class="secondary" type="submit">Analizar 30 segundos</button>
+          <span id="link-message" role="status"></span>
+        </form>
+      </details>
     </main>
     <script type="module" src="./panel.ts"></script>
   </body>
