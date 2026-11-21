@@ -272,7 +272,7 @@ output {
   margin: 0;
 }
 .row {
-  background: var(--paper);
+  background: var(--wash);
   border: 1px solid var(--edge);
   border-radius: 10px;
   overflow-wrap: anywhere;
@@ -330,7 +330,7 @@ summary::-webkit-details-marker {
   margin-top: 7px;
 }
 .result {
-  background: var(--wash);
+  background: color-mix(in srgb, var(--state) 10%, var(--wash));
   color: var(--state);
   font-size: 10.5px;
   font-weight: 750;
@@ -338,7 +338,7 @@ summary::-webkit-details-marker {
   border-radius: 12px;
 }
 .analysis-label {
-  color: var(--accent);
+  color: var(--state);
   font-size: 10.5px;
   font-weight: 680;
   white-space: nowrap;
@@ -351,8 +351,8 @@ summary::-webkit-details-marker {
 }
 .detail {
   padding: 5px 9px 9px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
+  border-top: 1px solid var(--edge);
+  color: var(--ink);
   font-size: 12px;
 }
 .detail p {
@@ -385,6 +385,10 @@ summary::-webkit-details-marker {
   border: 1px solid var(--line);
   border-radius: 6px;
 }
+.context-detail {
+  margin-top: 6px;
+}
+.context-detail > summary,
 .source-detail > summary {
   color: var(--ink);
   font-weight: 650;
@@ -441,4 +445,10 @@ select {
 }
 select {
   max-width: 80%;
+}
+
+.saved-clip {
+  display: block;
+  margin: 9px 0;
+  font-size: 12px;
 }

@@ -1,5 +1,5 @@
 globalThis.liveFactStatuses = Object.freeze({
-  pending: { icon: "◷", label: "Comprobando", color: "#8b5e1b", wash: "#fff2d6", edge: "#e8d19e" },
+  pending: { icon: "◷", label: "Comprobando", color: "#5c5d58", wash: "#efefea", edge: "#d7d8d1" },
   supported: {
     icon: "✓",
     label: "Respaldada por la fuente",
@@ -10,16 +10,16 @@ globalThis.liveFactStatuses = Object.freeze({
   mixed: {
     icon: "◐",
     label: "Evidencia mixta",
-    color: "#79543a",
-    wash: "#faebdd",
-    edge: "#eed4bd",
+    color: "#78591b",
+    wash: "#f8edd2",
+    edge: "#e6d6af",
   },
   context: {
     icon: "◐",
     label: "Falta contexto",
-    color: "#695788",
-    wash: "#f0eaf6",
-    edge: "#dfd3e9",
+    color: "#815709",
+    wash: "#fff2cc",
+    edge: "#e6cb85",
   },
   contradicted: {
     icon: "×",

@@ -20,6 +20,8 @@ type Entry = {
   error?: string;
   claimRef?: object;
   demo?: boolean;
+  saved?: boolean;
+  runUrl?: string;
   quote?: Claim["quote"];
   context?: Claim["context"];
   speaker?: Claim["speaker"];
@@ -248,7 +250,8 @@ function renderEntry(item: Entry, opened: Set<string>) {
   const kind = document.createElement("span");
   kind.className = "kind";
   kind.textContent =
-    (item.kind === "argument" ? "Argumento" : "Dato") + (item.demo ? " · Ensayo" : "");
+    (item.kind === "argument" ? "Argumento" : "Dato") +
+    (item.saved ? " · Guardado" : item.demo ? " · Ensayo" : "");
   meta.append(kind);
   if (item.speaker) {
     const speaker = document.createElement("span");
@@ -280,14 +283,27 @@ function renderEntry(item: Entry, opened: Set<string>) {
     detail.append(quote);
   }
   appendDetail(detail, "Qué muestra el dato", item.evidence);
-  appendDetail(
-    detail,
-    "Contexto",
-    item.context && item.context !== item.quote ? item.context : item.metadata,
-  );
+  const context = item.context && item.context !== item.quote ? item.context : item.metadata;
+  if (context && context.length > 180) {
+    const disclosure = document.createElement("details");
+    disclosure.className = "context-detail";
+    const heading = document.createElement("summary");
+    heading.textContent = "Ver contexto completo";
+    const paragraph = document.createElement("p");
+    paragraph.textContent = context;
+    disclosure.append(heading, paragraph);
+    detail.append(disclosure);
+  } else {
+    appendDetail(detail, "Contexto", context);
+  }
   appendDetail(detail, "Qué podemos concluir", item.argument);
   appendDetail(detail, "Estado", item.error);
   if (item.source) detail.append(sourceLink(item.source.label, item.source.url));
+  if (item.runUrl)
+    detail.append(
+      document.createElement("br"),
+      sourceLink("Abrir comprobación original", item.runUrl),
+    );
   if (item.claimRef) {
     const assessment = document.createElement("div");
     detail.append(assessment);

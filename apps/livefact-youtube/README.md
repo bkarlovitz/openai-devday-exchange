@@ -19,3 +19,15 @@ Para compilar desde el repositorio, ejecuta `npm ci` y `npm run build --workspac
 ## Contrato del equipo
 
 El service worker usa `createApiClient` de `@council/contracts`. Envía pasajes con offsets UTF-16 y marcas de tiempo, consulta el progreso del run durante la extracción y la búsqueda de evidencia, y carga el detalle de cada afirmación al abrir su análisis. Los argumentos de ejemplo ilustran cómo juzgar si las premisas sostienen una conclusión. La API actual extrae afirmaciones factuales y aporta evaluaciones con fuentes.
+
+## Fragmento para el jurado · 14:05–14:40
+
+En el vídeo de EL PAÍS del 13 de enero de 2025, Pedro Sánchez cifra en un 48 % el aumento del precio de la vivienda en Europa durante la última década. La captura del ensayo del equipo sitúa el porcentaje en torno a 14:15. La Moncloa recoge la intervención completa.
+
+1. En Chrome, abre LiveFact en una pestaña de YouTube y pulsa **Opciones y ensayo → Ver fragmento del 48 %**. También puedes usar el [enlace al fragmento con reproducción del análisis guardado](https://www.youtube.com/watch?v=kvm8yYvF1Ws&t=845s#livefact-demo).
+2. Deja **Avisos** activo, reproduce desde 14:05 y espera a 14:15. La extensión presenta una síntesis del resultado guardado. Pulsa el aviso y abre la fuente o la comprobación original en el panel.
+3. Para un análisis nuevo, abre [el mismo minuto en modo normal](https://www.youtube.com/watch?v=kvm8yYvF1Ws&t=845s), activa los CC en español, elige **Desarrollo del equipo** e inicia el análisis en directo. La segmentación de los CC y el tiempo de investigación pueden cambiar las afirmaciones y el resultado.
+
+**Resultado observado.** El backend compartido recibió la cita completa de la transcripción oficial. Devolvió evidencia mixta y una referencia de Eurostat. Su serie muestra un 48 % para la UE entre 2010 y 2023. El ámbito geográfico y el intervalo difieren de los expresados en el discurso. La repetición guardada funciona aunque el servicio tarde en responder. La verificación en directo envía los subtítulos que realmente entrega YouTube.
+
+[Discurso de La Moncloa](https://www.lamoncloa.gob.es/presidente/intervenciones/Paginas/2025/20250113-acto-vivienda.aspx) · [Serie de Eurostat](https://ec.europa.eu/eurostat/web/interactive-publications/housing-2024) · [Resultado del backend](https://council-checker-dev.snapnda.workers.dev/runs/efce044b-942d-4dee-a77e-f047c5642210)

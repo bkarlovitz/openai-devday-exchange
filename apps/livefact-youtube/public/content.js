@@ -9,6 +9,24 @@
   let demo, job, retry;
   let liveBackend = null;
   let replayUntil = -1;
+  let savedClipArmed = false;
+  const clip = {
+    id: "saved-housing-48",
+    saved: true,
+    kind: "fact",
+    status: "mixed",
+    startSeconds: 855,
+    speaker: "Pedro Sánchez",
+    assertion: "La vivienda en Europa subió un 48 % en la última década",
+    evidence: "Eurostat registra un aumento del 48 % en la UE entre 2010 y 2023.",
+    argument: "La cifra coincide. El periodo abarca trece años y el ámbito de la serie es la UE.",
+    source: {
+      label: "Eurostat · Housing in Europe 2024",
+      url: "https://ec.europa.eu/eurostat/web/interactive-publications/housing-2024",
+    },
+    runUrl:
+      "https://council-checker-dev.snapnda.workers.dev/runs/efce044b-942d-4dee-a77e-f047c5642210",
+  };
   let feedback = "";
   let captions = [];
   let visibleCaption = "";
@@ -58,7 +76,11 @@
     button.querySelector("i").textContent = status.icon;
     button.querySelector(".state").textContent = label;
     button.querySelector(".subject").textContent = item.assertion;
-    button.querySelector("small").textContent = item.demo ? "Ensayo ↗" : "↗";
+    button.querySelector("small").textContent = item.saved
+      ? "Guardado ↗"
+      : item.demo
+        ? "Ensayo ↗"
+        : "↗";
     button.setAttribute("aria-label", label + ". Abrir en LiveFact");
     button.title = item.assertion;
     button.addEventListener("click", (event) => {
@@ -129,6 +151,7 @@
     const key = identity();
     if (key !== videoKey) {
       videoKey = key;
+      savedClipArmed = key === "kvm8yYvF1Ws" && location.hash === "#livefact-demo";
       timeline = new Map();
       notices = [];
       demo = job = retry = liveBackend = null;
@@ -146,6 +169,11 @@
       return;
     }
     const position = video.currentTime;
+    if (savedClipArmed && position >= clip.startSeconds && position < 880) {
+      savedClipArmed = false;
+      publish(clip);
+      setFeedback("Comprobación guardada del discurso del 13 de enero de 2025.");
+    }
     const elapsed = previousPosition === null ? 0 : position - previousPosition;
     if (elapsed < -0.5) replayUntil = Math.max(previousPosition, replayUntil);
     if (elapsed > 0 && elapsed <= 2.5 && previousPosition < replayUntil && enabled && !demo) {
@@ -203,6 +231,8 @@
     for (const [id, item] of timeline) if (item.demo) timeline.delete(id);
     notices = notices.filter((notice) => !notice.demo);
     dismiss();
+    savedClipArmed = false;
+    timeline.delete(clip.id);
     const first = { id: "demo-rent", demo: true, kind: "fact", assertion: sample.assertion };
     demo = {
       elapsed: 0,
@@ -397,6 +427,8 @@
         setFeedback("Análisis detenido.");
       } else if (!job) {
         liveBackend = message.backend;
+        savedClipArmed = false;
+        timeline.delete(clip.id);
         demo = null;
         for (const [id, item] of timeline) if (item.demo) timeline.delete(id);
         notices = [];
