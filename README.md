@@ -200,3 +200,11 @@ curl -fsS http://127.0.0.1:8787/api/dev/evidence/query-dataset \
 Para comparar con 2026, cambia `year` y añade el `snapshotId` devuelto en `snapshot.id`. Los periodos y tramos se filtran por su etiqueta exacta. Si el periodo no aparece, la respuesta tiene `rows: []`. Una fila publicada con renta vacía conserva su valor original y devuelve `rent.value: null`.
 
 El catálogo local también admite búsqueda textual con `GET /api/dev/evidence/catalogue?q=lloguer` e inspección de recursos y versiones con `GET /api/dev/evidence/catalogue/incasol`.
+
+La misma ruta admite estas fuentes. Obtén `resourceKey` del catálogo y reutiliza `snapshotId` para las páginas siguientes.
+
+| `datasetId` | Filtros |
+| --- | --- |
+| `population` | `referenceDate` con formato `AAAA-01-01`. Opcionales `districtCode`, `neighbourhoodCode` y `censusSection`. |
+| `tourist-flats` | `districtCode` y `neighbourhoodCode` opcionales, tal como salen en el CSV (por ejemplo, `"01"`). La fecha de descarga figura en el snapshot. |
+| `ine-59061` | `seriesCode` (por ejemplo, `IPVA4962`) y `year` de cuatro dígitos. La respuesta conserva los códigos de unidad y escala del INE. |

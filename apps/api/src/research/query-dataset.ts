@@ -12,13 +12,77 @@ type Snapshot = {
   lastSeenAt: string;
 };
 
-type IncasolRow = {
+type SourceRow = {
   rowNumber: number;
-  data: Record<string, string>;
+  data: Record<string, unknown>;
 };
 
+function filtersFor(input: QueryDatasetInput) {
+  switch (input.datasetId) {
+    case "incasol":
+      return sql`AND data->>'Àmbit territorial' = 'Municipi'
+        AND data->>'Codi territorial' = ${input.filters.municipalityCode}
+        AND data->>'Any' = ${input.filters.year}
+        AND data->>'Període' = ${input.filters.period}
+        AND data->>'Tram de preus' = ${input.filters.priceBand}`;
+    case "population":
+      return sql`AND data->>'Data_Referencia' = ${input.filters.referenceDate}
+        ${input.filters.districtCode ? sql`AND data->>'Codi_Districte' = ${input.filters.districtCode}` : sql``}
+        ${input.filters.neighbourhoodCode ? sql`AND data->>'Codi_Barri' = ${input.filters.neighbourhoodCode}` : sql``}
+        ${input.filters.censusSection ? sql`AND data->>'Seccio_Censal' = ${input.filters.censusSection}` : sql``}`;
+    case "tourist-flats":
+      return sql`
+        ${input.filters.districtCode ? sql`AND data->>'CODI_DISTRICTE' = ${input.filters.districtCode}` : sql``}
+        ${input.filters.neighbourhoodCode ? sql`AND data->>'CODI_BARRI' = ${input.filters.neighbourhoodCode}` : sql``}`;
+    case "ine-59061":
+      return sql`AND data->>'COD' = ${input.filters.seriesCode}
+        AND data->>'Anyo' = ${input.filters.year}`;
+  }
+}
+
+function decimal(value: unknown): string | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value);
+  }
+  return typeof value === "string" && /^-?[0-9]+(?:\.[0-9]+)?$/.test(value) ? value : null;
+}
+
+function evidenceRow(datasetId: QueryDatasetInput["datasetId"], row: SourceRow) {
+  const { data } = row;
+  switch (datasetId) {
+    case "incasol":
+      return {
+        ...row,
+        observationPeriod: { year: data.Any, label: data["Període"] },
+        rent: { value: decimal(data.Renda), unit: "EUR/month" },
+      };
+    case "population":
+      return {
+        ...row,
+        observationPeriod: { referenceDate: data.Data_Referencia },
+        population: { value: decimal(data.Valor), unit: "people" },
+      };
+    case "tourist-flats":
+      return {
+        ...row,
+        observationPeriod: null,
+        capacity: { value: decimal(data.NUMERO_PLACES), unit: "places" },
+      };
+    case "ine-59061":
+      return {
+        ...row,
+        observationPeriod: { year: data.Anyo, periodCode: data.FK_Periodo },
+        observation: {
+          value: data.Secreto === true ? null : decimal(data.Valor),
+          unitCode: data.FK_Unidad,
+          scaleCode: data.FK_Escala,
+        },
+      };
+  }
+}
+
 export function queryDataset(binding: Hyperdrive, input: QueryDatasetInput) {
-  const { datasetId, resourceKey, snapshotId, filters, afterRow } = input;
+  const { datasetId, resourceKey, snapshotId, afterRow } = input;
   const limit = input.limit ?? 25;
   return withEvidenceDb(binding, async (db) => {
     const snapshots = await db.execute<Snapshot>(sql`
@@ -34,27 +98,15 @@ export function queryDataset(binding: Hyperdrive, input: QueryDatasetInput) {
       return null;
     }
 
-    const result = await db.execute<IncasolRow>(sql`
+    const result = await db.execute<SourceRow>(sql`
       SELECT row_number AS "rowNumber", data
       FROM source_row
       WHERE snapshot_id = ${snapshot.id}::bigint AND row_number > ${afterRow ?? 0}
-        AND data->>'Àmbit territorial' = 'Municipi'
-        AND data->>'Codi territorial' = ${filters.municipalityCode}
-        AND data->>'Any' = ${filters.year}
-        AND data->>'Període' = ${filters.period}
-        AND data->>'Tram de preus' = ${filters.priceBand}
+        ${filtersFor(input)}
       ORDER BY row_number LIMIT ${limit + 1}
     `);
     const page = result.rows.slice(0, limit);
-    const rows = page.map(({ rowNumber, data }) => ({
-      rowNumber,
-      data,
-      observationPeriod: { year: data.Any, label: data["Període"] },
-      rent: {
-        value: /^[0-9]+(?:\.[0-9]+)?$/.test(data.Renda ?? "") ? data.Renda : null,
-        unit: "EUR/month",
-      },
-    }));
+    const rows = page.map((row) => evidenceRow(datasetId, row));
     return {
       snapshot,
       query: { ...input, snapshotId: snapshot.id, limit },
