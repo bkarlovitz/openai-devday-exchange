@@ -21,6 +21,8 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 - Create apps/api/src/coordinator/run-coordinator.ts and provision its Durable Object binding and initial migration in Alchemy. It owns mutable run state and deduplicated commands. Persist R2 artifacts separately. Use a client-generated submissionKey UUID in the POST contract, returning the existing run for duplicate identical requests and 409 for key reuse with a different payload. Test response-loss resubmission.
 
+- Preserve and integrate the existing README.md data instructions, compose.yaml, db/schema.sql, scripts/ingest.py, scripts/requirements.txt, and .gitignore. This repository already has a data-loading component. Keep Python ingestion independently runnable while scaffolding the TypeScript application.
+
 ## Implementation Notes
 
 Depends on None; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.

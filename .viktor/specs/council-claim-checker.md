@@ -53,9 +53,11 @@ Start with source collections for housing, tourism, and municipal decisions/publ
 
 ## Engineering constraints
 
+Our team owns integration of the existing PostgreSQL/pgvector data foundation and its query tools. Keep Docker for local data development and use Neon through Cloudflare Hyperdrive for deployed application queries. Preserve the independently runnable Python ingestion pipeline and versioned schema. Add searchable original-language passages for stored official documents, linked to their source snapshots and page locations.
+
 Build for one active user and rapid hackathon development. Follow the engineering standards as the stack direction, with a shared backend for the web app and extension. Keep operational complexity proportionate to this scope.
 
-Audio transcription and source-file text extraction belong to upstream systems. This build focuses on checking supplied text. Model selection beyond OpenAI Decisions, persistence, background-processing runtime, and supported text-size limits remain planning choices.
+User-submission audio transcription and file extraction belong to upstream producers. Stored-evidence document extraction is part of our data-preparation path. The checker accepts supplied text through its shared input interface. Model selection beyond OpenAI Decisions, background-processing details and supported text-size limits are specified as reviewable defaults in the architecture plan. Source evidence uses the agreed database integration.
 
 ## Proposed delivery milestones
 
@@ -70,5 +72,6 @@ Audio transcription and source-file text extraction belong to upstream systems. 
 - Claims with missing or conflicting evidence trigger bounded deeper research and yield an explained outcome.
 - Claim progress and completed assessments appear progressively in both clients.
 - A selected-text extension check can be opened as the same run in the web app.
+- Loaded source rows and document passages are queryable through the deployed application, with immutable snapshot and page/row provenance.
 - Plain text succeeds without speaker labels or timestamps.
 - Supported languages, verdicts, calculations, and quoted passages are checked against a small human-reviewed set.

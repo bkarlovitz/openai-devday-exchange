@@ -14,6 +14,13 @@
     "task_file": ".viktor/tasks/TASK-002.md"
   },
   {
+    "id": "TASK-012",
+    "title": "Connect the existing evidence database through Neon and Hyperdrive",
+    "milestone": "M2: Cited factual assessments",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-012.md"
+  },
+  {
     "id": "TASK-003",
     "title": "Route claims with Decisions and retrieve official-source evidence",
     "milestone": "M2: Cited factual assessments",
@@ -56,8 +63,15 @@
     "task_file": ".viktor/tasks/TASK-008.md"
   },
   {
+    "id": "TASK-013",
+    "title": "Extract and retrieve citable passages from stored council documents",
+    "milestone": "M5: Barcelona source coverage",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-013.md"
+  },
+  {
     "id": "TASK-009",
-    "title": "Add replaceable topic collections and one structured-data connector",
+    "title": "Validate topic collections and stored-data comparisons",
     "milestone": "M5: Barcelona source coverage",
     "done": false,
     "task_file": ".viktor/tasks/TASK-009.md"

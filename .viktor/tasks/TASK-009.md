@@ -1,4 +1,4 @@
-# TASK-009: Add replaceable topic collections and one structured-data connector
+# TASK-009: Validate topic collections and stored-data comparisons
 
 ## Objective
 
@@ -14,20 +14,20 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Requirements
 
-- Create apps/api/src/research/sources.ts with editable topic/domain/source collections, including a general fallback. Verify current official pages and record source purpose and date of inspection.
-- Add one structured-data adapter for a real accessible Barcelona dataset. Select it during implementation by verifying download/API access and field definitions; document metric, geography, period, units, licensing/source attribution, and missing values. Route applicable numerical claims to it.
+- Complete apps/api/src/research/sources.ts with editable topic/domain/source collections, including a general fallback. Verify current official pages and record source purpose and date of inspection.
+- Reuse the catalogue, typed dataset tools, and document retrieval from TASK-012 and TASK-013. Validate source-specific mappings and calculations for the loaded tourist-flats, population, Incasòl, and INE datasets. Document metric, geography, period, units, attribution, and missing-value conventions. Route applicable claims to the stored evidence.
 - Expose fetched data rows as evidence and pass calculations through the existing validated tool. Distinguish missing coverage from technical failures.
 - Seed relevant public-record/document entry points for all three topics. Claims outside those collections continue general research. Replacing a collection must require no UI or contract change.
 
 ## Implementation Notes
 
-Depends on TASK-008; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Depends on TASK-013; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
 
-Use existing official-first search. Topic coverage is intentionally configurable. Do not assume legacy endpoint names from rough-plan.md are working until checked.
+Use the existing ingestion pipeline and database research tools with official-first search. Topic coverage is intentionally configurable. Do not assume legacy endpoint names from rough-plan.md are working until checked.
 
 ## Validation
 
-For each topic, run one manually checked factual statement against a current official source. For the dataset adapter, reproduce one numerical comparison from retrieved rows. Replace a collection in a fixture and verify routing changes without breaking general fallback.
+For each topic, run one manually checked factual statement against a current official source. Reproduce numerical comparisons from stored snapshot rows and verify document citations. Distinguish rental indices from euro rents and register snapshots from historical observations. Replace a collection in a fixture and verify routing changes without breaking general fallback.
 
 ## Completion Notes
 

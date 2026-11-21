@@ -22,6 +22,8 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 - Keep deadlines and action reservations in RunCoordinator storage. Every request carries a claim and active attempt ID, so replay cannot reset counters or allow stale writes. Configure Responses search max_tool_calls to 1 per search invocation.
 
+- Count each search_catalogue, inspect_dataset, query_dataset, search_documents, or read_document_passage invocation against the same deeper-research budget once that tool is available. Use the remaining deadline for database statement/query timeouts and retain referenced snapshots.
+
 ## Implementation Notes
 
 Depends on TASK-004; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.

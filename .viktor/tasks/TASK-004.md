@@ -22,6 +22,8 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 - Add packages/contracts/src/assessments.ts and update the claim-detail endpoint/client to return validated assessment and calculation records. Move web rendering into packages/ui so the extension can reuse it later.
 
+- For stored-data assessments, retain the exact dataset, snapshot hash/ID, row numbers, filters, units, and calculation operands. Show source observation periods separately from download dates. Verify Incasòl rent in euros and INE index values are not conflated, and avoid inferring past tourist-flat counts from a present register.
+
 ## Implementation Notes
 
 Depends on TASK-003; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.

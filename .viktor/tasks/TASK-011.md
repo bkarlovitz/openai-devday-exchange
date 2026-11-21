@@ -20,6 +20,8 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 - Run build/typecheck/lint/tests, deploy to a Cloudflare development environment with Alchemy, verify required secrets/bindings and browser CORS, and build an unpacked extension targeting that environment.
 - Update README.md with exact local/dev commands, extension installation, model configuration, budget settings, known limitations, and evaluation results. Fix discovered blockers before marking this task complete.
 
+- Include local ingestion, repeat loads, schema migration, document extraction, and deployed Neon-through-Hyperdrive retrieval in the final checks. Evaluate at least one stored-row numerical comparison and one stored-document factual claim. Record database and source versions with evaluation results.
+
 ## Implementation Notes
 
 Depends on TASK-010; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.

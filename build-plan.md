@@ -16,6 +16,10 @@ Text can originate from a YouTube transcript, PDF, or another source. Upstream t
 
 Checking should start automatically once text is submitted. The intended approach is a fast first pass using a decision API, followed by longer agentic research passes as needed. OpenAI Decisions is the agreed decision API. Deeper research should run automatically when evidence is insufficient or conflicting, within a bounded per-claim research budget. The configurable initial deeper-research budget is 60 seconds and 8 tool calls per claim, stopping when either limit is reached. Each assessment should show a verdict, short explanation, cited evidence passages, and uncertainty.
 
+## Existing data work
+
+The repository includes Docker PostgreSQL/pgvector, versioned official-source tables, and a standalone Python ingestion pipeline. Our team owns integration and query tools. Use Docker locally and Neon through Hyperdrive for deployed queries. Reuse the loaded housing, tourism, population, and rental-index sources, then add searchable passages from stored council documents. Preserve the text-only submission boundary.
+
 ## Proposed modules
 
 | Module | Responsibility |
@@ -52,7 +56,7 @@ The web app supports pasted text and the same progress and evidence views. Both 
 
 ## Architecture and models to discuss
 
-One TypeScript repository could contain the clients, backend, and shared contracts. The engineering standards provide the starting direction for React/Vite, Effect and Effect Schema, Hono, Cloudflare Workers, Alchemy, and storage where needed. Long-running research may need background processing. Its runtime remains an architecture decision. [Engineering standards](https://github.com/uwchlanventures/engineering-standards)
+The TypeScript workspace will contain clients, backend, and shared contracts alongside the existing Python data-preparation scripts. The engineering standards provide the starting direction for React/Vite, Effect and Effect Schema, Hono, Cloudflare Workers, Alchemy, and storage where needed. Implementation defaults use Cloudflare Workflows for research, a coordinator and R2 for run state/results, and Neon/Hyperdrive with Drizzle for stored evidence. [Engineering standards](https://github.com/uwchlanventures/engineering-standards)
 
 A language model with structured outputs could extract claims, while tool-enabled model calls could research evidence and interpret definitions. A proposed assessment step would use model reasoning grounded in retrieved passages for broader factual statements, with code performing arithmetic where needed. Each assessment would retain the supporting evidence and explanation. Specific models should be chosen against representative text inputs and the available hackathon budget.
 
@@ -88,12 +92,16 @@ The ordered executable index is [.viktor/tasks.json](.viktor/tasks.json). Every 
 | --- | --- | --- |
 | [TASK-001](.viktor/tasks/TASK-001.md) | M0: Runnable submission app | Scaffold the workspace and run a persisted text submission |
 | [TASK-002](.viktor/tasks/TASK-002.md) | M1: Automatic claim detection | Extract traceable claims and show them as processing progresses |
+| [TASK-012](.viktor/tasks/TASK-012.md) | M2: Cited factual assessments | Connect the existing evidence database through Neon and Hyperdrive |
 | [TASK-003](.viktor/tasks/TASK-003.md) | M2: Cited factual assessments | Route claims with Decisions and retrieve official-source evidence |
 | [TASK-004](.viktor/tasks/TASK-004.md) | M2: Cited factual assessments | Generate evidence-grounded verdicts and reproducible calculations |
 | [TASK-005](.viktor/tasks/TASK-005.md) | M3: Bounded deeper research | Automatically investigate unresolved and conflicting claims |
 | [TASK-006](.viktor/tasks/TASK-006.md) | M3: Bounded deeper research | Retry failed stages while preserving completed claim results |
 | [TASK-007](.viktor/tasks/TASK-007.md) | M4: Multilingual long-text checking | Process full text submissions with stable context and repeated-claim links |
 | [TASK-008](.viktor/tasks/TASK-008.md) | M4: Multilingual long-text checking | Switch explanation language using retained evidence |
-| [TASK-009](.viktor/tasks/TASK-009.md) | M5: Barcelona source coverage | Add replaceable topic collections and one structured-data connector |
+| [TASK-013](.viktor/tasks/TASK-013.md) | M5: Barcelona source coverage | Extract and retrieve citable passages from stored council documents |
+| [TASK-009](.viktor/tasks/TASK-009.md) | M5: Barcelona source coverage | Validate topic collections and stored-data comparisons |
 | [TASK-010](.viktor/tasks/TASK-010.md) | M6: Chrome extension client | Check selected text and open shared results in a side panel |
 | [TASK-011](.viktor/tasks/TASK-011.md) | M7: Verified development build | Evaluate complete checks and verify the deployed clients |
+
+Existing task IDs are preserved. Execute in task-index order, which places database integration before evidence research and document retrieval before source-coverage validation.
