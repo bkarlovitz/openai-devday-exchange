@@ -1,5 +1,5 @@
 import { createApiClient } from "@council/contracts";
-import type { Submission } from "@council/contracts";
+import type { Submission, YoutubeSubmission } from "@council/contracts";
 import { Effect } from "effect";
 import sample from "../../eval/fixtures/incasol-barcelona-q2.json";
 
@@ -24,6 +24,7 @@ type Message =
   | { type: "sample" }
   | { type: "open" }
   | { type: "submit"; backend: "local" | "team"; submission: Submission }
+  | { type: "submitYoutube"; backend: "local" | "team"; submission: YoutubeSubmission }
   | { type: "load"; backend: "local" | "team"; runId: string }
   | { type: "detail"; backend: "local" | "team"; runId: string; claimId: string };
 
@@ -43,6 +44,14 @@ chrome.runtime.onMessage.addListener(
       return;
     }
     const api = message.backend === "team" ? teamApi : localApi;
+    if (message.type === "submitYoutube") {
+      Effect.runPromise(api.saveYoutubeSubmission(message.submission)).then(
+        (value) => reply({ value }),
+        (cause: Error) =>
+          reply({ error: "No se pudo importar el tramo de YouTube. " + cause.message }),
+      );
+      return true;
+    }
     if (message.type === "submit") {
       Effect.runPromise(
         api.saveSubmission(message.submission).pipe(Effect.timeout("10 seconds")),
