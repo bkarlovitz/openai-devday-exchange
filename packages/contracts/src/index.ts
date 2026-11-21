@@ -6,3 +6,4 @@ export * from "./client";
 export * from "./documents";
 export * from "./evidence";
 export * from "./assessments";
+export * from "./youtube";

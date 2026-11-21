@@ -4,7 +4,11 @@ import { Submission, normalizeSubmission } from "@council/contracts";
 import type { Env } from "../env";
 import { createRun, getRun, coordinator } from "../services/run-store";
 
+import { submitYoutube } from "./youtube";
+
 export const runs = new Hono<{ Bindings: Env }>();
+
+runs.post("/youtube", submitYoutube);
 
 runs.post("/", async (c) => {
   let input: unknown;
