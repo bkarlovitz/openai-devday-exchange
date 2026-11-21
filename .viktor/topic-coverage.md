@@ -17,3 +17,7 @@ Puntos de entrada oficiales comprobados el 21 de noviembre de 2026. Las coleccio
 - Gasto: el acta registra la aprobación por unanimidad del reconocimiento de crédito por 1.040 € del expediente `25XF0640`. El Worker desplegado citó la página 8 y terminó Supported en `e7e4c6c5-cf4e-42a6-9c1b-72cddfe4331c`.
 - Vivienda: las filas de abril–junio de 2025 y 2026 del tramo de más de 600 €/mes dan 1.135,55 y 1.140,89 €/mes, un aumento del 0,47 %. El despliegue recuperó ambas filas en `0632e196-fd34-47ac-8205-ccf8bd677b2d`, pero falló al reformular la explicación del cálculo. La regresión queda cubierta en pruebas locales. Queda repetir el caso con la corrección desplegada.
 - Controles de las otras series: el endpoint desplegado sumó 115.829 habitantes en Ciutat Vella a 1 de enero de 2026 (54 filas) y devolvió 118,727 y 122,92 para la serie de índice nacional `IPVA4962` en 2023 y 2024, respectivamente, conservando los códigos de unidad y escala.
+
+## Comprobación integrada posterior
+
+El caso de vivienda se repitió con éxito en el despliegue integrado: `32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28` terminó sin errores, Supported para 0,47% y Contradicted para 50%, con las mismas filas y cálculo. El extracto auténtico de crédito `092214d8-d963-4756-b1ac-5fd674513fe4` terminó con cuatro Supported y sin errores. El control de pago efectivo `c003a1c7-bfaa-4543-a741-ba002cd3501c` terminó Insufficient evidence.

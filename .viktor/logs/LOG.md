@@ -83,3 +83,9 @@
 - **Live runs:** Opinion/checkability83270eb2-4d19-4a05-b6c2-1439c1d172b3; correct0.47% versus incorrect50% housing32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28 returned Supported/Contradicted with no errors; payment coveragec003a1c7-bfaa-4543-a741-ba002cd3501c returned Insufficient evidence; authentic credit excerpt092214d8-d963-4756-b1ac-5fd674513fe4 returned four Supported claims without errors. Long-document run7c9ae7fe-e9f3-4e9b-b611-42aa1f96effe.
 - **Correctness fixes:** Unique whitespace/typography reanchoring returns exact original spans and rejects partial compatibility-character matches. Invalid candidates never publish as source quotes. Scoped duplicate identity preserves unscoped records separately. Stored-record search now uses unique file IDs from context. Document-only contradictions receive an evidence review so lack of payment evidence is not mislabelled contradiction.
 - **Demo:** docs/demo-plan.md and eval/demo contain authentic sourced text, clearly labelled team-authored numerical/opinion cases, ready-to-import txt files and provenance. The datasets are public; the value is versioned rows, page citations, matching scope and reproducible arithmetic.
+
+### Final integration: timed YouTube import
+
+- **Timestamp:** 2026-11-21T13:27:00Z
+- **Summary:** Pulled teammate YouTube container/import commit96471d7 and merged it with transcript processing. Preserved exact-source quote anchoring and the teammate's cross-cue timestamp behavior. Kept both README sections. After merge, typecheck, lint and all58 tests passed. Container deployment verification is recorded below when complete.
+- **Integration ownership:** TASK-009 remains assigned to the teammate; its latest source mappings and assessment correction are incorporated. The rent regression now passes live, as recorded in topic-coverage.md.

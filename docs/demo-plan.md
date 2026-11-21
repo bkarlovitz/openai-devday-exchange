@@ -64,3 +64,17 @@ if (!response.ok) throw new Error(JSON.stringify(result));
 console.log(base + result.url);
 JS
 ```
+
+## Verified saved runs
+
+These are real completed runs on the development deployment, suitable as a fallback after attempting fresh input:
+
+| Example | Observed result | Saved run |
+| --- | --- | --- |
+| Opinion | Opinion/prediction checkability, zero factual claims | [Open](https://council-checker-dev.snapnda.workers.dev/runs/83270eb2-4d19-4a05-b6c2-1439c1d172b3) |
+| Controlled housing comparisons | 0.47% Supported; 50% Contradicted | [Open](https://council-checker-dev.snapnda.workers.dev/runs/32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28) |
+| Authentic credit excerpt | Four Supported claims; no technical errors | [Open](https://council-checker-dev.snapnda.workers.dev/runs/092214d8-d963-4756-b1ac-5fd674513fe4) |
+| Completed-payment assertion | Insufficient evidence | [Open](https://council-checker-dev.snapnda.workers.dev/runs/c003a1c7-bfaa-4543-a741-ba002cd3501c) |
+| Long official document | 33 terminal claims, two technical retrieval errors, one excluded unanchored candidate; overlap observed | [Open](https://council-checker-dev.snapnda.workers.dev/runs/7c9ae7fe-e9f3-4e9b-b611-42aa1f96effe) |
+
+The final long document demonstrates progressive processing and visible partial failures; it is not a claim of complete factual coverage. Extraction and verdicts remain model-assisted. Keep source scope visible and inspect citations during rehearsal.
