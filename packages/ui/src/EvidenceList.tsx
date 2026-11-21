@@ -14,8 +14,17 @@ export function EvidenceList({
       {evidence.map((item) => (
         <article className="evidence-item" id={`evidence-${item.evidenceId}`} key={item.evidenceId}>
           <div className="evidence-heading">
-            <a href={item.sourceUrl} target="_blank" rel="noreferrer">
+            <a
+              href={
+                item.pageNumber === undefined
+                  ? item.sourceUrl
+                  : `${item.sourceUrl.split("#")[0]}#page=${item.pageNumber}`
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
               {item.title}
+              {item.pageNumber !== undefined ? ` · page ${item.pageNumber}` : ""}
             </a>
             {citedIds.includes(item.evidenceId) ? (
               <span className="evidence-cited">Cited</span>

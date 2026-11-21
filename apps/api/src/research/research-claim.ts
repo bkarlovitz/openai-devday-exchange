@@ -13,8 +13,9 @@ import { judgeEvidence, routeClaim } from "../services/decisions";
 import { inspectDataset, searchCatalogue } from "./catalogue";
 import { queryDataset } from "./query-dataset";
 import { readSource, verifyExcerpt } from "./read-source";
+import { researchStoredDocuments } from "./research-documents";
 import { searchSources } from "./search";
-import { datasetGuidance } from "./sources";
+import { datasetGuidance, documentCollections } from "./sources";
 
 const QueryPlan = Schema.Struct({
   queries: Schema.Array(
@@ -151,9 +152,9 @@ function researchDataset(env: Env, claim: Claim, submission: Submission, dataset
   });
 }
 
-function researchWeb(env: Env, claim: Claim, topic: string) {
+function researchWeb(env: Env, claim: Claim, topic: string, usedActions = 0) {
   return Effect.gen(function* () {
-    const sources = yield* searchSources(env, claim.assertion, topic);
+    const sources = (yield* searchSources(env, claim.assertion, topic)).slice(0, 2 - usedActions);
     const evidence: Evidence[] = [];
     const notes: string[] = [];
     let failures = 0;
@@ -214,8 +215,29 @@ function researchWeb(env: Env, claim: Claim, topic: string) {
     if (sources.length && failures === sources.length)
       throw new Error("All discovered sources failed retrieval. Research can be retried.");
     if (!sources.length) notes.push("The initial search returned no source URLs.");
-    notes.push(`Initial research used ${1 + sources.length} of 3 tool actions.`);
+    notes.push(`Initial research used ${usedActions + 1 + sources.length} of 3 tool actions.`);
     return { evidence, notes };
+  });
+}
+
+function researchOfficialRecords(env: Env, claim: Claim, topic: string) {
+  return Effect.gen(function* () {
+    const collection = documentCollections[topic];
+    if (!collection || !env.EVIDENCE_DB) return yield* researchWeb(env, claim, topic);
+    const stored = yield* researchStoredDocuments(env, claim, collection);
+    if (stored.evidence.length) {
+      return {
+        evidence: stored.evidence,
+        notes: [`Initial research used ${1 + stored.evidence.length} of 3 tool actions.`],
+      };
+    }
+    const web = yield* researchWeb(env, claim, topic, stored.searched ? 1 : 0);
+    return {
+      ...web,
+      notes: stored.searched
+        ? ["No matching passage in the loaded council minutes.", ...web.notes]
+        : web.notes,
+    };
   });
 }
 
@@ -240,7 +262,7 @@ export function researchClaim(
     const result =
       knownDatasets.includes(route.dataset) && env.EVIDENCE_DB
         ? yield* researchDataset(env, claim, submission, route.dataset)
-        : yield* researchWeb(env, claim, route.topic);
+        : yield* researchOfficialRecords(env, claim, route.topic);
     const decision = yield* judgeEvidence(env, claim, result.evidence);
     return { checkable: true, topic: route.topic, ...result, decision };
   }).pipe(
