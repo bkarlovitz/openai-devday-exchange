@@ -1,0 +1,14 @@
+{
+  "kind": "team_authored_coverage_boundary_input",
+  "input": {
+    "text": "El Ayuntamiento de Barcelona ya pagó efectivamente los 1.040 euros correspondientes al expediente 25XF0640."
+  },
+  "expectedVerdictForLoadedEvidence": "insufficient_evidence",
+  "knownEvidence": {
+    "sourceUrl": "https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf",
+    "pageNumber": 8,
+    "sha256": "88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9",
+    "query": "25XF0640"
+  },
+  "explanation": "The loaded minutes record approval, authorization and recognition of an obligation. Establishing completed payment needs payment evidence. Further public records could change this assessment."
+}

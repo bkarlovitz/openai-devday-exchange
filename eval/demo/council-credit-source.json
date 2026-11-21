@@ -1,0 +1,23 @@
+{
+  "kind": "authentic_official_minutes_excerpt",
+  "language": "ca",
+  "sourceVersion": {
+    "snapshotId": "6",
+    "sha256": "88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9",
+    "fetchedAt": "2026-11-21T12:53:27.729Z",
+    "pageNumber": 8
+  },
+  "input": {
+    "text": "11. – (25XF0640) APROVAR l'expedient 25XF0640 de reconeixement de crèdit per un \nimport de 1.040 euros, atesa la necessitat de regularitzar les despeses \ncorresponents a dietes de l'any 2024 i no reconegudes durant l'exercici 2024. \nAUTORITZAR, DISPOSAR i RECONÈIXER l'obligació de la despesa a favor de la Sra. \nM. C. R. per un import de 1.040 euros, amb càrrec al pressupost general de \nl'exercici 2025 i l'aplicació pressupostària D/0607/23001/91211. \nS’APROVA, per unanimitat, el dictamen precedent.",
+    "source": {
+      "url": "https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf#page=8",
+      "title": "Acta del Plenari del Consell Municipal, 31 October 2025",
+      "sessionDate": "2025-10-31"
+    }
+  },
+  "expectedEvidence": {
+    "query": "25XF0640",
+    "pageNumber": 8,
+    "scope": "Approval and recognition of credit for 1,040 euros, with unanimous adoption."
+  }
+}

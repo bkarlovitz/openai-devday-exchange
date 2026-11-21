@@ -364,3 +364,58 @@ button:disabled {
   font-family: monospace;
   overflow-wrap: anywhere;
 }
+
+.transcript-import {
+  margin-bottom: 1.5rem;
+}
+.transcript-import input {
+  display: block;
+  max-width: 100%;
+  margin: 0.6rem 0;
+}
+.transcript-import p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.submission-options {
+  margin: 1rem 0;
+}
+.submission-options summary {
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+.submission-options label {
+  display: block;
+  margin: 0.8rem 0 0.35rem;
+}
+.submission-options input,
+.submission-options select {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.4rem;
+  background: white;
+  color: #17202a;
+  font: inherit;
+}
+.pipeline-progress {
+  display: grid;
+  gap: 0.35rem;
+}
+.pipeline-progress p {
+  margin: 0;
+}
+
+.checkability-notice {
+  margin: 0 0 1rem;
+  padding: 12px;
+  border: 1px solid #d7dde0;
+  border-radius: 8px;
+  background: #f8faf9;
+  color: #36434a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.checkability-notice p {
+  margin: 6px 0 0;
+}

@@ -32,3 +32,7 @@ Create a multi-chunk fixture with a claim at a boundary, a pronoun requiring pre
 ## Completion Notes
 
 When complete, set done to true for this task in .viktor/tasks.json, append actual changes and validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Never mark validation complete when credentials or external access prevented it.
+
+## Hackathon execution note
+
+Implemented directly on the existing persisted checking path under the user-approved 30-minute priority change; TASK-005/006 retries and deep research remain separate follow-up tasks. Input import, bounded overlap/context, canonical occurrence links, concurrent extraction/checking, and final-state guards are delivered. Unanchored model candidates are explicitly warned and excluded while grounded candidates continue.

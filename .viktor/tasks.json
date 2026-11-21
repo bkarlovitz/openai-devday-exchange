@@ -52,7 +52,7 @@
     "id": "TASK-007",
     "title": "Process full text submissions with stable context and repeated-claim links",
     "milestone": "M4: Multilingual long-text checking",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-007.md"
   },
   {

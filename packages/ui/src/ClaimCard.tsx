@@ -33,6 +33,22 @@ export function ClaimCard({
           {claim.startSeconds !== undefined ? ` · ${claim.startSeconds}s` : ""}
         </p>
       ) : null}
+      {claim.occurrences && claim.occurrences.length > 1 ? (
+        <details className="claim-occurrences">
+          <summary>Repeated in {claim.occurrences.length} places in this text</summary>
+          <ol>
+            {claim.occurrences.map((occurrence) => (
+              <li key={`${occurrence.start}-${occurrence.end}`}>
+                {occurrence.speaker ? `${occurrence.speaker} · ` : ""}
+                {occurrence.startSeconds !== undefined
+                  ? `${Math.floor(occurrence.startSeconds / 60)}:${String(Math.floor(occurrence.startSeconds % 60)).padStart(2, "0")} · `
+                  : ""}
+                Text positions {occurrence.start.toLocaleString()}–{occurrence.end.toLocaleString()}
+              </li>
+            ))}
+          </ol>
+        </details>
+      ) : null}
       {claim.error ? (
         <p className="error" role="alert">
           {claim.error}

@@ -1,9 +1,38 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { Effect } from "effect";
 import type { Claim } from "@council/contracts";
-import { routeClaim } from "./decisions";
+import { classifyPassage, routeClaim } from "./decisions";
 
 afterEach(() => vi.unstubAllGlobals());
+
+it.each(["factual_assertion", "opinion_prediction", "uncertain"] as const)(
+  "returns an advisory %s classification without a truth verdict",
+  async (kind) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({ answers: [{ type: "choice", name: "passage_kind", choice: kind }] }),
+      ),
+    );
+    const result = await Effect.runPromise(
+      classifyPassage({ OPENAI_API_KEY: "test" } as never, "A sentence to classify."),
+    );
+    expect(result.kind).toBe(kind);
+    expect(result.explanation.length).toBeGreaterThan(0);
+    expect(result).not.toHaveProperty("checkable");
+  },
+);
+
+it("keeps an unrecognized passage answer uncertain", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => Response.json({ answers: [] })),
+  );
+  const result = await Effect.runPromise(
+    classifyPassage({ OPENAI_API_KEY: "test" } as never, "An incomplete phrase"),
+  );
+  expect(result.kind).toBe("uncertain");
+});
 
 const claim: Claim = {
   claimId: "claim",

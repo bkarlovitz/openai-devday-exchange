@@ -1,0 +1,8 @@
+{
+  "kind": "team_authored_checkability_example",
+  "input": {
+    "text": "I would prefer fewer tourist apartments in Barcelona."
+  },
+  "expectedCheckability": "opinion_prediction",
+  "expectedClaims": 0
+}

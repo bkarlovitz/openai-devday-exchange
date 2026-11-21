@@ -9,20 +9,61 @@ import { chunkText } from "../services/chunk-text";
 import { extractClaims } from "../services/extract-claims";
 import { researchClaim } from "../research/research-claim";
 import { assessClaim } from "../services/assess";
+import { classifyPassage } from "../services/decisions";
 
 export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeResearch?: boolean }> {
   async run(event: WorkflowEvent<{ runId: string; resumeResearch?: boolean }>, step: WorkflowStep) {
     const runId = event.payload.runId;
     const attemptId = event.instanceId;
     const owner = coordinator(this.env, runId);
-    let submission: Submission;
-    if (!event.payload.resumeResearch) {
-      try {
-        const object = await this.env.SUBMISSIONS.get(`runs/${runId}/submission.json`);
-        if (!object) throw new Error("Saved submission is missing.");
-        submission = Schema.decodeUnknownSync(Submission)(await object.json());
+    const lanes = [Promise.resolve(), Promise.resolve()];
+    const laneErrors: unknown[] = [];
+    let ordinal = 0;
+    let extractionError: unknown;
+    const enqueue = (
+      run: Pick<Run, "runId" | "submission" | "explanationLanguage" | "detectedLanguage">,
+      claims: readonly Claim[],
+    ) => {
+      for (const claim of claims) {
+        const lane = ordinal++ % lanes.length;
+        lanes[lane] = lanes[lane]
+          .then(() => this.checkClaim(run, claim, claim.claimId, attemptId, step))
+          .catch((error) => {
+            laneErrors.push(error);
+          });
+      }
+    };
+    try {
+      const object = await this.env.SUBMISSIONS.get(`runs/${runId}/submission.json`);
+      if (!object) throw new Error("Saved submission is missing.");
+      const submission = Schema.decodeUnknownSync(Submission)(await object.json());
+      if (event.payload.resumeResearch) {
+        const run = await owner.getRun();
+        if (!run) throw new Error("Run disappeared before research.");
+        enqueue(run, run.claims);
+      } else {
         const chunks = chunkText(submission.text);
+        let detectedLanguage: "en" | "es" | "ca" | undefined;
         await step.do("begin-extraction", () => owner.beginExtraction(attemptId, chunks.length));
+        if (Array.from(submission.text).length <= 2000) {
+          await step.do(
+            "classify-passage",
+            {
+              retries: { limit: 0, delay: "1 second" },
+              timeout: "20 seconds",
+            },
+            async () => {
+              const checkability = await Effect.runPromise(
+                classifyPassage(this.env, submission.text),
+              ).catch(() => ({
+                kind: "uncertain" as const,
+                explanation:
+                  "Checkability could not be determined. Claim extraction will still examine the passage.",
+              }));
+              await owner.publishCheckability(attemptId, checkability);
+            },
+          );
+        }
         for (const chunk of chunks) {
           const key = `runs/${runId}/extraction/${attemptId}/${chunk.index}.json`;
           await step.do(
@@ -39,48 +80,63 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
               return key;
             },
           );
-          await step.do(`publish-${chunk.index}`, async () => {
+          // The step output freezes scheduling inputs, including canonical IDs, for replay.
+          const published = await step.do(`publish-${chunk.index}`, async () => {
             const artifact = await this.env.SUBMISSIONS.get(key);
             if (!artifact) throw new Error("Extraction artifact is missing.");
-            const result = await artifact.json<{ language: "en" | "es" | "ca"; claims: Claim[] }>();
-            await owner.publishChunk(attemptId, chunk.index, result.language, result.claims);
+            const result = await artifact.json<{
+              language: "en" | "es" | "ca";
+              claims: Claim[];
+              warnings?: string[];
+            }>();
+            const claims = await owner.publishChunk(
+              attemptId,
+              chunk.index,
+              result.language,
+              result.claims,
+              result.warnings ?? [],
+            );
+            return { claims, language: result.language };
           });
+          detectedLanguage ??= published.language;
+          enqueue(
+            {
+              runId,
+              submission,
+              detectedLanguage,
+              explanationLanguage: submission.explanationLanguage ?? detectedLanguage,
+            },
+            published.claims,
+          );
         }
         await step.do("finish-extraction", () => owner.finishExtraction(attemptId));
-      } catch (error) {
-        await owner.failExtraction(
-          attemptId,
-          error instanceof Error ? error.message : "Extraction failed.",
-        );
-        throw error;
       }
-    }
-    const run = await owner.getRun();
-    if (!run) throw new Error("Run disappeared after extraction.");
-    let nextClaim = 0;
-    const worker = async () => {
-      while (nextClaim < run.claims.length) {
-        const index = nextClaim++;
-        await this.checkClaim(run, run.claims[index], index, attemptId, step);
-      }
-    };
-    try {
-      await Promise.all(Array.from({ length: Math.min(2, run.claims.length) }, () => worker()));
-      await step.do("finish-research", () => owner.finishResearch(attemptId));
     } catch (error) {
-      await owner.failExtraction(
-        attemptId,
-        error instanceof Error ? error.message : "Research processing failed.",
-      );
-      throw error;
+      extractionError = error;
+      await owner
+        .failExtraction(attemptId, error instanceof Error ? error.message : "Extraction failed.")
+        .catch((recordError) => {
+          laneErrors.push(recordError);
+        });
     }
+    // Do not abandon already-published claims if a later extraction section fails.
+    await Promise.all(lanes);
+    const failure = extractionError ?? laneErrors[0];
+    if (failure) {
+      await owner.finishFailedRun(
+        attemptId,
+        failure instanceof Error ? failure.message : "Processing failed.",
+      );
+      throw failure;
+    }
+    await step.do("finish-research", () => owner.finishResearch(attemptId));
     return { runId, status: "complete" };
   }
 
   private async checkClaim(
-    run: Run,
+    run: Pick<Run, "runId" | "submission" | "explanationLanguage" | "detectedLanguage">,
     claim: Claim,
-    index: number,
+    index: string,
     attemptId: string,
     step: WorkflowStep,
   ) {

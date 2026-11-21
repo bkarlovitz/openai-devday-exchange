@@ -83,6 +83,7 @@ export function assessClaim(
     "Check definitions, place, period, units, and whether a source describes approval, announcement, or actual delivery.",
     "An announcement of approval alone cannot establish that delivery happened. A current register alone cannot establish historical counts.",
     "Choose supported, contradicted, mixed_evidence, or insufficient_evidence. No source found is insufficient evidence, never contradiction.",
+    "Contradicted requires affirmative evidence incompatible with the claim. An approval record without proof of execution/payment is INSUFFICIENT for a claim of execution/payment, not contradicted. Missing confirmation does not establish that an event did not happen.",
     "Fast decision relevance, sufficiency, and conflict flags are advisory. Independently assess the retained source scope, periods, definitions, and values; correct a mistaken fast classification when the actual evidence establishes the claim or its contradiction. A row preview cannot establish a population total without a complete aggregate.",
     "Use mixed_evidence only for material support and contradiction or unresolved source conflict; otherwise identify insufficient coverage.",
     "Cite only provided evidenceId values. Return a short grounded explanation and explicit uncertainty.",
@@ -140,6 +141,31 @@ export function assessClaim(
             },
             catch: (cause) =>
               cause instanceof Error ? cause : new Error("Invalid corrected assessment."),
+          }),
+        ),
+      );
+    }),
+    Effect.flatMap((assessment) => {
+      if (
+        assessment.verdict !== "contradicted" ||
+        assessment.calculations.length ||
+        evidence.some((item) => item.kind !== "document")
+      )
+        return Effect.succeed(assessment);
+      return generateObject(env, {
+        schema: JSONSchema.make(Assessment),
+        name: "document_contradiction_review",
+        input: { claim, evidence, proposedAssessment: assessment },
+        instructions:
+          instructions +
+          " Review this proposed document-based contradiction. Retain contradicted ONLY if a cited passage affirmatively establishes an incompatible fact. If the rationale merely says a claim is not established, not confirmed, or no payment/delivery proof is supplied, correct it to insufficient_evidence. Approval alone is not affirmative evidence of nonpayment. Keep calculations empty and retain original-language evidence.",
+        model: env.EXPLAIN_MODEL ?? "gpt-5.4-mini",
+      }).pipe(
+        Effect.flatMap((proposal) =>
+          Effect.try({
+            try: () => validateAssessment(proposal, evidence, decision),
+            catch: (cause) =>
+              cause instanceof Error ? cause : new Error("Invalid document review."),
           }),
         ),
       );

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { chunkText } from "./chunk-text";
-import { validateExtraction } from "./extract-claims";
+import { normalizedQuoteSpan, validateExtraction } from "./extract-claims";
 
 const base = {
   occurrence: 0,
@@ -13,6 +13,41 @@ const base = {
 const runId = "e63639f3-c21c-4e6d-abe7-7e06e05aa87f";
 
 describe("traceable extraction", () => {
+  it("retains grounded claims and warns when a model invents another quote", () => {
+    const text = "The council approved the measure.";
+    const result = validateExtraction(
+      {
+        language: "en",
+        claims: [
+          { ...base, quote: text, assertion: text },
+          { ...base, quote: "The city paid the invoice.", assertion: "The city paid the invoice." },
+        ],
+      },
+      chunkText(text)[0],
+      { submissionKey: runId, text },
+      runId,
+      true,
+    );
+    expect(result.claims).toHaveLength(1);
+    expect(result.claims[0].quote).toBe(text);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("1 candidate claim");
+  });
+  it("anchors normalized PDF whitespace but retains the exact original source quote", () => {
+    const text = "APROVAR el reconeixement de crèdit\n  per import de 1.040 euros.";
+    const quote = "APROVAR el reconeixement de crèdit per import de 1.040 euros.";
+    const result = validateExtraction(
+      { language: "ca", claims: [{ ...base, quote, assertion: quote }] },
+      chunkText(text)[0],
+      { submissionKey: runId, text },
+      runId,
+    );
+    expect(result.claims[0].quote).toBe(text);
+    expect(text.slice(result.claims[0].start, result.claims[0].end)).toBe(text);
+    expect(normalizedQuoteSpan("same  words; same\nwords", "same words")).toBeUndefined();
+    expect(normalizedQuoteSpan(text, "APROVAR un pagament de 2.000 euros")).toBeUndefined();
+    expect(normalizedQuoteSpan("Paid ½ euro", "Paid 1")).toBeUndefined();
+  });
   it("preserves two assertions sharing one compound quote", () => {
     const text = "The council approved the measure and opened the service.";
     const submission = { submissionKey: runId, text };
@@ -94,7 +129,16 @@ describe("traceable extraction", () => {
     const text = "😀 Barcelona. ".repeat(1500) + "El alquiler subió.";
     const chunks = chunkText(text);
     expect(chunks.length).toBeGreaterThan(1);
-    expect(chunks.map((chunk) => chunk.text).join("")).toBe(text);
+    let previousEnd = 0;
+    const reconstructed = chunks
+      .map((chunk) => {
+        expect(chunk.start).toBeLessThanOrEqual(previousEnd);
+        const unseen = text.slice(previousEnd, chunk.end);
+        previousEnd = chunk.end;
+        return unseen;
+      })
+      .join("");
+    expect(reconstructed).toBe(text);
     for (const chunk of chunks) {
       expect(chunk.text).toBe(text.slice(chunk.start, chunk.end));
       expect(chunk.text).not.toMatch(/[\uD800-\uDFFF]/u);

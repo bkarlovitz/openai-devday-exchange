@@ -32,7 +32,18 @@ export function chunkText(text: string, maxLength = 8000): TextChunk[] {
       text: text.slice(start, end),
       precedingContext: text.slice(Math.max(0, start - 500), start),
     });
-    start = end;
+    if (end === text.length) break;
+    // Repeat a small amount of original text so a boundary cannot hide an
+    // assertion. Publication links exact duplicate occurrences conservatively.
+    const overlap = Math.min(500, Math.floor(maxLength / 4));
+    let next = Math.max(start + 1, end - overlap);
+    const repeated = text.slice(next, end);
+    const boundary = repeated.search(/\n|[.!?] /);
+    if (boundary >= 0) next += boundary + 1;
+    const before = text.charCodeAt(next - 1);
+    const after = text.charCodeAt(next);
+    if (before >= 0xd800 && before <= 0xdbff && after >= 0xdc00 && after <= 0xdfff) next++;
+    start = Math.min(next, end);
   }
   return chunks;
 }

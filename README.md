@@ -296,3 +296,15 @@ The shared development app is [Council Check](https://council-checker-dev.snapnd
 `npm run build:extension` writes `apps/extension/dist`, `dist/council-check-extension.zip`, and the generated web download. The generated ZIP is not committed; `npm run build`, `npm run dev` and `npm run deploy:dev` recreate it. The manifest includes a public key so the unpacked extension ID stays `fhfebjohcmngiobjfcamkcknhmfhafbk` across teammates. The Worker permits that exact origin by default; EXTENSION_ORIGINS can override it with a comma-separated list. The extension host permission and API URL target the development deployment; update both and the Worker origin configuration when changing environments.
 
 The [supplied extension design](docs/design/README.md) is retained as HTML and PDF. TASK-010 maps the design to real submission, progress, verdict and evidence states. The time-boxed deliverable prioritizes the core layout and working interactions. Remaining roadmap tasks are still tracked in `.viktor/tasks.json`.
+
+## Documents, transcripts and checkability
+
+Paste text or import `.txt`, `.srt` or `.vtt` in the web app. Text is preserved exactly; recognized subtitle, bracketed and copied YouTube timestamps supply optional passage metadata. Source URL/title and explanation language can be set before checking. YouTube URL retrieval/transcription is a separate producer using the unchanged text API.
+
+The workflow extracts overlapping text sections and starts two deterministic checking lanes as sections publish. Progress shows extraction and completed claims separately. Exact repeated assertions with matching scope can share a canonical check while retaining occurrence offsets, speakers and timestamps. Changed numbers, dates and qualifications stay distinct. Completion waits for extraction and every published claim; partial provider failures are shown alongside successful results.
+
+Short passages (up to 2,000 characters) receive an advisory OpenAI Decisions checkability notice: factual assertion, opinion/prediction or needs context. This is separate from the evidence-based truth verdict and never suppresses normal extraction. The extension offers a prominent link to the same web run for passages over 5,000 characters or runs with more than eight claims.
+
+Quotes are anchored to original text. Unique mechanical whitespace/typography differences can be resolved back to an exact original span. Unanchored candidates are excluded with visible extraction warnings, while valid claims continue. The original input remains available for coverage review. The 200,000-character acceptance limit does not imply instant processing; elapsed time depends on factual density and source availability.
+
+See [the demo runbook](docs/demo-plan.md) and [ready-to-import examples](eval/demo). The supplied long-document sample is 13,591 characters from official minutes pages 8–11, with source version and page metadata recorded in its JSON companion.

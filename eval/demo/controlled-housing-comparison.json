@@ -1,0 +1,71 @@
+{
+  "kind": "team_authored_controlled_verification_inputs",
+  "authorship": "These statements were authored by the team for checking against public official rows.",
+  "scope": {
+    "municipality": "Barcelona",
+    "municipalityCode": "08019",
+    "territorialScope": "Municipi",
+    "priceBand": "> 600 euros/mes",
+    "period": "abril-juny",
+    "baselineYear": "2025",
+    "targetYear": "2026"
+  },
+  "cases": [
+    {
+      "label": "Expected supported numerical comparison",
+      "input": {
+        "text": "La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025."
+      },
+      "expectedVerdict": "supported"
+    },
+    {
+      "label": "Expected contradicted numerical comparison",
+      "input": {
+        "text": "La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 50% el segon trimestre de 2026 respecte al segon trimestre de 2025."
+      },
+      "expectedVerdict": "contradicted"
+    }
+  ],
+  "expectedEvidence": [
+    {
+      "snapshot_id": "1",
+      "resource_url": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+      "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+      "row_number": 5957,
+      "data": {
+        "Any": "2025",
+        "Renda": "1135.55",
+        "Període": "abril-juny",
+        "Habitatges": "7411",
+        "Nom territori": "Barcelona",
+        "Tram de preus": "> 600 euros/mes",
+        "Codi territorial": "08019",
+        "Àmbit territorial": "Municipi"
+      }
+    },
+    {
+      "snapshot_id": "1",
+      "resource_url": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+      "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+      "row_number": 838,
+      "data": {
+        "Any": "2026",
+        "Renda": "1140.89",
+        "Període": "abril-juny",
+        "Habitatges": "7845",
+        "Nom territori": "Barcelona",
+        "Tram de preus": "> 600 euros/mes",
+        "Codi territorial": "08019",
+        "Àmbit territorial": "Municipi"
+      }
+    }
+  ],
+  "calculation": {
+    "baseline": 1135.55,
+    "target": 1140.89,
+    "unit": "EUR/month",
+    "formula": "(target - baseline) / baseline * 100",
+    "percentChange": 0.47025670379993356,
+    "roundedPercentChange": 0.47
+  }
+}

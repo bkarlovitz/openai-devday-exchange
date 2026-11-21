@@ -5,7 +5,7 @@ import { Effect } from "effect";
 import { BadgeCheck, Check, ChevronDown, ExternalLink, LoaderCircle, Plus, X } from "lucide-react";
 import { MAX_TEXT_CHARACTERS } from "@council/contracts";
 import type { Claim } from "@council/contracts";
-import { ClaimCard, verdictLabels } from "@council/ui";
+import { CheckabilityNotice, ClaimCard, verdictLabels } from "@council/ui";
 import { api, submitOnce } from "./api";
 import { API_ORIGIN } from "./config";
 import { storeSelection, tabCheckKey } from "./messages";
@@ -83,10 +83,12 @@ function ClaimResult({
 }
 
 function Results({
+  textLength,
   runId,
   filter,
   setFilter,
 }: {
+  textLength: number;
   runId: string;
   filter: Filter;
   setFilter: (filter: Filter) => void;
@@ -133,7 +135,23 @@ function Results({
 
   return (
     <>
+      {textLength > 5000 || claims.length > 8 ? (
+        <aside className="web-handoff">
+          <p>Longer passage? Follow all claims and compare evidence in the web app.</p>
+          <a href={`${API_ORIGIN}/runs/${runId}`} target="_blank" rel="noreferrer">
+            Continue in web app <ExternalLink size={13} />
+          </a>
+        </aside>
+      ) : null}
+      <CheckabilityNotice checkability={run?.checkability} />
       <section className="check-overview">
+        {run?.extraction ? (
+          <p className="pipeline-status" role="status">
+            Finding claims: {run.extraction.completedChunks} / {run.extraction.totalChunks} text
+            sections{run.extraction.done ? " · finished" : " · more claims may appear"}.<br />
+            Checking claims: {reviewed} / {claims.length} finished.
+          </p>
+        ) : null}
         <div className="progress-track">
           <span
             style={{
@@ -187,6 +205,16 @@ function Results({
           results are shown.
         </p>
       ) : null}
+      {run?.extraction?.warnings?.length ? (
+        <aside className="notice extraction-warnings" role="status">
+          <strong>Extraction warnings</strong>
+          <ul>
+            {run.extraction.warnings.map((warning, index) => (
+              <li key={index}>{warning}</li>
+            ))}
+          </ul>
+        </aside>
+      ) : null}
       <section className="results" aria-label="Claim results">
         {filtered.map((claim) => (
           <ClaimResult
@@ -201,7 +229,9 @@ function Results({
             {!terminal ? <LoaderCircle size={23} className="spin" /> : <BadgeCheck size={27} />}
             <p>
               {terminal
-                ? "No checkable factual claims were found in this text."
+                ? run?.extraction?.warnings?.length
+                  ? "No source-linked claims are available. Review extraction warnings and original text."
+                  : "No checkable factual claims were found in this text."
                 : run?.status === "extracting"
                   ? "Finding factual claims in your text…"
                   : "Preparing your check…"}
@@ -214,7 +244,11 @@ function Results({
       </section>
       <footer className="panel-footer">
         <span className="footer-state">
-          {terminal ? "Check finished" : "Checking automatically"}
+          {terminal
+            ? "Check finished"
+            : run?.extraction && !run.extraction.done
+              ? "Finding and checking claims"
+              : "Checking automatically"}
         </span>
         <a href={`${API_ORIGIN}/runs/${runId}`} target="_blank" rel="noreferrer">
           Open in web app <ExternalLink size={13} />
@@ -320,7 +354,12 @@ function Panel() {
         </p>
       </section>
       {receipt ? (
-        <Results runId={receipt.runId} filter={filter} setFilter={setFilter} />
+        <Results
+          textLength={Array.from(check.submission.text).length}
+          runId={receipt.runId}
+          filter={filter}
+          setFilter={setFilter}
+        />
       ) : (
         <section className="composer">
           <h1>{saving ? "Starting your check" : "Check a passage"}</h1>

@@ -19,6 +19,13 @@ export const ExtractionResult = Schema.Struct({
 });
 export type ExtractionResult = typeof ExtractionResult.Type;
 
+export const ClaimOccurrence = Schema.Struct({
+  start: Schema.Number,
+  end: Schema.Number,
+  speaker: Schema.optional(Schema.String),
+  startSeconds: Schema.optional(Schema.Number),
+});
+
 export const Claim = Schema.Struct({
   claimId: Schema.String,
   quote: Schema.String,
@@ -33,6 +40,7 @@ export const Claim = Schema.Struct({
   comparison: Schema.NullOr(Schema.String),
   speaker: Schema.optional(Schema.String),
   startSeconds: Schema.optional(Schema.Number),
+  occurrences: Schema.optional(Schema.Array(ClaimOccurrence)),
   status: Schema.Literal(
     "awaiting_research",
     "researching",
@@ -52,6 +60,7 @@ export const ExtractionProgress = Schema.Struct({
   completedChunks: Schema.Number,
   totalChunks: Schema.Number,
   done: Schema.Boolean,
+  warnings: Schema.optional(Schema.Array(Schema.String)),
 });
 export type ExtractionProgress = typeof ExtractionProgress.Type;
 

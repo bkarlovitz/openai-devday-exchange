@@ -1,0 +1,66 @@
+# Council Check walkthrough
+
+Use the working text-to-evidence path for a three-to-five-minute walkthrough. The input collection combines an authentic official-record excerpt with team-authored verification statements. Source versions and expected arithmetic are recorded with each input.
+
+## Inputs and provenance
+
+| Input | Authorship and source | What to inspect |
+| --- | --- | --- |
+| [Council credit excerpt](../eval/demo/council-credit-source.json) | Exact 503-character excerpt from the 31 October 2025 plenary minutes, page 8, item 25XF0640 | Approval of a €1,040 recognition of credit and unanimous adoption, with the original PDF/page citation |
+| [Housing comparison](../eval/demo/controlled-housing-comparison.json) | Team-authored statements checked against public Incasòl rows | Barcelona municipality 08019, price band above €600/month, April–June 2025 and 2026. Compare a 0.47% statement with a 50% statement |
+| [Payment coverage boundary](../eval/demo/missing-payment-coverage.json) | Team-authored statement about completed payment for 25XF0640 | The loaded minutes establish approval and recognition of an obligation. Evidence of completed payment would require a further record |
+| [Long document input](../eval/demo/council-long-source.json) | Exact extracted text from minutes pages 8–11, with page offsets and the source hash | Optional long-input check. It contains 13,591 characters and multiple official resolutions |
+
+The housing source rows have average monthly rent of €1,135.55 for Q2 2025 and €1,140.89 for Q2 2026 in the stated band. The calculation is `(1140.89 - 1135.55) / 1135.55 * 100 = 0.4702567…%`, rounded to 0.47%. Keep the municipality, band, periods, and units visible when presenting the comparison. [Official Incasòl dataset](https://analisi.transparenciacatalunya.cat/d/qww9-bvhh)
+
+The document excerpt is drawn from the stored PDF with SHA-256 `88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9`. The current development database stores it as snapshot 6, passage 8. Snapshot IDs are local to the database, while the source URL and hash identify the underlying document. [Official minutes, page 8](https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf#page=8)
+
+## Recommended opening: checkability before truth
+
+Start with [the opinion input](../eval/demo/opinion-checkability.txt): “I would prefer fewer tourist apartments in Barcelona.” The short-passage notice identifies opinion/prediction, with no factual verdict. Then open the controlled housing statements: both are fact-checkable, while their verdicts differ. This demonstrates why checkability and truth are separate decisions. Short-passage checkability is advisory and never suppresses claim extraction.
+
+Ready-to-import `.txt` files accompany the JSON provenance records. Use the web import control or paste their text. The long source fixture is an authentic document excerpt, not a YouTube transcript. A teammate is independently building YouTube-link ingestion against the unchanged text-submission API.
+
+## Before presenting
+
+1. Open the [development app](https://council-checker-dev.snapnda.workers.dev) and the official minutes PDF on page 8.
+2. Run the short authentic excerpt and the two controlled housing statements. Keep their actual result URLs available. They are completed runs with retained evidence and timestamps.
+3. Check the payment-coverage input against the current system. The expected result from the loaded minutes is insufficient evidence for completed payment. Review the actual result before choosing it for the walkthrough, since additional public records could change the assessment.
+4. Inspect the cited excerpts and arithmetic yourself. Use only the fixture's `input` content as the submitted material. Its expected values are operator references.
+5. Use the long input for a separate length/workflow check when time permits. It can generate several claims and takes longer than the short passage.
+
+## Three-to-five-minute sequence
+
+- **Opening, about 30 seconds.** Show the official minutes and select the item headed 25XF0640. Explain that Council Check accepts text supplied from documents, transcripts, or other producers.
+- **Authentic source, about one minute.** Paste the exact excerpt or open its completed run. Show the extracted assertion, original wording, official PDF citation, and page number. Explain precisely what the record establishes.
+- **Numerical comparison, about one minute.** Say that the two housing statements were authored by the team as controlled checks. Show their actual assessments, the pinned rows, the common price band and geography, and the executable percentage-change calculation.
+- **Coverage boundary, about 45 seconds.** Show the payment statement if preflight produced an appropriate result. Walk through the difference between the approval recorded in the minutes and the further evidence needed to establish a completed payment.
+- **Client workflow, remaining time.** If the extension smoke check has passed, select text on a normal web page, open the side panel, and show the same run in the web app. Keep the result URL visible so a reader can revisit the check.
+
+The evidence sources are public. The added value is the connection from an exact input passage to versioned official rows or a cited council-document page, followed by reproducible arithmetic and an inspectable assessment of coverage.
+
+## Recording option
+
+The council landing page currently embeds the recording titled “Plenari del Consell Municipal - 05/11/26”, published by Barcelona Ajuntament. Its title and channel were verified through YouTube oEmbed. A caption check with yt-dlp found neither subtitles nor automatic captions at the time of preparation. A transcript has therefore not been obtained for this walkthrough. [Official council recording](https://www.youtube.com/watch?v=DEJF6IGRuxA)
+
+This recording is from 5 November 2026. The sourced credit excerpt comes from the separate 31 October 2025 minutes. Audio-to-text can supply future inputs through the existing text boundary.
+
+## Optional API submission
+
+This command submits the authentic excerpt and prints its result URL.
+
+```sh
+node --input-type=module <<'JS'
+import { readFile } from 'node:fs/promises';
+const fixture = JSON.parse(await readFile('eval/demo/council-credit-source.json', 'utf8'));
+const base = 'https://council-checker-dev.snapnda.workers.dev';
+const response = await fetch(base + '/api/runs', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ ...fixture.input, submissionKey: crypto.randomUUID() }),
+});
+const result = await response.json();
+if (!response.ok) throw new Error(JSON.stringify(result));
+console.log(base + result.url);
+JS
+```

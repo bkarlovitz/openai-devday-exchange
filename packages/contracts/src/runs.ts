@@ -56,6 +56,12 @@ export const Submission = Schema.Struct({
 
 export type Submission = typeof Submission.Type;
 
+export const PassageCheckability = Schema.Struct({
+  kind: Schema.Literal("factual_assertion", "opinion_prediction", "uncertain"),
+  explanation: Schema.String,
+});
+export type PassageCheckability = typeof PassageCheckability.Type;
+
 export const Run = Schema.Struct({
   runId: Schema.UUID,
   submission: Submission,
@@ -71,6 +77,7 @@ export const Run = Schema.Struct({
   extraction: Schema.optional(ExtractionProgress),
   detectedLanguage: Schema.optional(Language),
   explanationLanguage: Schema.optional(Language),
+  checkability: Schema.optional(PassageCheckability),
   error: Schema.optional(Schema.String),
   errorCount: Schema.optionalWith(Schema.Number, { default: () => 0 }),
   createdAt: Schema.String,

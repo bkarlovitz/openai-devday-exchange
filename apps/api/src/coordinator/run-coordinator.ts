@@ -3,6 +3,8 @@ import { ClaimDetail } from "@council/contracts";
 import type { Claim, Run, Submission } from "@council/contracts";
 import { Schema } from "effect";
 import type { Env } from "../env";
+import { claimSignature, mergeOccurrences } from "../services/claim-occurrences";
+import { claimIsTerminal, deriveProgress } from "../services/run-progress";
 
 type StoredRun = Omit<Run, "claims">;
 type SubmitResult = { conflict: true } | { conflict: false; run: Run };
@@ -77,44 +79,107 @@ export class RunCoordinator extends DurableObject<Env> {
     await this.ctx.storage.deleteAlarm();
   }
 
+  async publishCheckability(
+    attemptId: string,
+    checkability: NonNullable<Run["checkability"]>,
+  ): Promise<void> {
+    await this.updateAttempt(attemptId, (run) => ({ ...run, checkability }));
+  }
+
   async publishChunk(
     attemptId: string,
     index: number,
     language: "en" | "es" | "ca",
     claims: Claim[],
-  ): Promise<void> {
-    await this.ctx.blockConcurrencyWhile(async () => {
+    warnings: string[] = [],
+  ): Promise<Claim[]> {
+    return this.ctx.blockConcurrencyWhile(async () => {
       const run = await this.ctx.storage.get<StoredRun>("run");
       if (!run || run.extraction?.attemptId !== attemptId)
         throw new Error("Stale extraction attempt.");
       const published = `published/${attemptId}/${index}`;
-      if (await this.ctx.storage.get(published)) return;
-      for (const claim of claims) await this.ctx.storage.put(`claim/${claim.claimId}`, claim);
-      await this.ctx.storage.put(published, true);
-      await this.ctx.storage.put("run", {
-        ...run,
-        detectedLanguage: run.detectedLanguage ?? language,
-        explanationLanguage: run.submission.explanationLanguage ?? run.detectedLanguage ?? language,
-        extraction: {
-          ...run.extraction,
-          completedChunks: Math.max(run.extraction.completedChunks, index + 1),
-        },
-        revision: run.revision + 1,
-      });
+      const prior = await this.ctx.storage.get<{ accepted: Claim[] } | boolean>(published);
+      if (prior) return typeof prior === "object" ? prior.accepted : claims;
+      const accepted: Claim[] = [];
+      for (const claim of claims) {
+        const digest = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(claimSignature(claim)),
+        );
+        const fingerprint = [...new Uint8Array(digest)]
+          .map((n) => n.toString(16).padStart(2, "0"))
+          .join("");
+        const canonicalKey = `canonical/${fingerprint}`;
+        const canonicalId = await this.ctx.storage.get<string>(canonicalKey);
+        const existing = canonicalId
+          ? await this.ctx.storage.get<Claim>(`claim/${canonicalId}`)
+          : undefined;
+        if (existing) {
+          await this.ctx.storage.put(
+            `claim/${existing.claimId}`,
+            mergeOccurrences(existing, claim),
+          );
+        } else {
+          accepted.push(claim);
+          await this.ctx.storage.put({
+            [`claim/${claim.claimId}`]: claim,
+            [canonicalKey]: claim.claimId,
+          });
+        }
+      }
+      await this.ctx.storage.put(published, { accepted });
+      const currentClaims = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
+      await this.ctx.storage.put(
+        "run",
+        deriveProgress(
+          {
+            ...run,
+            detectedLanguage: run.detectedLanguage ?? language,
+            explanationLanguage:
+              run.submission.explanationLanguage ?? run.detectedLanguage ?? language,
+            extraction: {
+              ...run.extraction,
+              warnings: [
+                ...(run.extraction.warnings ?? []),
+                ...warnings.map((warning) => `Section ${index + 1}: ${warning}`),
+              ],
+              completedChunks: Math.max(run.extraction.completedChunks, index + 1),
+            },
+            revision: run.revision + 1,
+          },
+          [...currentClaims.values()],
+        ),
+      );
+      return accepted;
     });
   }
 
   async finishExtraction(attemptId: string): Promise<void> {
-    const claims = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
     await this.updateAttempt(attemptId, (run) => ({
       ...run,
-      status: claims.size ? "processing" : "complete",
       extraction: { ...run.extraction!, done: true },
     }));
   }
 
   async failExtraction(attemptId: string, error: string): Promise<void> {
     await this.updateAttempt(attemptId, (run) => ({ ...run, status: "error", error }));
+  }
+
+  async finishFailedRun(attemptId: string, error: string): Promise<void> {
+    await this.ctx.blockConcurrencyWhile(async () => {
+      const run = await this.ctx.storage.get<StoredRun>("run");
+      if (!run || run.extraction?.attemptId !== attemptId)
+        throw new Error("Stale processing attempt.");
+      const stored = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
+      const claims = [...stored.values()].map((claim) =>
+        claimIsTerminal(claim) ? claim : { ...claim, status: "error" as const, error },
+      );
+      for (const claim of claims) await this.ctx.storage.put(`claim/${claim.claimId}`, claim);
+      await this.ctx.storage.put(
+        "run",
+        deriveProgress({ ...run, error, revision: run.revision + 1 }, claims),
+      );
+    });
   }
 
   async getClaimJson(claimId: string): Promise<string | null> {
@@ -154,23 +219,39 @@ export class RunCoordinator extends DurableObject<Env> {
       if (!run || current !== attemptId || run.extraction?.attemptId !== attemptId) {
         throw new Error("Stale claim publication.");
       }
+      const currentClaim = await this.ctx.storage.get<Claim>(`claim/${claimId}`);
       const claim: Claim = {
         ...detail.claim,
+        occurrences: currentClaim?.occurrences ?? detail.claim.occurrences,
         evidenceCount: detail.evidence.length,
         verdict: detail.assessment?.verdict,
       };
       await this.ctx.storage.put({
         [`claim/${claimId}`]: claim,
         [`detail/${claimId}`]: artifactKey,
-        run: { ...run, revision: run.revision + 1 },
       });
+      const claims = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
+      await this.ctx.storage.put(
+        "run",
+        deriveProgress({ ...run, revision: run.revision + 1 }, [...claims.values()]),
+      );
     });
   }
 
   async finishResearch(attemptId: string): Promise<void> {
-    const claims = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
-    const errorCount = [...claims.values()].filter((claim) => claim.status === "error").length;
-    await this.updateAttempt(attemptId, (run) => ({ ...run, status: "complete", errorCount }));
+    await this.ctx.blockConcurrencyWhile(async () => {
+      const run = await this.ctx.storage.get<StoredRun>("run");
+      if (!run || run.extraction?.attemptId !== attemptId)
+        throw new Error("Stale research attempt.");
+      const claims = [...(await this.ctx.storage.list<Claim>({ prefix: "claim/" })).values()];
+      if ((!run.extraction.done && !run.error) || claims.some((claim) => !claimIsTerminal(claim))) {
+        throw new Error("Research cannot finish while extraction or claims are pending.");
+      }
+      await this.ctx.storage.put(
+        "run",
+        deriveProgress({ ...run, revision: run.revision + 1 }, claims),
+      );
+    });
   }
 
   async alarm(): Promise<void> {
@@ -186,7 +267,11 @@ export class RunCoordinator extends DurableObject<Env> {
       const run = await this.ctx.storage.get<StoredRun>("run");
       if (!run || run.extraction?.attemptId !== attemptId)
         throw new Error("Stale extraction attempt.");
-      await this.ctx.storage.put("run", { ...change(run), revision: run.revision + 1 });
+      const claims = [...(await this.ctx.storage.list<Claim>({ prefix: "claim/" })).values()];
+      await this.ctx.storage.put(
+        "run",
+        deriveProgress({ ...change(run), revision: run.revision + 1 }, claims),
+      );
     });
   }
 

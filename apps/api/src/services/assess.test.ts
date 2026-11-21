@@ -50,6 +50,25 @@ const operands = [
 ];
 
 describe("assessment evidence guards", () => {
+  it("reviews document contradictions that only establish approval rather than payment", async () => {
+    vi.mocked(generateObject)
+      .mockReturnValueOnce(Effect.succeed(proposal("contradicted")))
+      .mockReturnValueOnce(
+        Effect.succeed({
+          ...proposal("insufficient_evidence"),
+          explanation: "Approval does not establish whether payment happened.",
+        }),
+      );
+    const result = await Effect.runPromise(
+      assessClaim(
+        env,
+        { ...claim, assertion: "The invoice was paid.", dates: [] },
+        [{ ...source, kind: "document", text: "The council approved payment." }],
+        "en",
+      ),
+    );
+    expect(result.verdict).toBe("insufficient_evidence");
+  });
   it.each(["supported", "contradicted", "mixed_evidence", "insufficient_evidence"] as const)(
     "retains a valid %s fixture",
     (verdict) => {

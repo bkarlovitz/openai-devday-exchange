@@ -80,3 +80,13 @@ Display verdict labels as Supported, Contradicted, Mixed evidence, and Insuffici
 HTTP 400 indicates invalid input, 404 an unknown run or claim, 409 conflicting key reuse, and 503 a technical service failure. A run can enter error with its processing error and any claims already extracted. An individual claim can enter error while other claims finish. A technical failure is displayed separately from an insufficient-evidence assessment.
 
 The initial research pass uses at most three application tool actions and two concurrent claim researchers. Automatic longer research passes and failed-stage retries are subsequent tasks.
+
+## Transcript and checkability additions
+
+Additive fields keep existing clients and text producers compatible:
+
+- `Run.checkability?`: `{ kind: "factual_assertion" | "opinion_prediction" | "uncertain", explanation: string }`, an advisory short-passage classification separate from truth verdicts.
+- `Run.extraction.warnings?`: explicit source-anchoring coverage warnings. Render them even if no claims are available; do not describe a warned empty extraction as proof that the input contains no facts.
+- `Claim.occurrences?`: `[{ start, end, speaker?, startSeconds? }]`, exact original UTF-16 offsets. Canonical claim IDs and completed results remain stable as occurrences append.
+
+Extraction and claim checking now overlap. A run with finished current claims and `extraction.done=false` is still processing and can publish more claims. Both clients should continue polling until terminal run status. YouTube ingestion should send text/source/passages through the existing POST `/api/runs`; no transport-specific contract is required.
