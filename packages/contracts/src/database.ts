@@ -28,6 +28,7 @@ export const QueryDatasetInput = Schema.Union(
   Schema.Struct({
     ...page,
     datasetId: Schema.Literal("population"),
+    aggregate: Schema.optional(Schema.Literal("sum_population")),
     resourceKey: Schema.UUID,
     filters: Schema.Struct({
       referenceDate: Schema.String.pipe(Schema.pattern(/^\d{4}-01-01$/)),
@@ -39,6 +40,7 @@ export const QueryDatasetInput = Schema.Union(
   Schema.Struct({
     ...page,
     datasetId: Schema.Literal("tourist-flats"),
+    aggregate: Schema.optional(Schema.Literal("count_tourist_flats")),
     resourceKey: Schema.UUID,
     filters: Schema.Struct({
       districtCode: Schema.optional(areaCode),
@@ -58,5 +60,11 @@ export const QueryDatasetInput = Schema.Union(
   Schema.filter((query) => query.afterRow === undefined || query.snapshotId !== undefined, {
     message: () => "Pagination requires a snapshot ID.",
   }),
+  Schema.filter(
+    (query) =>
+      !("aggregate" in query && query.aggregate) ||
+      (query.afterRow === undefined && query.limit === undefined),
+    { message: () => "Aggregate queries cannot use pagination." },
+  ),
 );
 export type QueryDatasetInput = typeof QueryDatasetInput.Type;

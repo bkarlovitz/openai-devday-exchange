@@ -65,7 +65,7 @@ evidence.post("/query-dataset", async (c) => {
     onExcessProperty: "error",
   })(body);
   if (decoded._tag === "Left") {
-    return c.json({ error: "Invalid dataset query. Pagination requires a snapshot ID." }, 400);
+    return c.json({ error: "Invalid dataset query. Check the filters and pagination." }, 400);
   }
 
   const result = await queryDataset(c.env.EVIDENCE_DB!, decoded.right);

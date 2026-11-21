@@ -12,6 +12,12 @@ type Snapshot = {
   lastSeenAt: string;
 };
 
+type AggregateResult = {
+  value: string | null;
+  matchedRows: number;
+  missingRows: number;
+};
+
 type SourceRow = {
   rowNumber: number;
   data: Record<string, unknown>;
@@ -96,6 +102,35 @@ export function queryDataset(binding: Hyperdrive, input: QueryDatasetInput) {
     const snapshot = snapshots.rows[0];
     if (!snapshot) {
       return null;
+    }
+
+    if ("aggregate" in input && input.aggregate) {
+      const population = input.aggregate === "sum_population";
+      const operand = population
+        ? sql`CASE WHEN data->>'Valor' ~ '^[0-9]+$' THEN (data->>'Valor')::numeric END`
+        : sql`NULLIF(btrim(data->>'N_EXPEDIENT'), '')`;
+      const total = population ? sql`sum(operand)` : sql`count(DISTINCT operand)`;
+      const result = await db.execute<AggregateResult>(sql`
+        SELECT CASE WHEN count(*) > 0 AND count(operand) = count(*)
+                    THEN (${total})::text END AS value,
+               count(*)::integer AS "matchedRows",
+               (count(*) - count(operand))::integer AS "missingRows"
+        FROM (
+          SELECT ${operand} AS operand
+          FROM source_row
+          WHERE snapshot_id = ${snapshot.id}::bigint
+            ${filtersFor(input)}
+        ) matched
+      `);
+      return {
+        snapshot,
+        query: { ...input, snapshotId: snapshot.id },
+        aggregate: {
+          operation: input.aggregate,
+          unit: population ? "people" : "registered tourist flats",
+          ...result.rows[0],
+        },
+      };
     }
 
     const result = await db.execute<SourceRow>(sql`
