@@ -11,7 +11,7 @@ import {
 import { queryDataset } from "../research/query-dataset";
 import { queryPublishedDataset } from "../research/query-sources";
 import type { Env } from "../env";
-import { readDocumentPassage, searchDocuments } from "../research/query-documents";
+import { inspectDocument, readDocumentPassage, searchDocuments } from "../research/query-documents";
 
 export const evidence = new Hono<{ Bindings: Env }>();
 
@@ -121,6 +121,10 @@ evidence.get("/documents", (c) =>
       snapshotId: c.req.query("snapshotId"),
     }),
   ),
+);
+
+evidence.get("/documents/:snapshotId", (c) =>
+  toolResponse(c, () => inspectDocument(c.env, { snapshotId: c.req.param("snapshotId") })),
 );
 
 evidence.get("/documents/:snapshotId/:passageNumber", (c) => {

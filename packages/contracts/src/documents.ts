@@ -32,3 +32,17 @@ export type DocumentPassage = {
   extractionVersion: string;
   text: string;
 };
+
+export const InspectDocumentInput = Schema.Struct({ snapshotId: SnapshotId });
+
+export type DocumentExtraction = {
+  datasetId: string;
+  snapshotId: string;
+  sourceUrl: string;
+  sha256: string;
+  contentType: string;
+  status: "pending" | "extracted" | "empty_or_scanned" | "unsupported" | "error";
+  extractionVersion: string | null;
+  extractedAt: string | null;
+  passageCount: number;
+};

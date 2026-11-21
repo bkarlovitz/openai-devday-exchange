@@ -1,5 +1,7 @@
 import {
   type DocumentPassage,
+  type DocumentExtraction,
+  InspectDocumentInput,
   ReadDocumentPassageInput,
   SearchDocumentsInput,
 } from "@council/contracts";
@@ -53,5 +55,26 @@ export function readDocumentPassage(env: Env, input: unknown) {
     const passage = result.rows[0];
     if (!passage) throw new EvidenceNotFound("Passage not found.");
     return passage;
+  });
+}
+
+export function inspectDocument(env: Env, input: unknown) {
+  const { snapshotId } = Schema.decodeUnknownSync(InspectDocumentInput, {
+    onExcessProperty: "error",
+  })(input);
+  return databaseEffect(env, async (db) => {
+    const result = await db.execute<DocumentExtraction>(sql`
+      SELECT s.dataset_id AS "datasetId", s.id::text AS "snapshotId",
+        s.resource_url AS "sourceUrl", s.sha256, d.content_type AS "contentType",
+        d.extraction_status AS "status", d.extraction_version AS "extractionVersion",
+        d.extracted_at::text AS "extractedAt",
+        (SELECT count(*)::int FROM source_document_passage p WHERE p.snapshot_id = s.id)
+          AS "passageCount"
+      FROM source_document d JOIN snapshot s ON s.id = d.snapshot_id
+      WHERE d.snapshot_id = ${snapshotId}::bigint
+    `);
+    const document = result.rows[0];
+    if (!document) throw new EvidenceNotFound("Stored document not found.");
+    return document;
   });
 }
