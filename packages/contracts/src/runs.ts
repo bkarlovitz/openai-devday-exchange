@@ -72,6 +72,7 @@ export const Run = Schema.Struct({
   detectedLanguage: Schema.optional(Language),
   explanationLanguage: Schema.optional(Language),
   error: Schema.optional(Schema.String),
+  errorCount: Schema.optionalWith(Schema.Number, { default: () => 0 }),
   createdAt: Schema.String,
   revision: Schema.Number,
 });

@@ -58,7 +58,7 @@ export function SubmissionPage() {
           </p>
           <button type="submit" disabled={state.pending || tooLong}>
             {state.pending ? <LoaderCircle size={17} className="spin" /> : null}
-            {state.pending ? "Starting…" : "Extract claims"}
+            {state.pending ? "Starting…" : "Check claims"}
             {!state.pending ? <ArrowRight size={17} /> : null}
           </button>
         </div>
@@ -69,7 +69,8 @@ export function SubmissionPage() {
         ) : null}
       </form>
       <p className="scope-note">
-        Factual claims are extracted automatically. Evidence research is the next stage.
+        Claims are checked against official data and published sources, with evidence you can
+        inspect.
       </p>
     </main>
   );

@@ -24,14 +24,14 @@
     "id": "TASK-003",
     "title": "Route claims with Decisions and retrieve official-source evidence",
     "milestone": "M2: Cited factual assessments",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-003.md"
   },
   {
     "id": "TASK-004",
     "title": "Generate evidence-grounded verdicts and reproducible calculations",
     "milestone": "M2: Cited factual assessments",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-004.md"
   },
   {

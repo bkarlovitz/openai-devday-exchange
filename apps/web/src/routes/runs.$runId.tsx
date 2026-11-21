@@ -3,8 +3,44 @@ import { useAtom } from "@effect-atom/atom-react";
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Check, LoaderCircle } from "lucide-react";
 import { Effect } from "effect";
-import { loadRun } from "../services/api";
-import { runState, needsExtractionPolling } from "../state/run";
+import type { Claim, Run } from "@council/contracts";
+import { ClaimCard } from "@council/ui";
+import { loadClaim, loadRun } from "../services/api";
+import { claimDetailState, runState, needsRunPolling } from "../state/run";
+
+function ClaimResult({
+  runId,
+  claim,
+  revision,
+}: {
+  runId: string;
+  claim: Claim;
+  revision: number;
+}) {
+  const [state, setState] = useAtom(claimDetailState(`${runId}/${claim.claimId}`));
+  useEffect(() => {
+    const controller = new AbortController();
+    void Effect.runPromise(
+      loadClaim(runId, claim.claimId, controller.signal).pipe(Effect.either),
+    ).then((result) => {
+      if (controller.signal.aborted) return;
+      if (result._tag === "Right") setState({ detail: result.right });
+      else setState((previous) => ({ ...previous, error: result.left.message }));
+    });
+    return () => controller.abort();
+  }, [runId, claim.claimId, revision, setState]);
+  return <ClaimCard claim={claim} detail={state.detail} detailError={state.error} />;
+}
+
+function progressTitle(run: Run) {
+  if (run.status === "error") return "Checking failed";
+  if (run.status === "queued") return "Preparing submission";
+  if (run.status === "extracting") return "Finding factual claims";
+  if (run.status === "processing") return "Researching and checking claims";
+  if (run.status === "complete")
+    return run.errorCount > 0 ? "Checking finished with errors" : "Checking complete";
+  return "Awaiting processing";
+}
 
 export function SavedSubmissionPage() {
   const { runId } = useParams({ strict: false }) as { runId: string };
@@ -21,9 +57,7 @@ export function SavedSubmissionPage() {
         return;
       }
       setState({ status: "loaded", run: result.right });
-      if (needsExtractionPolling(result.right)) {
-        timer = setTimeout(refresh, 2000);
-      }
+      if (needsRunPolling(result.right)) timer = setTimeout(refresh, 2000);
     }
     void refresh();
     return () => {
@@ -61,53 +95,48 @@ export function SavedSubmissionPage() {
           <section className="status-note" role="status">
             <span className="status-dot" />
             <div>
-              <strong>
-                {state.run.status === "error"
-                  ? "Extraction failed"
-                  : state.run.status === "extracting"
-                    ? "Finding factual claims"
-                    : state.run.status === "queued"
-                      ? "Preparing submission"
-                      : state.run.extraction?.done
-                        ? "Extraction complete"
-                        : "Awaiting processing"}
-              </strong>
+              <strong>{progressTitle(state.run)}</strong>
               {state.run.error ? (
-                <p role="alert">{state.run.error}</p>
-              ) : state.run.extraction?.done ? (
-                <p>
-                  {state.run.claims.length
-                    ? `${state.run.claims.length} claims found. Evidence research is the next stage.`
-                    : "No checkable factual claims were found."}
+                <p className="error" role="alert">
+                  {state.run.error}
                 </p>
+              ) : state.run.status === "extracting" ? (
+                <p>
+                  {state.run.extraction?.completedChunks ?? 0} of{" "}
+                  {state.run.extraction?.totalChunks ?? 0} passages processed.
+                </p>
+              ) : state.run.claims.length ? (
+                <p>
+                  {
+                    state.run.claims.filter(
+                      (claim) => claim.status === "complete" || claim.status === "not_checkable",
+                    ).length
+                  }{" "}
+                  of {state.run.claims.length} claims checked.
+                </p>
+              ) : state.run.status === "complete" ? (
+                <p>No checkable factual claims were found.</p>
               ) : (
-                <p>
-                  {state.run.extraction
-                    ? `${state.run.extraction.completedChunks} of ${state.run.extraction.totalChunks} passages processed.`
-                    : "Your original text is saved."}
-                </p>
+                <p>Your original text is saved.</p>
               )}
+              {state.run.errorCount > 0 ? (
+                <p className="error">
+                  {state.run.errorCount} claim{state.run.errorCount === 1 ? "" : "s"} could not be
+                  checked. Other results remain available.
+                </p>
+              ) : null}
             </div>
           </section>
-          {state.run.claims.length > 0 ? (
-            <section className="claims-list" aria-label="Extracted claims">
+          {state.run.claims.length ? (
+            <section className="claims-list" aria-label="Claims and assessments">
               <h2>Factual claims</h2>
               {state.run.claims.map((claim) => (
-                <article className="surface claim" key={claim.claimId}>
-                  <p className="muted">Awaiting evidence research</p>
-                  <h3>{claim.assertion}</h3>
-                  <blockquote>{claim.quote}</blockquote>
-                  {claim.speaker ? (
-                    <p>
-                      {claim.speaker}
-                      {claim.startSeconds !== undefined ? ` · ${claim.startSeconds}s` : ""}
-                    </p>
-                  ) : null}
-                  <details>
-                    <summary>Context</summary>
-                    <p>{claim.context}</p>
-                  </details>
-                </article>
+                <ClaimResult
+                  key={claim.claimId}
+                  runId={runId}
+                  claim={claim}
+                  revision={state.run.revision}
+                />
               ))}
             </section>
           ) : null}

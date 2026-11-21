@@ -1,5 +1,7 @@
 import { Schema } from "effect";
 import { Language } from "./languages";
+import { Evidence, ResearchResult } from "./evidence";
+import { Assessment, Verdict } from "./assessments";
 
 export const ExtractedAssertion = Schema.Struct({
   quote: Schema.String.pipe(Schema.minLength(1)),
@@ -31,7 +33,17 @@ export const Claim = Schema.Struct({
   comparison: Schema.NullOr(Schema.String),
   speaker: Schema.optional(Schema.String),
   startSeconds: Schema.optional(Schema.Number),
-  status: Schema.Literal("awaiting_research"),
+  status: Schema.Literal(
+    "awaiting_research",
+    "researching",
+    "assessing",
+    "complete",
+    "error",
+    "not_checkable",
+  ),
+  verdict: Schema.optional(Verdict),
+  evidenceCount: Schema.optional(Schema.Number),
+  error: Schema.optional(Schema.String),
 });
 export type Claim = typeof Claim.Type;
 
@@ -42,3 +54,11 @@ export const ExtractionProgress = Schema.Struct({
   done: Schema.Boolean,
 });
 export type ExtractionProgress = typeof ExtractionProgress.Type;
+
+export const ClaimDetail = Schema.Struct({
+  claim: Claim,
+  evidence: Schema.Array(Evidence),
+  assessment: Schema.optional(Assessment),
+  research: Schema.optional(ResearchResult),
+});
+export type ClaimDetail = typeof ClaimDetail.Type;

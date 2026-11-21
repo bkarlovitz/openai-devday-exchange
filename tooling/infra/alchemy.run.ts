@@ -70,6 +70,12 @@ const worker = await Worker("app", {
     RUN_COORDINATOR: coordinator,
     CHECK_RUN: workflow,
     EXTRACT_MODEL: process.env.EXTRACT_MODEL ?? "gpt-5.4-mini",
+    DECISION_MODEL: process.env.DECISION_MODEL ?? "gpt-6-luna",
+    RESEARCH_MODEL: process.env.RESEARCH_MODEL ?? "gpt-5.4-mini",
+    SEARCH_MODEL: process.env.SEARCH_MODEL ?? "gpt-6.2-astra",
+    EXPLAIN_MODEL: process.env.EXPLAIN_MODEL ?? "gpt-5.4-mini",
+    EXTENSION_ORIGINS:
+      process.env.EXTENSION_ORIGINS ?? "chrome-extension://fhfebjohcmngiobjfcamkcknhmfhafbk",
     ...(process.env.OPENAI_API_KEY
       ? { OPENAI_API_KEY: alchemy.secret(process.env.OPENAI_API_KEY) }
       : {}),

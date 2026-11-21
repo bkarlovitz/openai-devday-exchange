@@ -1,5 +1,7 @@
 import { DurableObject } from "cloudflare:workers";
+import { ClaimDetail } from "@council/contracts";
 import type { Claim, Run, Submission } from "@council/contracts";
+import { Schema } from "effect";
 import type { Env } from "../env";
 
 type StoredRun = Omit<Run, "claims">;
@@ -18,6 +20,7 @@ export class RunCoordinator extends DurableObject<Env> {
           status: "queued",
           createdAt: new Date().toISOString(),
           revision: 0,
+          errorCount: 0,
         };
       }
       if (!run.extraction) {
@@ -32,6 +35,18 @@ export class RunCoordinator extends DurableObject<Env> {
           },
         };
       }
+      const pipelineVersion = await this.ctx.storage.get<number>("pipeline-version");
+      if (!pipelineVersion && run.extraction?.done && run.status === "processing") {
+        run = {
+          ...run,
+          status: "queued",
+          extraction: {
+            ...run.extraction,
+            attemptId: `${run.runId}-check-1`,
+          },
+        };
+      }
+      await this.ctx.storage.put("pipeline-version", 2);
       await this.ctx.storage.put("run", run);
       if (run.status === "queued") {
         await this.ctx.storage.setAlarm(Date.now() + 10_000);
@@ -102,6 +117,62 @@ export class RunCoordinator extends DurableObject<Env> {
     await this.updateAttempt(attemptId, (run) => ({ ...run, status: "error", error }));
   }
 
+  async getClaimJson(claimId: string): Promise<string | null> {
+    const claim = await this.ctx.storage.get<Claim>(`claim/${claimId}`);
+    if (!claim) return null;
+    const reference = await this.ctx.storage.get<string>(`detail/${claimId}`);
+    if (!reference) return JSON.stringify({ claim, evidence: [] });
+    const artifact = await this.env.SUBMISSIONS.get(reference);
+    if (!artifact) throw new Error("Claim detail artifact is missing.");
+    const detail = Schema.decodeUnknownSync(ClaimDetail)(await artifact.json());
+    return JSON.stringify({ ...detail, claim });
+  }
+
+  async beginResearch(attemptId: string, claimId: string): Promise<void> {
+    await this.ctx.blockConcurrencyWhile(async () => {
+      const run = await this.ctx.storage.get<StoredRun>("run");
+      const claim = await this.ctx.storage.get<Claim>(`claim/${claimId}`);
+      if (!run || run.extraction?.attemptId !== attemptId || !claim)
+        throw new Error("Stale research attempt.");
+      if (["complete", "error", "not_checkable"].includes(claim.status)) return;
+      await this.ctx.storage.put({
+        [`claim/${claimId}`]: { ...claim, status: "researching" },
+        [`research-attempt/${claimId}`]: attemptId,
+        run: { ...run, status: "processing", revision: run.revision + 1 },
+      });
+    });
+  }
+
+  async publishClaim(attemptId: string, claimId: string, artifactKey: string): Promise<void> {
+    const artifact = await this.env.SUBMISSIONS.get(artifactKey);
+    if (!artifact) throw new Error("Research artifact is missing.");
+    const detail = Schema.decodeUnknownSync(ClaimDetail)(await artifact.json());
+    if (detail.claim.claimId !== claimId) throw new Error("Mismatched claim artifact.");
+    await this.ctx.blockConcurrencyWhile(async () => {
+      const run = await this.ctx.storage.get<StoredRun>("run");
+      const current = await this.ctx.storage.get<string>(`research-attempt/${claimId}`);
+      if (!run || current !== attemptId || run.extraction?.attemptId !== attemptId) {
+        throw new Error("Stale claim publication.");
+      }
+      const claim: Claim = {
+        ...detail.claim,
+        evidenceCount: detail.evidence.length,
+        verdict: detail.assessment?.verdict,
+      };
+      await this.ctx.storage.put({
+        [`claim/${claimId}`]: claim,
+        [`detail/${claimId}`]: artifactKey,
+        run: { ...run, revision: run.revision + 1 },
+      });
+    });
+  }
+
+  async finishResearch(attemptId: string): Promise<void> {
+    const claims = await this.ctx.storage.list<Claim>({ prefix: "claim/" });
+    const errorCount = [...claims.values()].filter((claim) => claim.status === "error").length;
+    await this.updateAttempt(attemptId, (run) => ({ ...run, status: "complete", errorCount }));
+  }
+
   async alarm(): Promise<void> {
     const run = await this.ctx.storage.get<StoredRun>("run");
     if (run?.status === "queued") await this.launch(run);
@@ -129,7 +200,10 @@ export class RunCoordinator extends DurableObject<Env> {
     );
     const attemptId = run.extraction!.attemptId;
     try {
-      await this.env.CHECK_RUN.create({ id: attemptId, params: { runId: run.runId } });
+      await this.env.CHECK_RUN.create({
+        id: attemptId,
+        params: { runId: run.runId, resumeResearch: run.extraction?.done === true },
+      });
     } catch (error) {
       const existing = await this.env.CHECK_RUN.get(attemptId);
       const status = await existing.status();

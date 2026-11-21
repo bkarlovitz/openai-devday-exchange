@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@council/contracts": "*",
+    "@council/ui": "*",
     "@effect-atom/atom-react": "0.7.0",
     "@tanstack/react-router": "^1.0.0",
     "effect": "3.22.5",

@@ -78,6 +78,18 @@ describe("traceable extraction", () => {
     ).toThrow();
   });
 
+  it("anchors a unique exact quote when the model miscounts its occurrence", () => {
+    const text = "The council opened a service.";
+    const result = validateExtraction(
+      { language: "en", claims: [{ ...base, occurrence: 1, quote: text, assertion: text }] },
+      chunkText(text)[0],
+      { submissionKey: runId, text },
+      runId,
+    );
+    expect(result.claims[0].start).toBe(0);
+    expect(result.claims[0].quote).toBe(text);
+  });
+
   it("covers a multi-chunk Unicode input and maps quotes to global offsets", () => {
     const text = "😀 Barcelona. ".repeat(1500) + "El alquiler subió.";
     const chunks = chunkText(text);

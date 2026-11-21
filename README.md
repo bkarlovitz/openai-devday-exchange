@@ -1,6 +1,6 @@
 # Council Check
 
-A text-based council claim checker. The web app extracts traceable factual claims in English, Spanish, and Catalan. Stored official datasets are queryable through development evidence tools. Claim-to-evidence research and verdicts are the next integration.
+A text-based council claim checker. The web app extracts traceable factual claims in English, Spanish, and Catalan. OpenAI Decisions routes claims to official datasets or web research, then an evidence-grounded assessment publishes a verdict, cited sources, uncertainty, and code-computed calculations.
 
 ## Run the app locally
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:8787. Paste text, start extraction, and reload the resulting URL. The Workflow publishes claims and per-chunk progress. Claims remain awaiting evidence research after extraction. Local submissions persist under the ignored Alchemy state directory in tooling/infra. Keep that directory to retain local data.
+Open http://localhost:8787. Paste text, start extraction, and reload the resulting URL. The Workflow publishes claims and per-chunk progress. Claim cards update from research to assessment and completion, with partial technical errors shown separately. Local submissions persist under the ignored Alchemy state directory in tooling/infra. Keep that directory to retain local data.
 
 Local development emulates Workers, R2, a SQLite Durable Object, and Workflows using Alchemy/Miniflare. The pinned Alchemy provider requires an account identity even in local mode, so the infrastructure script supplies a local-only emulator identity. The app can start without Cloudflare credentials. Add OPENAI_API_KEY and ALCHEMY_PASSWORD to the ignored root .env for extraction. Docker supplies the optional local evidence database.
 
@@ -52,7 +52,7 @@ Reuse a submissionKey after a lost response. The same validated payload returns 
 
 ## Working on the next tasks
 
-See [build-plan.md](build-plan.md), [the task index](.viktor/tasks.json), and [the two-person plan](.viktor/team-plan.md). The frontend handoff is in [.viktor/frontend-contract.md](.viktor/frontend-contract.md). TASK-003 can now connect extracted claims to evidence research.
+See [build-plan.md](build-plan.md), [the task index](.viktor/tasks.json), and [the two-person plan](.viktor/team-plan.md). The frontend handoff is in [.viktor/frontend-contract.md](.viktor/frontend-contract.md). The initial claim-to-evidence-to-verdict path is working. Longer agentic research passes and failed-stage retries are subsequent tasks.
 
 The adopted engineering standards and source revisions are in [docs/engineering](docs/engineering/stack.md). Fetch important version-matched library sources with `npm run vendor:sync` and inspect them with `npm run vendor:status`. They are ignored reference material under repos/.
 
@@ -239,3 +239,13 @@ La misma ruta admite estas fuentes. Obtén `resourceKey` del catálogo y reutili
 | `ine-59061` | `seriesCode` (por ejemplo, `IPVA4962`) y `year` de cuatro dígitos. La respuesta conserva los códigos de unidad y escala del INE. |
 
 Para obtener un total reproducible, añade `"aggregate":"sum_population"` al consultar padrón o `"aggregate":"count_tourist_flats"` al consultar turismo, sin campos de paginación. La primera operación suma habitantes para la fecha y el ámbito filtrados. La segunda cuenta expedientes distintos del registro descargado. Ambas devuelven los filtros, la versión consultada y el número de filas utilizadas. Si faltan filas o valores necesarios, el total se devuelve como `null`.
+
+## Research and assessments
+
+Each claim runs an initial pass with at most three application tool actions. Up to two claims are researched concurrently. Stored-data queries pin snapshots and retain their original rows, periods and aggregate coverage. General factual claims use hosted web search and exact passages reconstructed from retrieved source text.
+
+Decisions supplies checkability, topic and evidence-scope triage. The assessor independently evaluates the retained sources. Numerical calculations verify source values and units and are recomputed by code. Technical failures remain separate from insufficient evidence, and completed runs can contain partial claim errors.
+
+GET /api/runs/{runId}/claims/{claimId} returns the shared ClaimDetail contract. The [frontend handoff](.viktor/frontend-contract.md) includes evidence/assessment fields and real rendering fixtures. Shared cards are exported by @council/ui for both clients.
+
+Model IDs are configurable through EXTRACT_MODEL, DECISION_MODEL, RESEARCH_MODEL, SEARCH_MODEL, and EXPLAIN_MODEL. Model requests use explicit timeouts. This initial pass precedes the configurable longer research loop in TASK-005.

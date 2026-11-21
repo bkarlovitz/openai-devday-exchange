@@ -25,3 +25,19 @@
 - **Development deployment** https://council-checker-dev.snapnda.workers.dev. Development evidence inspection is explicitly enabled for this deployment. Submissions and database credentials remain server-side. The general claim-to-evidence research path remains TASK-003.
 
 - **Concurrent merge reconciliation** Integrated the later catalogue/IncAsòl and structured-source merges as well. Preserved GET catalogue inspection and POST query-dataset, including source-specific period, rent, population, capacity, INE unit/scale, and cursor fields. The source-specific adapters share the general snapshot query engine.
+
+### TASK-003: Route claims with Decisions and retrieve official-source evidence
+
+- **Timestamp:** 2026-11-21T12:45:00Z
+- **Outcome:** done
+- **Summary:** Added live OpenAI Decisions routing, official-first web discovery and exact retained passages, snapshot-pinned dataset planning/querying, per-claim immutable evidence, claim-detail API, and two concurrent checkpointed researchers. Fast decisions are advisory and checkability is independent of truth. Preserved the team's aggregate and document contract changes.
+- **Validation:** Live Decisions and hosted web-search calls succeeded. A fresh Barcelona-capital claim produced a supported verdict from the official BOE statute with mechanically retained source text. Direct Incasòl research produced separate snapshot-pinned evidence for two simultaneous claims; population/tourism route planning and catalogue discovery were exercised during implementation. Focused source/decision fixtures passed. Technical failures remain distinct from empty evidence. The deployed Worker retrieved Neon evidence through Hyperdrive and rendered linked evidence in a browser without page errors.
+- **Models:** Extraction/planning/assessment gpt-5.4-mini, Decisions gpt-6-luna, hosted search gpt-6.2-astra; model bindings remain configurable. Request examples and controls are in README.md.
+
+### TASK-004: Generate evidence-grounded verdicts and reproducible calculations
+
+- **Timestamp:** 2026-11-21T12:45:00Z
+- **Outcome:** done
+- **Summary:** Added citation-validated assessments, deterministic arithmetic with source/measure validation, progressive shared claim/evidence/assessment components, and explicit per-claim technical errors. Arithmetic correction has time to complete inside the workflow. Empty dataset rows cannot validate operands from query metadata.
+- **Validation:** Typecheck, lint and all 22 focused tests passed, covering four verdicts, citation rejection, wrong periods, approval versus delivery, zero baseline, unit mismatch, arithmetic correction and empty-row metadata rejection. A live two-claim Catalan check marked 0.47% Supported and 50% Contradicted from 1135.55 and 1140.89 EUR/month; code computed 0.47025670379993356%. A fresh deployed check completed Supported against Neon; deployed web rendering passed without JavaScript errors. Retained live fixture: .viktor/examples/assessed-claim.json.
+- **Review:** Independent focused review found and resolved the empty-row operand issue and the arithmetic-correction timeout mismatch; no additional critical persistence/stale-attempt issue was found. TASK-003/004 are integrated in one commit because their contracts and workflow form the first complete checking path under the user-approved hackathon time box.

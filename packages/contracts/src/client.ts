@@ -1,6 +1,7 @@
 import { Effect, Schema } from "effect";
 import { ApiError, Run, SubmissionReceipt } from "./runs";
 import type { Submission } from "./runs";
+import { ClaimDetail } from "./claims";
 
 export function createApiClient(baseUrl = "") {
   async function request(path: string, init?: RequestInit): Promise<unknown> {
@@ -24,6 +25,16 @@ export function createApiClient(baseUrl = "") {
             }),
           ),
         catch: (cause) => (cause instanceof Error ? cause : new Error("Could not save your text.")),
+      });
+    },
+    loadClaim(runId: string, claimId: string, signal: AbortSignal) {
+      return Effect.tryPromise({
+        try: async () =>
+          Schema.decodeUnknownSync(ClaimDetail)(
+            await request(`/api/runs/${runId}/claims/${claimId}`, { signal }),
+          ),
+        catch: (cause) =>
+          cause instanceof Error ? cause : new Error("Could not load this claim."),
       });
     },
     loadRun(runId: string, signal: AbortSignal) {

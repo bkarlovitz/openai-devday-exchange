@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Effect, Schema } from "effect";
 import { Submission, normalizeSubmission } from "@council/contracts";
 import type { Env } from "../env";
-import { createRun, getRun } from "../services/run-store";
+import { createRun, getRun, coordinator } from "../services/run-store";
 
 export const runs = new Hono<{ Bindings: Env }>();
 
@@ -45,4 +45,20 @@ runs.get("/:runId", async (c) => {
     return c.json({ error: "Submission not found." }, 404);
   }
   return c.json(run);
+});
+
+runs.get("/:runId/claims/:claimId", async (c) => {
+  const id = Schema.decodeUnknownOption(Schema.UUID)(c.req.param("runId"));
+  const claimId = c.req.param("claimId");
+  if (
+    id._tag === "None" ||
+    !/^[a-zA-Z0-9-]{1,100}$/.test(claimId) ||
+    !claimId.startsWith(id.value.toLowerCase() + "-")
+  ) {
+    return c.json({ error: "Claim not found." }, 404);
+  }
+  const detail = await coordinator(c.env, id.value.toLowerCase()).getClaimJson(claimId);
+  return detail
+    ? c.body(detail, 200, { "Content-Type": "application/json" })
+    : c.json({ error: "Claim not found." }, 404);
 });

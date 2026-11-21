@@ -1,3 +1,3 @@
 import { createApiClient } from "@council/contracts";
 
-export const { saveSubmission, loadRun } = createApiClient();
+export const { saveSubmission, loadRun, loadClaim } = createApiClient();

@@ -16,10 +16,16 @@ export function validateExtraction(
     let localStart = -1;
     for (let occurrence = 0; occurrence <= claim.occurrence; occurrence++) {
       localStart = chunk.text.indexOf(claim.quote, localStart + 1);
-      if (localStart < 0)
+      if (localStart < 0) break;
+    }
+    if (localStart < 0) {
+      const unique = chunk.text.indexOf(claim.quote);
+      if (unique < 0 || unique !== chunk.text.lastIndexOf(claim.quote)) {
         throw new Error(
           "An extracted quote did not match the submitted text. The chunk was not published.",
         );
+      }
+      localStart = unique;
     }
     const start = chunk.start + localStart;
     const end = start + claim.quote.length;

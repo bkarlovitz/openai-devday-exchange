@@ -1,0 +1,388 @@
+{
+  "claim": {
+    "claimId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0",
+    "quote": "La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025.",
+    "assertion": "La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025.",
+    "start": 0,
+    "end": 159,
+    "context": "La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025.\n\nLa renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 50% el segon trimestre de 2026 respecte al segon trimestre de 2025.",
+    "entities": [
+      "la renda mitjana",
+      "el tram de més de 600 euros al mes",
+      "el municipi de Barcelona"
+    ],
+    "dates": [
+      "el segon trimestre de 2026",
+      "el segon trimestre de 2025"
+    ],
+    "metric": "0,47%",
+    "place": "municipi de Barcelona",
+    "comparison": "respecte al segon trimestre de 2025",
+    "status": "complete",
+    "verdict": "supported",
+    "evidenceCount": 2
+  },
+  "evidence": [
+    {
+      "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-0",
+      "kind": "dataset",
+      "sourceUrl": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+      "title": "incasol · qww9-bvhh",
+      "retrievedAt": "2026-11-21T12:06:10.933Z",
+      "sourceDate": "2026, abril-juny",
+      "text": "{\"query\":{\"datasetId\":\"incasol\",\"snapshotId\":\"1\",\"filters\":[{\"field\":\"Àmbit territorial\",\"op\":\"eq\",\"value\":\"Municipi\"},{\"field\":\"Codi territorial\",\"op\":\"eq\",\"value\":\"08019\"},{\"field\":\"Tram de preus\",\"op\":\"eq\",\"value\":\"> 600 euros/mes\"},{\"field\":\"Any\",\"op\":\"eq\",\"value\":\"2026\"},{\"field\":\"Període\",\"op\":\"eq\",\"value\":\"abril-juny\"}],\"limit\":25,\"offset\":0,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\"}},\"totalRows\":1,\"rowsAreSample\":false,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\",\"unit\":\"EUR/month\",\"value\":\"1140.8900000000000000\",\"numericRows\":1,\"status\":\"complete\"},\"fields\":[{\"name\":\"Any\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Codi territorial\",\"type\":\"text\"},{\"name\":\"Habitatges\",\"type\":\"number\",\"unit\":\"contracts\"},{\"name\":\"Nom territori\",\"type\":\"text\"},{\"name\":\"Període\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Renda\",\"type\":\"number\",\"unit\":\"EUR/month\"},{\"name\":\"Tram de preus\",\"type\":\"text\"},{\"name\":\"Àmbit territorial\",\"type\":\"text\"}],\"rows\":[{\"rowNumber\":838,\"data\":{\"Any\":\"2026\",\"Renda\":\"1140.89\",\"Període\":\"abril-juny\",\"Habitatges\":\"7845\",\"Nom territori\":\"Barcelona\",\"Tram de preus\":\"> 600 euros/mes\",\"Codi territorial\":\"08019\",\"Àmbit territorial\":\"Municipi\"}}]}",
+      "datasetId": "incasol",
+      "snapshotId": "1",
+      "resourceKey": "qww9-bvhh",
+      "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+      "rowNumbers": [
+        838
+      ],
+      "rows": [
+        {
+          "rowNumber": 838,
+          "data": {
+            "Any": "2026",
+            "Renda": "1140.89",
+            "Període": "abril-juny",
+            "Habitatges": "7845",
+            "Nom territori": "Barcelona",
+            "Tram de preus": "> 600 euros/mes",
+            "Codi territorial": "08019",
+            "Àmbit territorial": "Municipi"
+          }
+        }
+      ],
+      "query": {
+        "datasetId": "incasol",
+        "snapshotId": "1",
+        "filters": [
+          {
+            "field": "Àmbit territorial",
+            "op": "eq",
+            "value": "Municipi"
+          },
+          {
+            "field": "Codi territorial",
+            "op": "eq",
+            "value": "08019"
+          },
+          {
+            "field": "Tram de preus",
+            "op": "eq",
+            "value": "> 600 euros/mes"
+          },
+          {
+            "field": "Any",
+            "op": "eq",
+            "value": "2026"
+          },
+          {
+            "field": "Període",
+            "op": "eq",
+            "value": "abril-juny"
+          }
+        ],
+        "limit": 25,
+        "offset": 0,
+        "aggregate": {
+          "operation": "avg",
+          "field": "Renda"
+        }
+      },
+      "totalRows": 1,
+      "rowsAreSample": false,
+      "aggregate": {
+        "operation": "avg",
+        "field": "Renda",
+        "unit": "EUR/month",
+        "value": "1140.8900000000000000",
+        "numericRows": 1,
+        "status": "complete"
+      }
+    },
+    {
+      "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-1",
+      "kind": "dataset",
+      "sourceUrl": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+      "title": "incasol · qww9-bvhh",
+      "retrievedAt": "2026-11-21T12:06:10.933Z",
+      "sourceDate": "2025, abril-juny",
+      "text": "{\"query\":{\"datasetId\":\"incasol\",\"snapshotId\":\"1\",\"filters\":[{\"field\":\"Àmbit territorial\",\"op\":\"eq\",\"value\":\"Municipi\"},{\"field\":\"Codi territorial\",\"op\":\"eq\",\"value\":\"08019\"},{\"field\":\"Tram de preus\",\"op\":\"eq\",\"value\":\"> 600 euros/mes\"},{\"field\":\"Any\",\"op\":\"eq\",\"value\":\"2025\"},{\"field\":\"Període\",\"op\":\"eq\",\"value\":\"abril-juny\"}],\"limit\":25,\"offset\":0,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\"}},\"totalRows\":1,\"rowsAreSample\":false,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\",\"unit\":\"EUR/month\",\"value\":\"1135.5500000000000000\",\"numericRows\":1,\"status\":\"complete\"},\"fields\":[{\"name\":\"Any\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Codi territorial\",\"type\":\"text\"},{\"name\":\"Habitatges\",\"type\":\"number\",\"unit\":\"contracts\"},{\"name\":\"Nom territori\",\"type\":\"text\"},{\"name\":\"Període\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Renda\",\"type\":\"number\",\"unit\":\"EUR/month\"},{\"name\":\"Tram de preus\",\"type\":\"text\"},{\"name\":\"Àmbit territorial\",\"type\":\"text\"}],\"rows\":[{\"rowNumber\":5957,\"data\":{\"Any\":\"2025\",\"Renda\":\"1135.55\",\"Període\":\"abril-juny\",\"Habitatges\":\"7411\",\"Nom territori\":\"Barcelona\",\"Tram de preus\":\"> 600 euros/mes\",\"Codi territorial\":\"08019\",\"Àmbit territorial\":\"Municipi\"}}]}",
+      "datasetId": "incasol",
+      "snapshotId": "1",
+      "resourceKey": "qww9-bvhh",
+      "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+      "rowNumbers": [
+        5957
+      ],
+      "rows": [
+        {
+          "rowNumber": 5957,
+          "data": {
+            "Any": "2025",
+            "Renda": "1135.55",
+            "Període": "abril-juny",
+            "Habitatges": "7411",
+            "Nom territori": "Barcelona",
+            "Tram de preus": "> 600 euros/mes",
+            "Codi territorial": "08019",
+            "Àmbit territorial": "Municipi"
+          }
+        }
+      ],
+      "query": {
+        "datasetId": "incasol",
+        "snapshotId": "1",
+        "filters": [
+          {
+            "field": "Àmbit territorial",
+            "op": "eq",
+            "value": "Municipi"
+          },
+          {
+            "field": "Codi territorial",
+            "op": "eq",
+            "value": "08019"
+          },
+          {
+            "field": "Tram de preus",
+            "op": "eq",
+            "value": "> 600 euros/mes"
+          },
+          {
+            "field": "Any",
+            "op": "eq",
+            "value": "2025"
+          },
+          {
+            "field": "Període",
+            "op": "eq",
+            "value": "abril-juny"
+          }
+        ],
+        "limit": 25,
+        "offset": 0,
+        "aggregate": {
+          "operation": "avg",
+          "field": "Renda"
+        }
+      },
+      "totalRows": 1,
+      "rowsAreSample": false,
+      "aggregate": {
+        "operation": "avg",
+        "field": "Renda",
+        "unit": "EUR/month",
+        "value": "1135.5500000000000000",
+        "numericRows": 1,
+        "status": "complete"
+      }
+    }
+  ],
+  "assessment": {
+    "verdict": "supported",
+    "explanation": "The supplied Incasol aggregates match the same place, time, and price band: municipality of Barcelona, tram \"> 600 euros/mes\", April-June 2025 and April-June 2026. The average rent rises from 1135.55 EUR/month to 1140.89 EUR/month, which is an increase of about 0.47%, consistent with the claim.",
+    "evidenceIds": [
+      "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-0",
+      "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-1"
+    ],
+    "uncertainty": [
+      "The evidence is an average rent aggregate for the specified band, not an individual contract value; the claim wording is still consistent with this aggregate.",
+      "The percentage is rounded; the exact computed change is slightly above 0.47%."
+    ],
+    "calculations": [
+      {
+        "operation": "percentage_change",
+        "operands": [
+          {
+            "label": "baseline (2025 abril-juny avg rent)",
+            "value": 1135.55,
+            "unit": "EUR/month",
+            "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-1"
+          },
+          {
+            "label": "target (2026 abril-juny avg rent)",
+            "value": 1140.89,
+            "unit": "EUR/month",
+            "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-0"
+          }
+        ],
+        "formula": "(1140.89 - 1135.55) / 1135.55 × 100",
+        "result": 0.47025670379993356,
+        "unit": "%"
+      }
+    ]
+  },
+  "research": {
+    "checkable": true,
+    "topic": "housing",
+    "evidence": [
+      {
+        "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-0",
+        "kind": "dataset",
+        "sourceUrl": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+        "title": "incasol · qww9-bvhh",
+        "retrievedAt": "2026-11-21T12:06:10.933Z",
+        "sourceDate": "2026, abril-juny",
+        "text": "{\"query\":{\"datasetId\":\"incasol\",\"snapshotId\":\"1\",\"filters\":[{\"field\":\"Àmbit territorial\",\"op\":\"eq\",\"value\":\"Municipi\"},{\"field\":\"Codi territorial\",\"op\":\"eq\",\"value\":\"08019\"},{\"field\":\"Tram de preus\",\"op\":\"eq\",\"value\":\"> 600 euros/mes\"},{\"field\":\"Any\",\"op\":\"eq\",\"value\":\"2026\"},{\"field\":\"Període\",\"op\":\"eq\",\"value\":\"abril-juny\"}],\"limit\":25,\"offset\":0,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\"}},\"totalRows\":1,\"rowsAreSample\":false,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\",\"unit\":\"EUR/month\",\"value\":\"1140.8900000000000000\",\"numericRows\":1,\"status\":\"complete\"},\"fields\":[{\"name\":\"Any\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Codi territorial\",\"type\":\"text\"},{\"name\":\"Habitatges\",\"type\":\"number\",\"unit\":\"contracts\"},{\"name\":\"Nom territori\",\"type\":\"text\"},{\"name\":\"Període\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Renda\",\"type\":\"number\",\"unit\":\"EUR/month\"},{\"name\":\"Tram de preus\",\"type\":\"text\"},{\"name\":\"Àmbit territorial\",\"type\":\"text\"}],\"rows\":[{\"rowNumber\":838,\"data\":{\"Any\":\"2026\",\"Renda\":\"1140.89\",\"Període\":\"abril-juny\",\"Habitatges\":\"7845\",\"Nom territori\":\"Barcelona\",\"Tram de preus\":\"> 600 euros/mes\",\"Codi territorial\":\"08019\",\"Àmbit territorial\":\"Municipi\"}}]}",
+        "datasetId": "incasol",
+        "snapshotId": "1",
+        "resourceKey": "qww9-bvhh",
+        "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+        "rowNumbers": [
+          838
+        ],
+        "rows": [
+          {
+            "rowNumber": 838,
+            "data": {
+              "Any": "2026",
+              "Renda": "1140.89",
+              "Període": "abril-juny",
+              "Habitatges": "7845",
+              "Nom territori": "Barcelona",
+              "Tram de preus": "> 600 euros/mes",
+              "Codi territorial": "08019",
+              "Àmbit territorial": "Municipi"
+            }
+          }
+        ],
+        "query": {
+          "datasetId": "incasol",
+          "snapshotId": "1",
+          "filters": [
+            {
+              "field": "Àmbit territorial",
+              "op": "eq",
+              "value": "Municipi"
+            },
+            {
+              "field": "Codi territorial",
+              "op": "eq",
+              "value": "08019"
+            },
+            {
+              "field": "Tram de preus",
+              "op": "eq",
+              "value": "> 600 euros/mes"
+            },
+            {
+              "field": "Any",
+              "op": "eq",
+              "value": "2026"
+            },
+            {
+              "field": "Període",
+              "op": "eq",
+              "value": "abril-juny"
+            }
+          ],
+          "limit": 25,
+          "offset": 0,
+          "aggregate": {
+            "operation": "avg",
+            "field": "Renda"
+          }
+        },
+        "totalRows": 1,
+        "rowsAreSample": false,
+        "aggregate": {
+          "operation": "avg",
+          "field": "Renda",
+          "unit": "EUR/month",
+          "value": "1140.8900000000000000",
+          "numericRows": 1,
+          "status": "complete"
+        }
+      },
+      {
+        "evidenceId": "23157347-c8d7-477c-a669-a99d4ea319bd-0-0-dataset-1",
+        "kind": "dataset",
+        "sourceUrl": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD",
+        "title": "incasol · qww9-bvhh",
+        "retrievedAt": "2026-11-21T12:06:10.933Z",
+        "sourceDate": "2025, abril-juny",
+        "text": "{\"query\":{\"datasetId\":\"incasol\",\"snapshotId\":\"1\",\"filters\":[{\"field\":\"Àmbit territorial\",\"op\":\"eq\",\"value\":\"Municipi\"},{\"field\":\"Codi territorial\",\"op\":\"eq\",\"value\":\"08019\"},{\"field\":\"Tram de preus\",\"op\":\"eq\",\"value\":\"> 600 euros/mes\"},{\"field\":\"Any\",\"op\":\"eq\",\"value\":\"2025\"},{\"field\":\"Període\",\"op\":\"eq\",\"value\":\"abril-juny\"}],\"limit\":25,\"offset\":0,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\"}},\"totalRows\":1,\"rowsAreSample\":false,\"aggregate\":{\"operation\":\"avg\",\"field\":\"Renda\",\"unit\":\"EUR/month\",\"value\":\"1135.5500000000000000\",\"numericRows\":1,\"status\":\"complete\"},\"fields\":[{\"name\":\"Any\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Codi territorial\",\"type\":\"text\"},{\"name\":\"Habitatges\",\"type\":\"number\",\"unit\":\"contracts\"},{\"name\":\"Nom territori\",\"type\":\"text\"},{\"name\":\"Període\",\"type\":\"text\",\"role\":\"period\"},{\"name\":\"Renda\",\"type\":\"number\",\"unit\":\"EUR/month\"},{\"name\":\"Tram de preus\",\"type\":\"text\"},{\"name\":\"Àmbit territorial\",\"type\":\"text\"}],\"rows\":[{\"rowNumber\":5957,\"data\":{\"Any\":\"2025\",\"Renda\":\"1135.55\",\"Període\":\"abril-juny\",\"Habitatges\":\"7411\",\"Nom territori\":\"Barcelona\",\"Tram de preus\":\"> 600 euros/mes\",\"Codi territorial\":\"08019\",\"Àmbit territorial\":\"Municipi\"}}]}",
+        "datasetId": "incasol",
+        "snapshotId": "1",
+        "resourceKey": "qww9-bvhh",
+        "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+        "rowNumbers": [
+          5957
+        ],
+        "rows": [
+          {
+            "rowNumber": 5957,
+            "data": {
+              "Any": "2025",
+              "Renda": "1135.55",
+              "Període": "abril-juny",
+              "Habitatges": "7411",
+              "Nom territori": "Barcelona",
+              "Tram de preus": "> 600 euros/mes",
+              "Codi territorial": "08019",
+              "Àmbit territorial": "Municipi"
+            }
+          }
+        ],
+        "query": {
+          "datasetId": "incasol",
+          "snapshotId": "1",
+          "filters": [
+            {
+              "field": "Àmbit territorial",
+              "op": "eq",
+              "value": "Municipi"
+            },
+            {
+              "field": "Codi territorial",
+              "op": "eq",
+              "value": "08019"
+            },
+            {
+              "field": "Tram de preus",
+              "op": "eq",
+              "value": "> 600 euros/mes"
+            },
+            {
+              "field": "Any",
+              "op": "eq",
+              "value": "2025"
+            },
+            {
+              "field": "Període",
+              "op": "eq",
+              "value": "abril-juny"
+            }
+          ],
+          "limit": 25,
+          "offset": 0,
+          "aggregate": {
+            "operation": "avg",
+            "field": "Renda"
+          }
+        },
+        "totalRows": 1,
+        "rowsAreSample": false,
+        "aggregate": {
+          "operation": "avg",
+          "field": "Renda",
+          "unit": "EUR/month",
+          "value": "1135.5500000000000000",
+          "numericRows": 1,
+          "status": "complete"
+        }
+      }
+    ],
+    "decision": {
+      "relevant": true,
+      "sufficient": true,
+      "conflicting": false
+    },
+    "notes": [
+      "Use the published average rent (Renda, EUR/month) for the exact price band '> 600 euros/mes' in Barcelona municipality (Codi territorial 08019, Àmbit territorial=Municipi). Compare Q2 2026 (abril-juny) against Q2 2025 (abril-juny). The claim’s stated percentage change can be checked from these two averages.",
+      "Initial research used 3 of 3 tool actions."
+    ]
+  }
+}
