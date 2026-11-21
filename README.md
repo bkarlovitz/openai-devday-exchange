@@ -150,3 +150,41 @@ Campos observados para los adaptadores de TASK-012:
 | Padrón | `Data_Referencia`, `Codi_Districte`, `Codi_Barri`, `Seccio_Censal` y `Valor`. Verificar las columnas por recurso histórico. |
 | Viviendas turísticas | `N_EXPEDIENT`, `CODI_DISTRICTE`, `CODI_BARRI` y `NUMERO_PLACES`. Conservar los ceros iniciales de los códigos. |
 | INE 59061 | `COD`, `Nombre`, `Anyo`, `Fecha`, `Valor`, identificadores de unidad, escala y periodo, y `Secreto`. Usar el código de serie y comprobar su unidad antes de comparar. |
+
+### Preparar pasajes de documentos oficiales
+
+Después de crear las tablas base de `db/schema.sql`, aplica las migraciones antes de extraer documentos. Docker aplica el esquema base al crear un volumen vacío. En una base Neon nueva, aplica primero `db/schema.sql`. Los scripts usan `DATABASE_URL` cuando está exportada.
+
+```sh
+.venv/bin/pip install -r scripts/requirements.txt
+.venv/bin/python scripts/extract_documents.py --migrate-only
+.venv/bin/python scripts/ingest.py --source council --source minutes
+.venv/bin/python scripts/extract_documents.py
+```
+
+Las migraciones de `db/migrations` se aplican por número y se registran en `schema_migration` en la misma transacción. El extractor guarda un pasaje por página con texto en el PDF y bloques de texto en el HTML. Se puede reprocesar una sola versión con `--snapshot-id ID`. Los bytes originales y los pasajes de otras versiones se conservan. Un PDF sin texto queda como `empty_or_scanned`. Los formatos sin extractor quedan como `unsupported` y los fallos de parser como `error` con su diagnóstico.
+
+La cobertura comprobada es la portada del Consell Municipal y el acta del 31 de octubre de 2025. Los enlaces de la portada identifican documentos potenciales.
+
+```sql
+SELECT s.resource_url, s.sha256, p.snapshot_id, p.passage_number,
+       p.page_number, p.html_location, p.passage_text
+FROM source_document_passage p
+JOIN snapshot s ON s.id = p.snapshot_id
+WHERE s.dataset_id = 'minutes'
+  AND p.search_vector @@ plainto_tsquery('simple', 'sessió ordinària')
+ORDER BY p.page_number
+LIMIT 3;
+```
+
+### Consultar la evidencia desde el Worker local
+
+Añade `LOCAL_EVIDENCE_DATABASE_URL=postgresql://council:council_local@127.0.0.1:5432/council` y un `ALCHEMY_PASSWORD` en el `.env` local. Usa tus valores si cambiaste el puerto o las credenciales de Docker. Alchemy usa la contraseña para cifrar el estado del binding. Arranca PostgreSQL y ejecuta `npm run dev`.
+
+```sh
+curl -fsS http://127.0.0.1:8787/api/dev/evidence/catalogue
+curl -fsSG http://127.0.0.1:8787/api/dev/evidence/documents \
+  --data-urlencode 'datasetId=minutes' --data-urlencode 'q=sessió ordinària'
+```
+
+Con el `snapshotId` y `passageNumber` devueltos, recupera el mismo pasaje en `/api/dev/evidence/documents/<snapshotId>/<passageNumber>`. Las rutas de inspección solo se habilitan en el Worker local de Alchemy. Para un despliegue, `HYPERDRIVE_ORIGIN` configura el origen Neon mediante su URL directa de PostgreSQL.
