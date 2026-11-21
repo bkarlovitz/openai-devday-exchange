@@ -30,6 +30,8 @@ export function validateExtraction(
     const start = chunk.start + localStart;
     const end = start + claim.quote.length;
     const passage = submission.passages?.find((item) => item.start <= start && item.end >= end);
+    const startPassage =
+      passage ?? submission.passages?.find((item) => item.start <= start && item.end > start);
     return {
       claimId: `${runId}-${chunk.index}-${index}`,
       quote: claim.quote,
@@ -46,7 +48,7 @@ export function validateExtraction(
       place: claim.place,
       comparison: claim.comparison,
       speaker: passage?.speaker,
-      startSeconds: passage?.startSeconds,
+      startSeconds: startPassage?.startSeconds,
       status: "awaiting_research",
     };
   });
