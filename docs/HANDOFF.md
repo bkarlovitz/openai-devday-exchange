@@ -2,6 +2,16 @@
 
 Updated 2026-11-21. Code baseline: `32b65c1` on `main`. This is a working hackathon system, with deliberate limits described below. Start here, then use the linked implementation and task specs for detail.
 
+## For Brian: confirm the latest UI deployment
+
+Requested by Romina on 2026-11-21. Status: awaiting verification.
+
+Brian, please check whether the active Cloudflare deployment of [Wingman](https://council-checker-dev.snapnda.workers.dev) includes [PR #21](https://github.com/bkarlovitz/openai-devday-exchange/pull/21), merged as `32b65c106f1348942a2c70af68aae76b5136c39e` on 2026-11-21 at 17:36 Europe/Madrid. This merge introduced the Night Broadcast UI and verdict reactions.
+
+Check Workers & Pages → `council-checker-dev` → Deployments. Confirm the deployed source revision includes that merge, or compare the live JavaScript/CSS with a fresh build containing it. A deployment timestamp alone does not establish which code was released. Check the hosted extension ZIPs too, since both Chrome panels changed.
+
+Please record the active deployment/version ID, source revision or asset comparison, and result here. If the live build is older, flag that deployment is still needed. Codex could not verify it on 2026-11-21: the live site timed out and the local CLI had no authenticated Cloudflare access. The previously verified release used `37aa194`.
+
 ## What the system does
 
 Wingman checks factual claims in supplied text against retained official datasets, council records, and retrieved web sources. It preserves the original quote and returns a verdict, cited evidence, uncertainty, and validated calculations. The web app and two separate Chrome extensions share the same backend. English, Spanish, and Catalan are supported.
