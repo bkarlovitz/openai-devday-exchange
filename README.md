@@ -68,3 +68,25 @@ LIMIT 5;
 ```
 
 Para buscar por similitud, obtén el vector de la consulta con el mismo modelo y ordena las fichas por `embedding <=> $1::vector`. El catálogo inicial es pequeño y usa distancia exacta. Las comparaciones factuales se hacen con las filas y sus periodos.
+
+### Caso de referencia de Incasòl
+
+Este ejemplo compara el segundo trimestre de 2025 con el de 2026 para el municipio de Barcelona (`08019`) y el tramo publicado `> 600 euros/mes`. La comparación usa datos oficiales y sirve como caso de integración.
+
+```sh
+docker compose exec -T db psql -XAt -v ON_ERROR_STOP=1 -U council -d council \
+  -v baseline_year=2025 -v baseline_period=abril-juny \
+  -v target_year=2026 -v target_period=abril-juny \
+  < scripts/incasol-comparison.sql
+```
+
+En la descarga comprobada, la renta media de este tramo pasó de **1.135,55** a **1.140,89 €/mes** (+**0,47 %**). El JSON incluye las filas originales, el identificador y el hash del snapshot, la URL del CSV y la fórmula. Añade `-v snapshot_id=ID` para repetir la consulta contra un snapshot concreto de tu base. Con `target_year=2099` el script devuelve `missing_period` y conserva la fila disponible.
+
+Campos observados para los adaptadores de TASK-012:
+
+| Dataset | Campos iniciales |
+| --- | --- |
+| Incasòl | `Àmbit territorial`, `Codi territorial`, `Any`, `Període`, `Tram de preus`, `Renda` y `Habitatges`. Los valores de CSV se guardan como texto. |
+| Padrón | `Data_Referencia`, `Codi_Districte`, `Codi_Barri`, `Seccio_Censal` y `Valor`. Verificar las columnas por recurso histórico. |
+| Viviendas turísticas | `N_EXPEDIENT`, `CODI_DISTRICTE`, `CODI_BARRI` y `NUMERO_PLACES`. Conservar los ceros iniciales de los códigos. |
+| INE 59061 | `COD`, `Nombre`, `Anyo`, `Fecha`, `Valor`, identificadores de unidad, escala y periodo, y `Secreto`. Usar el código de serie y comprobar su unidad antes de comparar. |

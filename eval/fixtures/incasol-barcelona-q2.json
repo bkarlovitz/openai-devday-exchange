@@ -1,0 +1,72 @@
+{
+  "description": "Caso de integración con datos oficiales, sin cita de un pleno asociada.",
+  "assertion": "La renta media del tramo de más de 600 euros al mes en Barcelona subió un 0,47 % en el segundo trimestre de 2026 respecto al mismo trimestre de 2025.",
+  "evidence": {
+    "rows": [
+      {
+        "data": {
+          "Any": "2025",
+          "Renda": "1135.55",
+          "Període": "abril-juny",
+          "Habitatges": "7411",
+          "Nom territori": "Barcelona",
+          "Tram de preus": "> 600 euros/mes",
+          "Codi territorial": "08019",
+          "Àmbit territorial": "Municipi"
+        },
+        "rent": 1135.55,
+        "role": "baseline",
+        "year": "2025",
+        "period": "abril-juny",
+        "row_number": 5957
+      },
+      {
+        "data": {
+          "Any": "2026",
+          "Renda": "1140.89",
+          "Període": "abril-juny",
+          "Habitatges": "7845",
+          "Nom territori": "Barcelona",
+          "Tram de preus": "> 600 euros/mes",
+          "Codi territorial": "08019",
+          "Àmbit territorial": "Municipi"
+        },
+        "rent": 1140.89,
+        "role": "target",
+        "year": "2026",
+        "period": "abril-juny",
+        "row_number": 838
+      }
+    ],
+    "status": "ok",
+    "snapshot": {
+      "id": "32",
+      "sha256": "65f15b3a7a48680a2bdec81b3172f4ba81907858082c0d58a1993e7db10b3070",
+      "dataset_id": "incasol",
+      "fetched_at": "2026-11-21T11:18:00.00321+00:00",
+      "resource_key": "qww9-bvhh",
+      "resource_url": "https://analisi.transparenciacatalunya.cat/api/views/qww9-bvhh/rows.csv?accessType=DOWNLOAD"
+    },
+    "priceBand": "> 600 euros/mes",
+    "calculation": {
+      "unit": "EUR/month",
+      "target": 1140.89,
+      "formula": "(target - baseline) / baseline * 100",
+      "baseline": 1135.55,
+      "percentChange": 0.47
+    },
+    "territoryCode": "08019",
+    "requestedPeriods": [
+      {
+        "role": "baseline",
+        "year": "2025",
+        "period": "abril-juny"
+      },
+      {
+        "role": "target",
+        "year": "2026",
+        "period": "abril-juny"
+      }
+    ]
+  }
+}
