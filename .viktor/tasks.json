@@ -17,7 +17,7 @@
     "id": "TASK-012",
     "title": "Connect the existing evidence database through Neon and Hyperdrive",
     "milestone": "M2: Cited factual assessments",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-012.md"
   },
   {

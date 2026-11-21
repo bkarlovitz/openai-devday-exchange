@@ -1,117 +1,142 @@
-import type { QueryDatasetInput } from "@council/contracts";
-import { sql } from "drizzle-orm";
-import { withEvidenceDb } from "../db/client";
+import { and, asc, eq, ilike, ne, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import { Schema } from "effect";
+import { DatasetQueryInput } from "@council/contracts";
+import type { DatasetEvidence, SourceField } from "@council/contracts";
+import type { Env } from "../env";
+import { databaseEffect } from "../db/client";
+import { latestSnapshot, snapshot, sourceRow } from "../db/schema";
+import { describeFields } from "./dataset-fields";
+import { EvidenceNotFound, QueryInputError, snapshotReference } from "./catalogue";
 
-type Snapshot = {
-  id: string;
-  datasetId: string;
-  resourceKey: string;
-  sourceUrl: string;
-  sha256: string;
-  fetchedAt: string;
-  lastSeenAt: string;
-};
-
-type SourceRow = {
-  rowNumber: number;
-  data: Record<string, unknown>;
-};
-
-function filtersFor(input: QueryDatasetInput) {
-  switch (input.datasetId) {
-    case "incasol":
-      return sql`AND data->>'Àmbit territorial' = 'Municipi'
-        AND data->>'Codi territorial' = ${input.filters.municipalityCode}
-        AND data->>'Any' = ${input.filters.year}
-        AND data->>'Període' = ${input.filters.period}
-        AND data->>'Tram de preus' = ${input.filters.priceBand}`;
-    case "population":
-      return sql`AND data->>'Data_Referencia' = ${input.filters.referenceDate}
-        ${input.filters.districtCode ? sql`AND data->>'Codi_Districte' = ${input.filters.districtCode}` : sql``}
-        ${input.filters.neighbourhoodCode ? sql`AND data->>'Codi_Barri' = ${input.filters.neighbourhoodCode}` : sql``}
-        ${input.filters.censusSection ? sql`AND data->>'Seccio_Censal' = ${input.filters.censusSection}` : sql``}`;
-    case "tourist-flats":
-      return sql`
-        ${input.filters.districtCode ? sql`AND data->>'CODI_DISTRICTE' = ${input.filters.districtCode}` : sql``}
-        ${input.filters.neighbourhoodCode ? sql`AND data->>'CODI_BARRI' = ${input.filters.neighbourhoodCode}` : sql``}`;
-    case "ine-59061":
-      return sql`AND data->>'COD' = ${input.filters.seriesCode}
-        AND data->>'Anyo' = ${input.filters.year}`;
-  }
+function numericValue(field: string) {
+  const value = sql<string>`${sourceRow.data}->>${field}`;
+  return sql`CASE WHEN COALESCE(${sourceRow.data}->>'Secreto', 'false') <> 'true' AND ${value} ~ '^[+-]?[0-9]+([.][0-9]+)?$' THEN (${value})::numeric END`;
 }
 
-function decimal(value: unknown): string | null {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return String(value);
-  }
-  return typeof value === "string" && /^-?[0-9]+(?:\.[0-9]+)?$/.test(value) ? value : null;
+function requireField(fields: SourceField[], name: string): SourceField {
+  const field = fields.find((item) => item.name === name);
+  if (!field)
+    throw new QueryInputError(`Unsupported field "${name}". Inspect this resource's fields first.`);
+  return field;
 }
 
-function evidenceRow(datasetId: QueryDatasetInput["datasetId"], row: SourceRow) {
-  const { data } = row;
-  switch (datasetId) {
-    case "incasol":
-      return {
-        ...row,
-        observationPeriod: { year: data.Any, label: data["Període"] },
-        rent: { value: decimal(data.Renda), unit: "EUR/month" },
-      };
-    case "population":
-      return {
-        ...row,
-        observationPeriod: { referenceDate: data.Data_Referencia },
-        population: { value: decimal(data.Valor), unit: "people" },
-      };
-    case "tourist-flats":
-      return {
-        ...row,
-        observationPeriod: null,
-        capacity: { value: decimal(data.NUMERO_PLACES), unit: "places" },
-      };
-    case "ine-59061":
-      return {
-        ...row,
-        observationPeriod: { year: data.Anyo, periodCode: data.FK_Periodo },
-        observation: {
-          value: data.Secreto === true ? null : decimal(data.Valor),
-          unitCode: data.FK_Unidad,
-          scaleCode: data.FK_Escala,
-        },
-      };
-  }
-}
-
-export function queryDataset(binding: Hyperdrive, input: QueryDatasetInput) {
-  const { datasetId, resourceKey, snapshotId, afterRow } = input;
-  const limit = input.limit ?? 25;
-  return withEvidenceDb(binding, async (db) => {
-    const snapshots = await db.execute<Snapshot>(sql`
-      SELECT id::text, dataset_id AS "datasetId", resource_key AS "resourceKey",
-             resource_url AS "sourceUrl", sha256, fetched_at::text AS "fetchedAt",
-             last_seen_at::text AS "lastSeenAt"
-      FROM ${snapshotId ? sql`snapshot` : sql`latest_snapshot`}
-      WHERE dataset_id = ${datasetId} AND resource_key = ${resourceKey}
-        ${snapshotId ? sql`AND id = ${snapshotId}::bigint` : sql``}
-    `);
-    const snapshot = snapshots.rows[0];
-    if (!snapshot) {
-      return null;
+export function queryDataset(env: Env, input: unknown) {
+  const options = Schema.decodeUnknownSync(DatasetQueryInput)(input);
+  return databaseEffect(env, async (db): Promise<DatasetEvidence> => {
+    const table = options.snapshotId ? snapshot : latestSnapshot;
+    const resources = await db
+      .select()
+      .from(table)
+      .where(
+        and(
+          eq(table.datasetId, options.datasetId),
+          options.snapshotId ? eq(table.id, BigInt(options.snapshotId)) : undefined,
+          options.resourceKey ? eq(table.resourceKey, options.resourceKey) : undefined,
+        ),
+      )
+      .limit(2);
+    if (!resources.length) throw new EvidenceNotFound("Dataset snapshot not found.");
+    if (resources.length > 1)
+      throw new QueryInputError("Choose a resourceKey or snapshotId from inspect_dataset.");
+    const resource = resources[0];
+    const [sample] = await db
+      .select({ data: sourceRow.data })
+      .from(sourceRow)
+      .where(eq(sourceRow.snapshotId, resource.id))
+      .orderBy(asc(sourceRow.rowNumber))
+      .limit(1);
+    const fields = describeFields(options.datasetId, sample?.data ?? {});
+    const filters: SQL[] = [eq(sourceRow.snapshotId, resource.id)];
+    if (options.afterRow) filters.push(sql`${sourceRow.rowNumber} > ${options.afterRow}`);
+    for (const filter of options.filters) {
+      const field = requireField(fields, filter.field);
+      const value = sql<string>`${sourceRow.data}->>${field.name}`;
+      if (filter.op === "eq") filters.push(eq(value, filter.value));
+      else if (filter.op === "ne") filters.push(ne(value, filter.value));
+      else if (filter.op === "contains") filters.push(ilike(value, `%${filter.value}%`));
+      else {
+        if (field.type !== "number" || !/^[+-]?[0-9]+([.][0-9]+)?$/.test(filter.value)) {
+          throw new QueryInputError(
+            "Numeric comparisons require a numeric field and decimal operand.",
+          );
+        }
+        const operators = { gt: sql`>`, gte: sql`>=`, lt: sql`<`, lte: sql`<=` };
+        filters.push(
+          sql`${numericValue(field.name)} ${operators[filter.op]} ${filter.value}::numeric`,
+        );
+      }
     }
-
-    const result = await db.execute<SourceRow>(sql`
-      SELECT row_number AS "rowNumber", data
-      FROM source_row
-      WHERE snapshot_id = ${snapshot.id}::bigint AND row_number > ${afterRow ?? 0}
-        ${filtersFor(input)}
-      ORDER BY row_number LIMIT ${limit + 1}
-    `);
-    const page = result.rows.slice(0, limit);
-    const rows = page.map((row) => evidenceRow(datasetId, row));
-    return {
-      snapshot,
-      query: { ...input, snapshotId: snapshot.id, limit },
-      rows,
-      nextAfterRow: result.rows.length > limit ? (page.at(-1)?.rowNumber ?? null) : null,
+    options.fields?.forEach((field) => requireField(fields, field));
+    let ordering = sql`${sourceRow.rowNumber} ASC`;
+    if (options.orderBy) {
+      const field = requireField(fields, options.orderBy.field);
+      const value =
+        field.type === "number" ? numericValue(field.name) : sql`${sourceRow.data}->>${field.name}`;
+      ordering = sql`${value} ${options.orderBy.direction === "asc" ? sql`ASC` : sql`DESC`} NULLS LAST, ${sourceRow.rowNumber} ASC`;
+    }
+    const where = and(...filters);
+    const rows = await db
+      .select({ rowNumber: sourceRow.rowNumber, data: sourceRow.data })
+      .from(sourceRow)
+      .where(where)
+      .orderBy(ordering)
+      .limit(options.limit)
+      .offset(options.offset);
+    const [counts] = await db
+      .select({ total: sql<number>`count(*)::int` })
+      .from(sourceRow)
+      .where(where);
+    const result: DatasetEvidence = {
+      snapshot: snapshotReference(resource),
+      query: options,
+      fields,
+      totalRows: counts.total,
+      rowsAreSample: options.offset > 0 || counts.total > rows.length,
+      rows: rows.map((row) => ({
+        rowNumber: row.rowNumber,
+        data: row.data,
+        selectedValues: options.fields
+          ? Object.fromEntries(options.fields.map((field) => [field, row.data[field]]))
+          : undefined,
+      })),
     };
+    if (options.aggregate) {
+      const { operation, field: name } = options.aggregate;
+      if (operation === "count")
+        result.aggregate = { operation, value: String(counts.total), status: "complete" };
+      else {
+        if (!name) throw new QueryInputError("This aggregation requires a field.");
+        const field = requireField(fields, name);
+        if (field.type !== "number")
+          throw new QueryInputError(
+            "Aggregate only a numeric measure, never a territory code or period.",
+          );
+        const value = numericValue(name);
+        const operations = {
+          sum: sql`sum(${value})`,
+          avg: sql`avg(${value})`,
+          min: sql`min(${value})`,
+          max: sql`max(${value})`,
+        };
+        const [aggregate] = await db
+          .select({
+            value: sql<string | null>`(${operations[operation]})::text`,
+            valid: sql<number>`count(${value})::int`,
+          })
+          .from(sourceRow)
+          .where(where);
+        const complete = aggregate.valid === counts.total;
+        result.aggregate = {
+          operation,
+          field: name,
+          unit: field.unit,
+          value: complete ? aggregate.value : null,
+          numericRows: aggregate.valid,
+          status: complete ? "complete" : "missing_numeric_values",
+        };
+      }
+    }
+    return result;
   });
 }

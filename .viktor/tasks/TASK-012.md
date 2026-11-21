@@ -34,3 +34,7 @@ Start Docker, run ingestion on a small source subset, and query catalogue/rows t
 ## Completion Notes
 
 When complete, set done to true in .viktor/tasks.json, append changes and actual validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Record external-access blockers explicitly.
+
+### Completed implementation
+
+Integrated the teammate's B-path connection and document API work, completed the typed catalogue/row tools, and verified Docker and Neon/Hyperdrive paths. Query contracts live in packages/contracts/src/database.ts. See .viktor/logs/LOG.md for live validation evidence.

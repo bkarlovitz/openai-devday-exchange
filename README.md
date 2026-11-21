@@ -1,6 +1,6 @@
 # Council Check
 
-A text-based council claim checker. TASK-001 provides a saved-submission workflow in the web app. Claim extraction and evidence research are implemented by subsequent tasks.
+A text-based council claim checker. The web app extracts traceable factual claims in English, Spanish, and Catalan. Stored official datasets are queryable through development evidence tools. Claim-to-evidence research and verdicts are the next integration.
 
 ## Run the app locally
 
@@ -11,9 +11,9 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:8787. Paste text, save it, and reload the resulting URL. The scaffold Workflow marks the submission as awaiting processing. Local submissions persist under the ignored Alchemy state directory in tooling/infra. Keep that directory to retain local data.
+Open http://localhost:8787. Paste text, start extraction, and reload the resulting URL. The Workflow publishes claims and per-chunk progress. Claims remain awaiting evidence research after extraction. Local submissions persist under the ignored Alchemy state directory in tooling/infra. Keep that directory to retain local data.
 
-Local development emulates Workers, R2, a SQLite Durable Object, and Workflows using Alchemy/Miniflare. The pinned Alchemy provider requires an account identity even in local mode, so the infrastructure script supplies a local-only emulator identity. Cloudflare, OpenAI, and database credentials are unnecessary for this task's local path.
+Local development emulates Workers, R2, a SQLite Durable Object, and Workflows using Alchemy/Miniflare. The pinned Alchemy provider requires an account identity even in local mode, so the infrastructure script supplies a local-only emulator identity. The app can start without Cloudflare credentials. Add OPENAI_API_KEY and ALCHEMY_PASSWORD to the ignored root .env for extraction. Docker supplies the optional local evidence database.
 
 The web assets are built when dev starts. For frontend hot reload, keep the main dev process running and start `npm run dev --workspace @council/web` in another terminal. Open Vite's URL. It proxies /api to port 8787. Rebuild or restart the main dev command to serve updated frontend assets on port 8787.
 
@@ -26,9 +26,9 @@ npm run build
 npm test
 ```
 
-Build creates the web assets and dry-runs Worker bundling. The test command discovers future application tests and succeeds when none exist. TASK-001's behavioral validation used the running local Worker and a browser, including response-loss replay with the same submission key.
+Build creates the web assets and dry-runs Worker bundling. The focused test suite covers traceable compound claims, supplied context, invented-quote rejection, and multi-chunk Unicode offsets. Live API and browser smoke checks cover the processing path.
 
-To deploy a development environment, authenticate with `npx alchemy login` or supply Cloudflare credentials in a root .env using .env.example. Set ALCHEMY_PASSWORD to encrypt deployment state, then run `npm run deploy:dev`. The account needs access to Workers, R2, Durable Objects, and Workflows. Alchemy provisions the bucket, bindings, Workflow, and SQLite Durable Object migration. Deployment credentials are server-side. Local and deployed data use separate stores.
+To deploy a development environment, configure OAuth with `npx alchemy configure` or supply Cloudflare credentials in a root .env using .env.example. Set ALCHEMY_PASSWORD to encrypt deployment state, then run `npm run deploy:dev`. The account needs access to Workers, R2, Durable Objects, and Workflows. Alchemy provisions the bucket, bindings, Workflow, and SQLite Durable Object migration. Deployment credentials are server-side. Set CLOUDFLARE_PROFILE in .env if the configured profile has a custom name. Local and deployed data use separate stores.
 
 The checked-in Wrangler configuration supports dry-run builds and standalone Wrangler local inspection. Alchemy owns infrastructure deployment. Both configurations pin compatibility date 2026-07-15 to match the pinned Alchemy emulator.
 
@@ -52,7 +52,7 @@ Reuse a submissionKey after a lost response. The same validated payload returns 
 
 ## Working on the next tasks
 
-See [build-plan.md](build-plan.md), [the task index](.viktor/tasks.json), and [the two-person plan](.viktor/team-plan.md). TASK-002 and TASK-012 can proceed in parallel after this scaffold.
+See [build-plan.md](build-plan.md), [the task index](.viktor/tasks.json), and [the two-person plan](.viktor/team-plan.md). The frontend handoff is in [.viktor/frontend-contract.md](.viktor/frontend-contract.md). TASK-003 can now connect extracted claims to evidence research.
 
 The adopted engineering standards and source revisions are in [docs/engineering](docs/engineering/stack.md). Fetch important version-matched library sources with `npm run vendor:sync` and inspect them with `npm run vendor:status`. They are ignored reference material under repos/.
 
@@ -187,7 +187,36 @@ curl -fsSG http://127.0.0.1:8787/api/dev/evidence/documents \
   --data-urlencode 'datasetId=minutes' --data-urlencode 'q=sessió ordinària'
 ```
 
-Con el `snapshotId` y `passageNumber` devueltos, recupera el mismo pasaje en `/api/dev/evidence/documents/<snapshotId>/<passageNumber>`. Las rutas de inspección solo se habilitan en el Worker local de Alchemy. Para un despliegue, `HYPERDRIVE_ORIGIN` configura el origen Neon mediante su URL directa de PostgreSQL.
+Con el `snapshotId` y `passageNumber` devueltos, recupera el mismo pasaje en `/api/dev/evidence/documents/<snapshotId>/<passageNumber>`. Las rutas de inspección se habilitan en el Worker local de Alchemy y en despliegues de desarrollo con ENABLE_EVIDENCE_DEBUG=true. Para un despliegue, `HYPERDRIVE_ORIGIN` configura el origen Neon mediante su URL directa de PostgreSQL.
+
+## Typed evidence tools
+
+Our query integration reuses the database/document helper added by the teammate's B-path merge. Local Alchemy defaults to the Docker connection above. A deployed Hyperdrive origin uses HYPERDRIVE_ORIGIN or DATABASE_URL. Python data preparation uses DATABASE_URL directly.
+
+The development API provides POST /api/dev/evidence/search, /inspect, and /query with the input schemas in packages/contracts/src/database.ts. GET /api/dev/evidence/catalogue retains the existing catalogue-list response. Document routes remain available after applying the teammate's document migrations and extraction commands.
+
+Search works without embeddings. Optional query vectors require text-embedding-3-small and 1536 dimensions. inspect_dataset returns available resources, fields, units, sample rows, and immutable snapshot references. For multi-resource datasets, choose a resourceKey or snapshotId explicitly. Continue pagination with the returned snapshotId.
+
+Example query body for POST /api/dev/evidence/query follows.
+
+```json
+{
+  "datasetId": "incasol",
+  "filters": [
+    { "field": "Codi territorial", "op": "eq", "value": "08019" },
+    { "field": "Àmbit territorial", "op": "eq", "value": "Municipi" },
+    { "field": "Tram de preus", "op": "eq", "value": "> 600 euros/mes" },
+    { "field": "Any", "op": "eq", "value": "2026" },
+    { "field": "Període", "op": "eq", "value": "abril-juny" }
+  ],
+  "aggregate": { "operation": "avg", "field": "Renda" },
+  "limit": 25
+}
+```
+
+Filters, fields, ordering, and aggregate operations are validated against the selected resource. Territory codes remain strings. Row data retains the full original JSON, including period/unit fields; optional fields also returns selectedValues. Results identify whether displayed rows are a sample. Aggregations cover all matched rows in the pinned snapshot. Missing numeric values produce a missing_numeric_values result with no numeric answer.
+
+The SQL baseline remains db/schema.sql, mirrored by apps/api/src/db/schema.ts. Keep additive migrations under db/migrations. Docker's init script runs only for a fresh volume; scripts/extract_documents.py --migrate-only applies the existing ordered migrations to either Docker or Neon using its migration ledger.
 
 Consulta las filas de Incasòl desde el Worker local:
 

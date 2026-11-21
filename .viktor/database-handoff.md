@@ -20,3 +20,7 @@ El identificador del snapshot viaja como string. El resultado incluye hash, URL,
 | INE 59061 | 11.424 observaciones, 1.714 con `Valor` nulo o ausente. Códigos de unidad, escala y periodo presentes. | Consultar por código de serie y año. Respetar nulos y el indicador de secreto. Mantener los códigos de unidad y escala hasta verificar su interpretación por serie. |
 
 En las versiones locales consultadas no aparecieron duplicados dentro del mismo recurso para ámbito/código/año/periodo/tramo (Incasòl), fecha/sección (padrón), expediente (turismo) ni serie/año/periodo (INE). Son comprobaciones del contenido cargado y deben repetirse si cambia el esquema de una fuente.
+
+## Implementación integrada
+
+El contrato operativo está en packages/contracts/src/database.ts y las funciones en apps/api/src/research/catalogue.ts y query-dataset.ts. La API de desarrollo ofrece POST /api/dev/evidence/search, /inspect y /query. La paginación usa offset y limit con el snapshotId devuelto. La respuesta conserva el JSON original en data y devuelve selectedValues cuando se solicitan campos concretos. La conexión Neon/Hyperdrive se ha comprobado con la misma consulta de referencia de Incasòl.
