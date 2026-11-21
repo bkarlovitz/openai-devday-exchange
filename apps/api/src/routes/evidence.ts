@@ -64,7 +64,7 @@ evidence.post("/query-dataset", async (c) => {
   const decoded = Schema.decodeUnknownEither(QueryDatasetInput, {
     onExcessProperty: "error",
   })(body);
-  if (decoded._tag === "Left" || (decoded.right.afterRow && !decoded.right.snapshotId)) {
+  if (decoded._tag === "Left") {
     return c.json({ error: "Invalid dataset query. Pagination requires a snapshot ID." }, 400);
   }
 
