@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LiveFact · YouTube",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "minimum_chrome_version": "116",
   "description": "Vuelve al momento de una afirmación y consulta su contexto mientras ves YouTube.",
   "permissions": ["storage", "sidePanel"],

@@ -54,19 +54,20 @@
     const status = statuses[item.status];
     const host = document.createElement("div");
     host.style.cssText =
-      "position:absolute;right:12px;top:12px;z-index:60;width:286px;max-width:calc(100% - 24px);pointer-events:auto";
+      "position:absolute;right:12px;top:12px;z-index:60;width:clamp(286px,46%,320px);max-width:calc(100% - 24px);pointer-events:auto";
     const root = host.attachShadow({ mode: "open" });
     const label = item.label || status.label;
     root.innerHTML = `<style>
-      button{display:block;width:100%;padding:10px 13px;border-radius:13px;border:1px solid var(--edge);border-inline-start:3px solid var(--state);box-sizing:border-box;
+      button{display:block;width:100%;padding:11px 14px;border-radius:13px;border:1px solid var(--edge);border-inline-start:4px solid var(--state);box-sizing:border-box;
       background:var(--wash);color:#302d27;box-shadow:0 2px 5px #221b1b16,0 6px 20px #221b1b26;font:600 13px/1.35 system-ui;text-align:left;cursor:pointer}
       button:focus-visible{outline:2px solid var(--state);outline-offset:2px}
       .top,.foot{display:flex;align-items:center;gap:6px}
-      .top{color:var(--state);font-size:11px;font-weight:700}
-      i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:var(--state);color:white;font:700 11px/1 system-ui}
+      .top{width:fit-content;max-width:100%;box-sizing:border-box;border-radius:14px;padding:3px 9px 3px 5px;
+      background:var(--state);color:#fff;font-size:12px;font-weight:700;line-height:1.3}
+      i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:#fff;color:var(--state);font:700 12px/1 system-ui}
       .subject{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;
-      overflow-wrap:anywhere;margin:5px 0 6px;font-size:14px;line-height:1.32}
-      .foot{font-size:10px;color:#554f46;font-variant-numeric:tabular-nums}
+      overflow-wrap:anywhere;margin:7px 0;font-size:16px;font-weight:680;line-height:1.28}
+      .foot{font-size:11px;color:#554f46;font-variant-numeric:tabular-nums}
       .action{margin-left:auto;color:var(--state)}
       @media(prefers-reduced-motion:no-preference){button{animation:enter .15s ease-out}@keyframes enter{from{opacity:0;transform:translateY(-3px)}}}
     </style><button type="button" aria-describedby="subject"><span class="top"><i aria-hidden="true"></i><span class="state"></span></span><span class="subject" id="subject"></span><span class="foot"><span class="origin"></span><span class="action"></span></span></button>`;
