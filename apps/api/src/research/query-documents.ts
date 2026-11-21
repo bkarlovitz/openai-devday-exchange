@@ -1,35 +1,31 @@
+import type {
+  DocumentPassage,
+  ReadDocumentPassageInput,
+  SearchDocumentsInput,
+} from "@council/contracts";
 import { sql } from "drizzle-orm";
 import { withEvidenceDb } from "../db/client";
-
-type DocumentPassage = {
-  datasetId: string;
-  snapshotId: string;
-  passageNumber: number;
-  pageNumber: number | null;
-  htmlLocation: string | null;
-  sourceUrl: string;
-  sha256: string;
-  text: string;
-};
 
 const fields = sql`
   s.dataset_id AS "datasetId", p.snapshot_id::text AS "snapshotId",
   p.passage_number AS "passageNumber", p.page_number AS "pageNumber",
   p.html_location AS "htmlLocation", s.resource_url AS "sourceUrl",
-  s.sha256, p.passage_text AS "text"
+  s.sha256, p.extraction_version AS "extractionVersion", p.passage_text AS "text"
 `;
 
-export function searchDocuments(binding: Hyperdrive, query: string, datasetId?: string) {
+export function searchDocuments(binding: Hyperdrive, input: SearchDocumentsInput) {
+  const { query, datasetId, snapshotId, limit = 10 } = input;
   return withEvidenceDb(binding, async (db) => {
     const result = await db.execute<DocumentPassage>(sql`
       SELECT ${fields}
       FROM source_document_passage p
-      JOIN latest_snapshot s ON s.id = p.snapshot_id
+      JOIN ${snapshotId ? sql`snapshot` : sql`latest_snapshot`} s ON s.id = p.snapshot_id
       CROSS JOIN plainto_tsquery('simple', ${query}) q
       WHERE p.search_vector @@ q
-        AND (${datasetId ?? null}::text IS NULL OR s.dataset_id = ${datasetId ?? null})
+        ${datasetId ? sql`AND s.dataset_id = ${datasetId}` : sql``}
+        ${snapshotId ? sql`AND s.id = ${snapshotId}::bigint` : sql``}
       ORDER BY ts_rank(p.search_vector, q) DESC, p.snapshot_id, p.passage_number
-      LIMIT 10
+      LIMIT ${limit}
     `);
     return result.rows;
   });
@@ -37,8 +33,7 @@ export function searchDocuments(binding: Hyperdrive, query: string, datasetId?: 
 
 export function readDocumentPassage(
   binding: Hyperdrive,
-  snapshotId: string,
-  passageNumber: number,
+  { snapshotId, passageNumber }: ReadDocumentPassageInput,
 ) {
   return withEvidenceDb(binding, async (db) => {
     const result = await db.execute<DocumentPassage>(sql`

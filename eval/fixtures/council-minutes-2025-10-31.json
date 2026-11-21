@@ -1,0 +1,15 @@
+{
+  "assertion": "El Consell Municipal de Barcelona va celebrar una sessió ordinària el 31 d’octubre de 2025.",
+  "query": {
+    "query": "sessió ordinària",
+    "datasetId": "minutes"
+  },
+  "expectedEvidence": {
+    "datasetId": "minutes",
+    "sourceUrl": "https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf",
+    "sha256": "88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9",
+    "pageNumber": 1,
+    "extractionVersion": "1",
+    "quote": "SESSIÓ ORDINÀRIA DE 31 D'OCTUBRE DE 2025"
+  }
+}

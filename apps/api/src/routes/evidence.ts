@@ -1,6 +1,7 @@
+import { ReadDocumentPassageInput, SearchDocumentsInput } from "@council/contracts";
 import { Hono } from "hono";
 import type { Context } from "hono";
-import { Effect, ParseResult } from "effect";
+import { Effect, ParseResult, Schema } from "effect";
 import type { DatabaseError } from "../db/client";
 import {
   EvidenceNotFound,
@@ -114,24 +115,26 @@ evidence.post("/query", async (c) => {
 });
 
 evidence.get("/documents", async (c) => {
-  const query = c.req.query("q")?.trim();
-  if (!query || query.length > 200) {
-    return c.json({ error: "Provide a query between 1 and 200 characters." }, 400);
+  const decoded = Schema.decodeUnknownEither(SearchDocumentsInput)({
+    query: c.req.query("q"),
+    datasetId: c.req.query("datasetId"),
+    snapshotId: c.req.query("snapshotId"),
+  });
+  if (decoded._tag === "Left") {
+    return c.json({ error: "Invalid document search." }, 400);
   }
-  return c.json(await searchDocuments(c.env.EVIDENCE_DB!, query, c.req.query("datasetId")));
+  return c.json(await searchDocuments(c.env.EVIDENCE_DB!, decoded.right));
 });
 
 evidence.get("/documents/:snapshotId/:passageNumber", async (c) => {
   const { snapshotId, passageNumber } = c.req.param();
-  const number = Number(passageNumber);
-  if (
-    !/^[1-9]\d{0,18}$/.test(snapshotId) ||
-    BigInt(snapshotId) > 9223372036854775807n ||
-    !/^[1-9]\d{0,9}$/.test(passageNumber) ||
-    number > 2147483647
-  ) {
+  const decoded = Schema.decodeUnknownEither(ReadDocumentPassageInput)({
+    snapshotId,
+    passageNumber: /^[1-9]\d{0,9}$/.test(passageNumber) ? Number(passageNumber) : undefined,
+  });
+  if (decoded._tag === "Left") {
     return c.json({ error: "Invalid snapshot or passage identifier." }, 400);
   }
-  const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, snapshotId, number);
+  const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, decoded.right);
   return passage ? c.json(passage) : c.json({ error: "Passage not found." }, 404);
 });
