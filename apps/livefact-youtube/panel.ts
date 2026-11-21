@@ -1,3 +1,4 @@
+import { youtubeVideoId } from "@council/contracts";
 import type { Claim, ClaimDetail } from "@council/contracts";
 
 type Status = "pending" | "supported" | "context" | "contradicted" | "mixed" | "unavailable";
@@ -498,8 +499,71 @@ capture.addEventListener("click", () => {
   capture.disabled = true;
   void send({ type: "capture", backend: backend.value });
 });
-void chrome.storage.local.get({ enabled: true, backend: "local" }).then((settings) => {
+const linkForm = el<HTMLFormElement>("link-form");
+const linkUrl = el<HTMLInputElement>("link-url");
+linkForm.closest("details")!.addEventListener("toggle", () => {
+  if (!linkUrl.value && lastSnapshot?.ready)
+    linkUrl.value = "https://www.youtube.com/watch?v=" + lastSnapshot.videoKey;
+});
+linkForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const status = el("link-message");
+  const button = linkForm.querySelector("button")!;
+  const id = youtubeVideoId(linkUrl.value.trim());
+  if (!id) {
+    status.textContent = "Introduce un enlace watch o youtu.be válido.";
+    return;
+  }
+  const url = new URL(linkUrl.value);
+  const raw = url.searchParams.get("t") ?? url.searchParams.get("start");
+  const offset = raw?.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+  const at = offset
+    ? Number(offset[1] || 0) * 3600 + Number(offset[2] || 0) * 60 + Number(offset[3] || 0)
+    : undefined;
+  const same = lastSnapshot?.ready && id === lastSnapshot.videoKey;
+  const start = el<HTMLInputElement>("link-start").value;
+  const fromSeconds = start
+    ? Number(start)
+    : (at ?? (same ? Math.floor(lastSnapshot!.clock.position) : 0));
+  if (fromSeconds >= 86400) {
+    status.textContent = "El inicio elegido está fuera de rango.";
+    return;
+  }
+  const targetBackend = backend.value;
+  button.disabled = true;
+  status.textContent = "Abriendo el fragmento…";
+  try {
+    let target = activeTab;
+    if (!same) {
+      target = (
+        await chrome.tabs.create({
+          url: "https://www.youtube.com/watch?v=" + id + "&t=" + fromSeconds + "s",
+        })
+      ).id;
+    }
+    for (let i = 0; i < 50; i++) {
+      const snapshot = await send<Snapshot>({ type: "snapshot" }, target);
+      if (snapshot?.ready && snapshot.videoKey === id) {
+        const accepted = await send<boolean>(
+          { type: "importLink", backend: targetBackend, videoId: id, fromSeconds },
+          target,
+        );
+        status.textContent = accepted
+          ? "Tramo enviado al servidor."
+          : "Comprueba el intervalo y espera a que termine el análisis activo.";
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    status.textContent = "El reproductor todavía no está listo. Vuelve a intentarlo.";
+  } catch {
+    status.textContent = "No se pudo abrir el vídeo. Vuelve a intentarlo.";
+  } finally {
+    button.disabled = false;
+  }
+});
+void chrome.storage.local.get({ enabled: true, backend: "team" }).then((settings) => {
   enabled.checked = settings.enabled !== false;
-  backend.value = settings.backend === "team" ? "team" : "local";
+  backend.value = settings.backend === "local" ? "local" : "team";
   void watch();
 });

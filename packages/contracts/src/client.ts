@@ -1,5 +1,6 @@
 import { Effect, Schema } from "effect";
 import { ApiError, Run, SubmissionReceipt } from "./runs";
+import type { YoutubeSubmission } from "./youtube";
 import type { Submission } from "./runs";
 import { ClaimDetail } from "./claims";
 
@@ -25,6 +26,20 @@ export function createApiClient(baseUrl = "") {
             }),
           ),
         catch: (cause) => (cause instanceof Error ? cause : new Error("Could not save your text.")),
+      });
+    },
+    saveYoutubeSubmission(submission: YoutubeSubmission) {
+      return Effect.tryPromise({
+        try: async () =>
+          Schema.decodeUnknownSync(SubmissionReceipt)(
+            await request("/api/runs/youtube", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(submission),
+              signal: AbortSignal.timeout(55_000),
+            }),
+          ),
+        catch: (cause) => (cause instanceof Error ? cause : new Error("YouTube import failed.")),
       });
     },
     loadClaim(runId: string, claimId: string, signal: AbortSignal) {

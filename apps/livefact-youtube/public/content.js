@@ -299,7 +299,9 @@
       chrome.runtime.sendMessage({ type, backend: jobState.backend, ...data });
     try {
       if (!jobState.runId) {
-        const receipt = await request("submit", { submission: jobState.submission });
+        const receipt = await request(jobState.youtube ? "submitYoutube" : "submit", {
+          submission: jobState.submission,
+        });
         if (job !== jobState) return;
         if (!receipt?.value) throw new Error(receipt?.error || "El servidor no respondió.");
         jobState.runId = receipt.value.runId;
@@ -368,7 +370,7 @@
 
   function startCheck(backend, batch = captions) {
     if (job) return;
-    const saved = retry?.backend === backend ? retry : null;
+    const saved = !retry?.youtube && retry?.backend === backend ? retry : null;
     if (!saved && !batch.length) {
       setFeedback("Activa los subtítulos CC y reproduce unos segundos antes de analizar.");
       return;
@@ -413,11 +415,55 @@
         feedback,
         busy: Boolean(job),
         live: Boolean(liveBackend),
-        retry: retry?.backend ?? null,
+        retry: retry?.youtube ? null : (retry?.backend ?? null),
         entries: [...timeline.values()].reverse(),
       });
     }
     if (!videoKey || !video) return;
+    if (message.type === "importLink") {
+      if (message.videoId !== videoKey || job || liveBackend) {
+        reply(false);
+        return;
+      }
+      const fromSeconds = message.fromSeconds;
+      const toSeconds = Math.min(
+        fromSeconds + 30,
+        Math.floor(clock(video).end ?? fromSeconds + 30),
+        86400,
+      );
+      if (!Number.isInteger(fromSeconds) || fromSeconds < 0 || toSeconds <= fromSeconds) {
+        setFeedback("El inicio elegido está fuera del vídeo.");
+        reply(false);
+        return;
+      }
+      const reuse =
+        retry?.youtube &&
+        retry.backend === message.backend &&
+        retry.submission.fromSeconds === fromSeconds &&
+        retry.submission.toSeconds === toSeconds;
+      job = reuse
+        ? retry
+        : {
+            backend: message.backend,
+            youtube: true,
+            submission: {
+              url: "https://www.youtube.com/watch?v=" + videoKey,
+              fromSeconds,
+              toSeconds,
+              submissionKey: crypto.randomUUID(),
+              explanationLanguage: "es",
+            },
+          };
+      retry = job;
+      savedClipArmed = false;
+      demo = null;
+      for (const [id, item] of timeline) if (item.demo || item.saved) timeline.delete(id);
+      notices = [];
+      dismiss();
+      setFeedback("Importando los subtítulos del enlace…");
+      void check(job);
+      reply(true);
+    }
     if (message.type === "live") {
       if (liveBackend) {
         liveBackend = job = retry = null;
@@ -434,7 +480,7 @@
         captions = [];
         visibleCaption = "";
         setFeedback("Reproduce el vídeo con CC. Esperando subtítulos…");
-        if (retry && retry.backend === liveBackend) startCheck(liveBackend);
+        if (retry && !retry.youtube && retry.backend === liveBackend) startCheck(liveBackend);
         else retry = null;
       }
       revision++;
