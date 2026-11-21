@@ -2,6 +2,12 @@
 
 Updated 2026-11-21. Code baseline: `32b65c1` on `main`. This is a working hackathon system, with deliberate limits described below. Start here, then use the linked implementation and task specs for detail.
 
+## Romina's project closeout
+
+Closed on Romina's side on 2026-11-21, at her instruction after the hackathon ended. Her contribution is complete. The code, brand assets, documentation, and engineering handoff are retained in this repository. Further development on her side requires a new request.
+
+Brian's deployment verification remains a requested team follow-up, tracked in the next section. Its completion and Brian's acceptance are unconfirmed. This closeout records Romina's finished involvement; it does not establish that the latest UI is deployed. The technical backlog below remains available for any future team work.
+
 ## For Brian: confirm the latest UI deployment
 
 Requested by Romina on 2026-11-21. Status: awaiting verification.
