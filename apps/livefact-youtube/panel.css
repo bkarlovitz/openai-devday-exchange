@@ -492,3 +492,23 @@ select {
   border-color: var(--ink);
   color: var(--paper);
 }
+
+.notice-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+#preview-notice {
+  background: var(--paper);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 650;
+}
+#preview-notice:enabled:hover {
+  background: var(--wash);
+}

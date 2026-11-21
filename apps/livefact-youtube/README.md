@@ -10,6 +10,8 @@ Para compilar desde el repositorio, ejecuta `npm ci` y `npm run build --workspac
 
 ## Probar la extensión
 
+En un vídeo de YouTube, activa **Avisos** y pulsa **Probar aviso** para ver la última tarjeta o, si la lista está vacía, un ejemplo identificado. El aviso también funciona en pausa.
+
 - En **Opciones y ensayo → Probar con un ejemplo**, reproduce el vídeo para ver avisos y marcas de ejemplo. La cronología incluye un dato respaldado, un dato contradicho y un argumento que necesita contexto. Todos están identificados como ensayo.
 - **Iniciar análisis en directo** envía los nuevos subtítulos visibles al servidor elegido por bloques mientras avanza el vídeo. Funciona con el panel cerrado y se detiene desde el mismo botón o al cambiar de vídeo. Los avisos aparecen cuando el backend detecta o evalúa una afirmación.
 - **Por enlace** importa un tramo de hasta 180 segundos mediante `POST /api/runs/youtube` del equipo. Puedes indicar inicio y fin en segundos. Con fin vacío analiza hasta 30 segundos. El inicio puede venir del tiempo del enlace o del reproductor. Funciona con los CC del reproductor apagados si el importador puede recuperar una pista. El modo en directo sigue leyendo los CC visibles.
