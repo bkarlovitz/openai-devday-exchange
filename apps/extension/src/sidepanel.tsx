@@ -57,7 +57,7 @@ function ClaimResult({
   return (
     <details className={`result-item result-${claim.verdict ?? claim.status}`}>
       <summary>
-        <ClaimPreview claim={claim} />
+        <ClaimPreview claim={claim} showExpression />
       </summary>
       <ClaimCard claim={claim} detail={state.detail} detailError={state.error} />
       {claim.status === "error" ? (
@@ -219,7 +219,11 @@ function Results({
         ))}
         {!claims.length && !state.error ? (
           <div className="empty-state">
-            {!terminal ? <LoaderCircle size={23} className="spin" /> : <BadgeCheck size={27} />}
+            {terminal ? (
+              <BadgeCheck size={27} />
+            ) : (
+              <span className="claim-reaction" data-expression="listening" aria-hidden="true" />
+            )}
             <p>
               {terminal
                 ? run?.extraction?.warnings?.length

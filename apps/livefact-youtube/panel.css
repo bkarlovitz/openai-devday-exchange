@@ -1,4 +1,5 @@
 @import "../../packages/ui/src/brand-fonts.css";
+@import "../../packages/ui/src/pigeon-expressions.css";
 
 :root {
   color-scheme: light;

@@ -49,6 +49,8 @@ Keep light reading surfaces for product UI. For campaign scenes, use the Night B
 
 The exhibit arrives before the reaction. Follow the [motion notes](night-broadcast/Motion/Timing%20and%20performance.txt) for stamp, held gavel and splat. The contradicted sequence runs about 3 seconds, with the ivory splat at about 2.2 seconds on the edge of the claim bubble. Keep the claim, verdict and sources readable. For reduced motion, use one static pose and show the result immediately. Keep repeat reactions compact and make the performance legible in silence.
 
+The two Chrome panels use compact portraits from the [original expression sheet](night-broadcast/References/13-character-expressions.png). Attentive listening accompanies gathering evidence, and one-eye reading accompanies examining it. A supported result gets the stamp triumph, the two uncertainty labels share the over-the-glasses peer, and a contradicted result gets the discrepancy reaction. The portraits are static and decorative. Verdict text, symbols and sources remain available.
+
 ## Product surfaces and concepts
 
 - **Chrome side panel:** prioritize the quote, label, finding and source in a single column. Allow expansion for context and evidence. Check at 320 and 400 CSS px with keyboard focus and long multilingual content.
@@ -58,3 +60,5 @@ The exhibit arrives before the reaction. Follow the [motion notes](night-broadca
 ## Local validation
 
 Validated on 2026-11-21 from baseline `81f6e51` with the identity and focus changes in this branch. The web build, both extension builds, lint, type checking, and all 87 automated tests passed. A browser check exercised the text side panel at 320 and 400 CSS px with isolated fictional fixtures. It covered all four verdicts, checking, technical failure, not checkable, keyboard focus and expansion, visible cited sources, a result with no source, and Spanish and Catalan text wrapping. The motion section describes the intended performance for future animation work.
+
+The expression update was checked in both Chrome panels at 320 and 400 CSS px. The checks covered all five portraits, the reading transition, four distinct verdict labels and markers, source links, keyboard expansion, and the absence of portraits for technical failures and noncheckable claims. Lint, type checking, the web and extension builds, and all 87 automated tests passed.

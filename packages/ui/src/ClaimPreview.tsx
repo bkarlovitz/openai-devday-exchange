@@ -1,23 +1,39 @@
-import type { Claim } from "@council/contracts";
+import type { Claim, Verdict } from "@council/contracts";
 import { verdictLabels, verdictPhrases } from "./AssessmentView";
 
-export function ClaimPreview({ claim }: { claim: Claim }) {
-  const pending = ["awaiting_research", "researching", "assessing"].includes(claim.status);
-  const symbol = pending
-    ? "···"
-    : claim.verdict === "supported"
-      ? "✓"
-      : claim.verdict === "contradicted"
-        ? "×"
-        : claim.verdict === "mixed_evidence"
-          ? "±"
-          : claim.verdict === "insufficient_evidence"
-            ? "?"
-            : "—";
-  const label = pending
-    ? "Analyzing…"
-    : claim.verdict
-      ? verdictLabels[claim.verdict]
+const verdictVisuals: Record<Verdict, { expression: string; symbol: string }> = {
+  supported: { expression: "supported", symbol: "✓" },
+  contradicted: { expression: "contradicted", symbol: "×" },
+  mixed_evidence: { expression: "uncertain", symbol: "±" },
+  insufficient_evidence: { expression: "uncertain", symbol: "?" },
+};
+
+const gathering = { expression: "listening", label: "Gathering evidence…" };
+const checkingStages: Partial<Record<Claim["status"], typeof gathering>> = {
+  awaiting_research: gathering,
+  researching: gathering,
+  assessing: { expression: "reading", label: "Examining evidence…" },
+};
+
+export function ClaimPreview({
+  claim,
+  showExpression = false,
+}: {
+  claim: Claim;
+  showExpression?: boolean;
+}) {
+  const checking = checkingStages[claim.status];
+  const verdict = claim.verdict;
+  const visual = verdict ? verdictVisuals[verdict] : undefined;
+  const expression =
+    checking?.expression ?? (claim.status === "complete" ? visual?.expression : undefined);
+  const symbol = checking ? "···" : (visual?.symbol ?? "—");
+  const label = checking
+    ? showExpression
+      ? checking.label
+      : "Analyzing…"
+    : verdict
+      ? verdictLabels[verdict]
       : claim.status === "error"
         ? "Checking failed"
         : "Not checkable";
@@ -40,14 +56,18 @@ export function ClaimPreview({ claim }: { claim: Claim }) {
       </span>
       <span className="preview-main">
         <span className="preview-quote">“{claim.quote}”</span>
-        <span className="category-symbol" aria-hidden="true">
-          {symbol}
+        <span
+          className="claim-reaction"
+          data-expression={showExpression ? expression : undefined}
+          aria-hidden="true"
+        >
+          <span className="category-symbol reaction-symbol">{symbol}</span>
         </span>
       </span>
       <span className="preview-bottom">
         <span className="status-chip">{label}</span>
-        {!pending && claim.verdict ? (
-          <span className="verdict-phrase">{verdictPhrases[claim.verdict]}</span>
+        {!checking && verdict ? (
+          <span className="verdict-phrase">{verdictPhrases[verdict]}</span>
         ) : null}
         <span className="preview-more">
           View analysis <span aria-hidden="true">⌄</span>
