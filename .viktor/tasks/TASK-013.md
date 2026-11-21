@@ -34,3 +34,7 @@ Extract the stored sample minutes PDF and inspect a cited passage against its or
 ## Completion Notes
 
 When complete, set done to true in .viktor/tasks.json, append changes and actual validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Record external-access blockers explicitly.
+
+## Delivered hackathon verification
+
+The initial stored-document path is live on Cloudflare and Neon. The sample council page and 31 October 2025 minutes are loaded and extracted; other linked documents are not implied to be loaded. A real provider-backed run checked file 25XF0640 and cited snapshot 6, passage/page 8 of the minutes. See the task log for local extraction/history checks and the final live run. Deep-loop registration remains part of TASK-005/TASK-011.

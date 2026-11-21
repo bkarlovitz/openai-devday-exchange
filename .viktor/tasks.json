@@ -66,7 +66,7 @@
     "id": "TASK-013",
     "title": "Extract and retrieve citable passages from stored council documents",
     "milestone": "M5: Barcelona source coverage",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-013.md"
   },
   {
