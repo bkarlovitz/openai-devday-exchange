@@ -4,6 +4,7 @@ import {
   customType,
   check,
   integer,
+  index,
   jsonb,
   pgTable,
   pgView,
@@ -65,4 +66,31 @@ export const sourceDocument = pgTable("source_document", {
     .references(() => snapshot.id),
   contentType: text("content_type").notNull(),
   content: bytea("content").notNull(),
+  extractionStatus: text("extraction_status").notNull().default("pending"),
+  extractionVersion: text("extraction_version"),
+  extractedAt: timestamp("extracted_at", { withTimezone: true }),
+  extractionError: text("extraction_error"),
 });
+
+const tsvector = customType<{ data: string }>({ dataType: () => "tsvector" });
+
+export const sourceDocumentPassage = pgTable(
+  "source_document_passage",
+  {
+    snapshotId: bigint("snapshot_id", { mode: "bigint" })
+      .notNull()
+      .references(() => sourceDocument.snapshotId),
+    passageNumber: integer("passage_number").notNull(),
+    pageNumber: integer("page_number"),
+    htmlLocation: text("html_location"),
+    passageText: text("passage_text").notNull(),
+    extractionVersion: text("extraction_version").notNull(),
+    searchVector: tsvector("search_vector").generatedAlwaysAs(
+      sql`to_tsvector('simple', passage_text)`,
+    ),
+  },
+  (table) => [
+    primaryKey({ columns: [table.snapshotId, table.passageNumber] }),
+    index("source_document_passage_search_idx").using("gin", table.searchVector),
+  ],
+);

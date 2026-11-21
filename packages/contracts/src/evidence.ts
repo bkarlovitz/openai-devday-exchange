@@ -36,6 +36,9 @@ export const Evidence = Schema.Struct({
     }),
   ),
   pageNumber: Schema.optional(Schema.Number),
+  passageNumber: Schema.optional(Schema.Number),
+  htmlLocation: Schema.optional(Schema.String),
+  extractionVersion: Schema.optional(Schema.String),
 });
 export type Evidence = typeof Evidence.Type;
 

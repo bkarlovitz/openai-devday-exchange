@@ -8,6 +8,7 @@ import {
 import { sql } from "drizzle-orm";
 import { Schema } from "effect";
 import { databaseEffect } from "../db/client";
+import { latestSnapshot, snapshot, sourceDocument, sourceDocumentPassage } from "../db/schema";
 import type { Env } from "../env";
 import { EvidenceNotFound } from "./catalogue";
 
@@ -28,8 +29,8 @@ export function searchDocuments(env: Env, input: unknown) {
   return databaseEffect(env, async (db) => {
     const result = await db.execute<DocumentPassage>(sql`
       SELECT ${fields}
-      FROM source_document_passage p
-      JOIN ${snapshotId ? sql`snapshot` : sql`latest_snapshot`} s ON s.id = p.snapshot_id
+      FROM ${sourceDocumentPassage} p
+      JOIN ${snapshotId ? snapshot : latestSnapshot} s ON s.id = p.snapshot_id
       CROSS JOIN plainto_tsquery('simple', ${query}) q
       WHERE p.search_vector @@ q
         ${datasetId ? sql`AND s.dataset_id = ${datasetId}` : sql``}
@@ -48,8 +49,8 @@ export function readDocumentPassage(env: Env, input: unknown) {
   return databaseEffect(env, async (db) => {
     const result = await db.execute<DocumentPassage>(sql`
       SELECT ${fields}
-      FROM source_document_passage p
-      JOIN snapshot s ON s.id = p.snapshot_id
+      FROM ${sourceDocumentPassage} p
+      JOIN ${snapshot} s ON s.id = p.snapshot_id
       WHERE p.snapshot_id = ${snapshotId}::bigint AND p.passage_number = ${passageNumber}
     `);
     const passage = result.rows[0];
@@ -68,9 +69,9 @@ export function inspectDocument(env: Env, input: unknown) {
         s.resource_url AS "sourceUrl", s.sha256, d.content_type AS "contentType",
         d.extraction_status AS "status", d.extraction_version AS "extractionVersion",
         d.extracted_at::text AS "extractedAt",
-        (SELECT count(*)::int FROM source_document_passage p WHERE p.snapshot_id = s.id)
+        (SELECT count(*)::int FROM ${sourceDocumentPassage} p WHERE p.snapshot_id = s.id)
           AS "passageCount"
-      FROM source_document d JOIN snapshot s ON s.id = d.snapshot_id
+      FROM ${sourceDocument} d JOIN ${snapshot} s ON s.id = d.snapshot_id
       WHERE d.snapshot_id = ${snapshotId}::bigint
     `);
     const document = result.rows[0];

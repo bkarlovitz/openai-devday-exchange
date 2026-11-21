@@ -40,3 +40,10 @@ export const datasetGuidance: Record<string, string> = {
   "ine-59061":
     "Select the exact COD series and Anyo. Retain FK_Unidad and FK_Escala. Valor is an index or variation defined by its series, never an average rent in euros. Secreto or missing Valor cannot establish a value.",
 };
+
+// The council minutes can contain decisions in any of these policy areas.
+export const documentCollections: Readonly<Record<string, { datasetId: string; title: string }>> = {
+  housing: { datasetId: "minutes", title: "Barcelona City Council minutes" },
+  tourism: { datasetId: "minutes", title: "Barcelona City Council minutes" },
+  municipal: { datasetId: "minutes", title: "Barcelona City Council minutes" },
+};
