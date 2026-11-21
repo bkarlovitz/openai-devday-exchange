@@ -1,0 +1,25 @@
+{
+  "assertion": "La versió consultada del registre municipal conté 845 registres d’habitatges d’ús turístic a Ciutat Vella.",
+  "query": {
+    "datasetId": "tourist-flats",
+    "resourceKey": "b32fa7f6-d464-403b-8a02-0292a64883bf",
+    "filters": [
+      {
+        "field": "CODI_DISTRICTE",
+        "op": "eq",
+        "value": "01"
+      }
+    ],
+    "aggregate": {
+      "operation": "count"
+    },
+    "limit": 1
+  },
+  "expectedEvidence": {
+    "sha256": "5f0fd04393debc7a7ea07c5fdc89f7d69e5ba95ea93213b5b5be0b45dc62440c",
+    "resourceUrl": "https://opendata-ajuntament.barcelona.cat/data/dataset/c748799e-1079-44b1-9e60-88d936a3fe70/resource/b32fa7f6-d464-403b-8a02-0292a64883bf/download",
+    "fetchedAt": "2026-11-21T11:17:27.681Z",
+    "count": 845
+  },
+  "scope": "Recuento del CSV descargado. El snapshot fija la versión y no proporciona una fecha histórica de vigencia."
+}

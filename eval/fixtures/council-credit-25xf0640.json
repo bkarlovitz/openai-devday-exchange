@@ -1,0 +1,15 @@
+{
+  "assertion": "El Ple va aprovar per unanimitat el reconeixement de crèdit de 1.040 euros de l’expedient 25XF0640.",
+  "query": {
+    "query": "25XF0640",
+    "datasetId": "minutes"
+  },
+  "expectedEvidence": {
+    "sourceUrl": "https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf",
+    "sha256": "88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9",
+    "pageNumber": 8,
+    "extractionVersion": "1",
+    "quote": "11. – (25XF0640) APROVAR l'expedient 25XF0640 de reconeixement de crèdit per un \nimport de 1.040 euros, atesa la necessitat de regularitzar les despeses \ncorresponents a dietes de l'any 2024 i no reconegudes durant l'exercici 2024. \nAUTORITZAR, DISPOSAR i RECONÈIXER l'obligació de la despesa a favor de la Sra. \nM. C. R. per un import de 1.040 euros, amb càrrec al pressupost general de \nl'exercici 2025 i l'aplicació pressupostària D/0607/23001/91211. \nS’APROVA, per unanimitat, el dictamen precedent."
+  },
+  "scope": "El acta acredita la aprobación del dictamen y el reconocimiento de crédito. Un justificante de pago sería necesario para acreditar un pago efectivo."
+}
