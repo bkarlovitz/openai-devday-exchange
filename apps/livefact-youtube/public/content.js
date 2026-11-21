@@ -6,6 +6,49 @@
   let notices = [];
   let enabled = false;
   let noticeHost, noticeTimer;
+  let soundEnabled = false;
+  let noticeAudio;
+
+  async function playNoticeSound(item, host) {
+    const video = currentVideo();
+    if (
+      !soundEnabled ||
+      item.status === "pending" ||
+      item.status === "unavailable" ||
+      !video ||
+      video.muted ||
+      !video.volume ||
+      document.hidden ||
+      !navigator.userActivation.hasBeenActive
+    )
+      return;
+    noticeAudio ??= new AudioContext();
+    if (noticeAudio.state !== "running") await noticeAudio.resume();
+    if (noticeHost !== host || !enabled || !soundEnabled || video.muted || document.hidden) return;
+    const start = noticeAudio.currentTime + 0.01;
+    const voice = noticeAudio.createOscillator();
+    const volume = noticeAudio.createGain();
+    const peak = 0.12 * video.volume;
+    if (!peak) return;
+    voice.type = "sine";
+    voice.frequency.setValueAtTime(510, start);
+    voice.frequency.exponentialRampToValueAtTime(425, start + 0.12);
+    voice.frequency.setValueAtTime(465, start + 0.16);
+    voice.frequency.exponentialRampToValueAtTime(355, start + 0.4);
+    volume.gain.setValueAtTime(0, start);
+    volume.gain.linearRampToValueAtTime(peak, start + 0.025);
+    volume.gain.linearRampToValueAtTime(0, start + 0.14);
+    volume.gain.setValueAtTime(0, start + 0.16);
+    volume.gain.linearRampToValueAtTime(peak * 0.75, start + 0.19);
+    volume.gain.linearRampToValueAtTime(0, start + 0.42);
+    voice.connect(volume).connect(noticeAudio.destination);
+    voice.onended = () => {
+      voice.disconnect();
+      volume.disconnect();
+    };
+    voice.start(start);
+    voice.stop(start + 0.43);
+  }
   let demo, job, retry;
   let liveBackend = null;
   let replayUntil = -1;
@@ -109,6 +152,7 @@
     });
     parent.append(host);
     noticeHost = host;
+    void playNoticeSound(item, host).catch(() => {});
     function scheduleDismiss() {
       clearTimeout(noticeTimer);
       if (host.matches(":hover") || root.activeElement) return;
@@ -582,7 +626,9 @@
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== "local" || !changes.enabled) return;
+    if (area !== "local") return;
+    if (changes.noticeSound) soundEnabled = changes.noticeSound.newValue === true;
+    if (!changes.enabled) return;
     enabled = changes.enabled.newValue;
     revision++;
     if (!enabled) {
@@ -590,8 +636,9 @@
       dismiss();
     }
   });
-  chrome.storage.local.get({ enabled: true }).then((settings) => {
+  chrome.storage.local.get({ enabled: true, noticeSound: false }).then((settings) => {
     enabled = settings.enabled;
+    soundEnabled = settings.noticeSound === true;
     tick();
   });
   setInterval(tick, 300);
