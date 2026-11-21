@@ -26,7 +26,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-012; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-002, TASK-012. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Add research files under apps/api/src. This milestone completes after TASK-004 with real assessments. Model/account/tool compatibility is explicitly verified here; record any necessary Responses model substitution.
 

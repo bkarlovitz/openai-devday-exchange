@@ -21,7 +21,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-006; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-006. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Use RunCoordinator manifest ownership and immutable per-claim artifacts from the architecture. Counting Unicode characters must be consistent between client and API. Explicitly retain every occurrence when deduplicating.
 

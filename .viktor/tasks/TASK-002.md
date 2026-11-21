@@ -25,7 +25,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-001; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-001. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Extend TASK-001 endpoints and Workflow. Keep source offsets anchored to immutable original text. Test malformed structured output rather than trusting provider output.
 

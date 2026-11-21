@@ -23,7 +23,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-007; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-007. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Add services/explanation-language.ts and shared language contracts. This task builds on the working research and retry paths rather than rerunning source searches to translate.
 

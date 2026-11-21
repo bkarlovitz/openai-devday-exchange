@@ -26,7 +26,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-004; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-004. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Use Workflow checkpoints around claim work. Persist budget state outside the replayable model/tool loop so restarts cannot reset allowances. Do not equate high classification confidence with evidential sufficiency.
 

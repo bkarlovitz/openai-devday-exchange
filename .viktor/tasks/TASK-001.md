@@ -25,7 +25,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on None; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — None. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 The greenfield project needs one real request and storage path before AI work. All listed paths are new. Follow .viktor/architecture.md for repository layout and scripts.
 

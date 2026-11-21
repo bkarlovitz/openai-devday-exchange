@@ -16,15 +16,15 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 - Add a small human-reviewed evaluation set under eval/ spanning en/es/ca, all four verdicts, all initial topics, and a general-topic claim. Record expected quote/claim, source evidence, and assessment rationale without model self-grading.
 - Add an eval command reporting extraction misses, unsupported quotes/citations, verdict agreement, and research-limit behavior separately. Record live-source retrieval dates and distinguish network/model errors from factual disagreements.
-- Use Playwright for the web submission-to-result path with controlled provider fixtures, including partial failure/retry and language switching. Perform the extension manual smoke checks from TASK-010 with the deployed API.
+- Use Playwright for the web submission-to-result path with controlled provider fixtures, including partial failure/retry and language switching. Perform the extension manual smoke checks from TASK-010 with the deployed API, including retry and language switching after TASK-006 and TASK-008.
 - Run build/typecheck/lint/tests, deploy to a Cloudflare development environment with Alchemy, verify required secrets/bindings and browser CORS, and build an unpacked extension targeting that environment.
 - Update README.md with exact local/dev commands, extension installation, model configuration, budget settings, known limitations, and evaluation results. Fix discovered blockers before marking this task complete.
 
-- Include local ingestion, repeat loads, schema migration, document extraction, and deployed Neon-through-Hyperdrive retrieval in the final checks. Evaluate at least one stored-row numerical comparison and one stored-document factual claim. Record database and source versions with evaluation results.
+- Include local ingestion, repeat loads, schema migration, document extraction, and deployed Neon-through-Hyperdrive retrieval in the final checks. Evaluate at least one stored-row numerical comparison and one stored-document factual claim. Record database and source versions with evaluation results. Verify document-tool registration in the deep-research loop and action accounting after TASK-005 and TASK-013 merge, including exhausted-budget behavior.
 
 ## Implementation Notes
 
-Depends on TASK-010; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-008, TASK-009, TASK-010. Proposed owner — Both. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Keep evaluation focused on stated acceptance checks and single-user usage. This task creates no production release or store publication. Explicitly confirm environment access before reporting deployment verified.
 

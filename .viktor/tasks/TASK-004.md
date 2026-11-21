@@ -26,7 +26,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-003; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-003. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Reuse source contracts from TASK-003. A source outage is a technical failure, whereas an unsuccessful evidence search can yield Insufficient evidence. Evidence summaries and explanations remain separate from retained quotations.
 

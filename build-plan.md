@@ -105,3 +105,7 @@ The ordered executable index is [.viktor/tasks.json](.viktor/tasks.json). Every 
 | [TASK-011](.viktor/tasks/TASK-011.md) | M7: Verified development build | Evaluate complete checks and verify the deployed clients |
 
 Existing task IDs are preserved. Execute in task-index order, which places database integration before evidence research and document retrieval before source-coverage validation.
+
+## Two-person execution
+
+[The team execution plan](.viktor/team-plan.md) assigns application processing to Person A and evidence integration plus the extension to Person B. Explicit task prerequisites enable parallel work after the scaffold. Both people finish with full-system verification. Assignments are proposed and can be swapped.

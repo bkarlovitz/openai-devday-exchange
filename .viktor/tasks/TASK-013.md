@@ -18,12 +18,12 @@ The pulled database and ingestion implementation provides versioned official dat
 - Add scripts/extract_documents.py and a compatible pypdf dependency to scripts/requirements.txt. Extract text page by page from stored PDF bytes and visible text from stored council HTML. Record extraction status/version per snapshot so empty or scanned documents are distinguishable from parser failures, and reruns replace only the same snapshot's derived passages transactionally.
 - Keep processing in the standalone Python data-preparation path. Document running schema migrations in numeric order with an applied-migration ledger so each runs once against existing Docker volumes or Neon, followed by ingestion and document extraction. This evidence preparation does not change the application's text-submission boundary.
 - Add research/query-documents.ts and Drizzle mappings for document passage lookup, scoped by dataset/snapshot and configurable topic collections. Search passages with language-appropriate settings or a multilingual text fallback; retain page numbers, source URL, snapshot hash, and quotation text.
-- Register search_documents/read_document_passage as research tools, include them in deep-research action accounting, and render document/page citations through the existing evidence view. Keep Google Fact Check entries labelled as prior published checks and research their underlying sources when needed.
+- Supply search_documents/read_document_passage tool exports and coordinate initial-research registration with Person A. Render document/page citations through the existing evidence view. TASK-011 verifies deep-loop registration and budget accounting after TASK-005 and this task have merged. Keep Google Fact Check entries labelled as prior published checks and research their underlying sources when needed.
 - Complete source collections for housing, tourism, and municipal decisions/public spending using accessible official entry points. State which council sessions/documents have actually been loaded. Discovering a landing-page link alone must not imply its linked document content has been ingested.
 
 ## Implementation Notes
 
-Depends on TASK-008; follow the execution order in .viktor/tasks.json. Read .viktor/architecture.md and the existing README.md, db/schema.sql, compose.yaml, and scripts/ingest.py.
+Prerequisites — TASK-004. Proposed owner — Person B. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Reuse source_document and extend it additively for extraction status. Include a publicly accessible text-based council document in validation. Report scanned/inaccessible documents as unavailable; OCR can be added when required by real inputs. pypdf extracts text from digital PDFs and has distinct limits for scanned images.
 

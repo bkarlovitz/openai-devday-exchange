@@ -18,19 +18,19 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 - Implement background.ts, sidepanel.tsx, and message contracts. From a user context-menu gesture, open the side panel, transfer selected text with page URL/title, submit automatically once, and show shared ClaimCard/AssessmentView components.
 - Retain draft and active run IDs in chrome.storage across panel suspension. Multiple tabs or repeated user gestures must not submit the same handoff twice or display a stale selection. Include paste fallback for pages without selection access.
 - Configure extension API origin and installed extension ID. Add API CORS for exact configured origins including OPTIONS requests. Keep API credentials server-side.
-- Add Open in web app using the exact run ID. Reflect polling progress, partial errors, retry, and language selection. Show transport errors with a usable retry action.
+- Add Open in web app using the exact run ID. Reflect polling progress and partial errors. Reuse retry and language controls when TASK-006 and TASK-008 land, with their final extension integration verified in TASK-011. Show transport errors with a usable retry action.
 
 - Declare contextMenus explicitly. Generate one submissionKey per selection or pasted submission, persist it before transport, and reuse it after network failure. A genuinely new user action gets a new key. Reuse commandId on transport retries for language/retry mutations.
 
 ## Implementation Notes
 
-Depends on TASK-009; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-004. Proposed owner — Person B. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Reuse packages/ui components and contracts. Poll through the same API client abstraction. Validate the user-gesture opening path against current Chrome APIs during implementation.
 
 ## Validation
 
-Build and load the unpacked extension in desktop Chrome. Select text on a normal page, invoke Check claims, and verify automatic submission and progressive results. Close/reopen the panel, test two tabs and paste fallback, switch language, and open the same run in the web app. Inspect that the package contains no API key.
+Build and load the unpacked extension in desktop Chrome. Select text on a normal page, invoke Check claims, and verify automatic submission and progressive results. Close/reopen the panel, test two tabs and paste fallback, and open the same run in the web app. Verify language and retry controls in TASK-011 after their backend tasks land. Inspect that the package contains no API key.
 
 ## Completion Notes
 

@@ -23,7 +23,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-005; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-005. Proposed owner — Person A. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Extend the existing store and Workflow rather than introducing a queue. Extend the RunCoordinator command and attempt protocol established in TASK-001.
 

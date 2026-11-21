@@ -15,7 +15,7 @@ The pulled database and ingestion implementation provides versioned official dat
 ## Requirements
 
 - Keep compose.yaml and scripts/ingest.py as local database and loading entry points. Extend README.md setup instructions. Apply db/schema.sql to an isolated Neon development database with pgvector, then load a representative source subset through the existing DATABASE_URL support.
-- Add apps/api/src/db/client.ts and schema.ts using Drizzle with a Workers-compatible PostgreSQL driver. Map the existing dataset, snapshot, source_row, source_document, and latest_snapshot structures accurately, including bigint IDs serialized as strings at the API boundary.
+- Add database tool contracts in packages/contracts/src/database.ts and coordinate their export with Person A. Add apps/api/src/db/client.ts and schema.ts using Drizzle with a Workers-compatible PostgreSQL driver. Map the existing dataset, snapshot, source_row, source_document, and latest_snapshot structures accurately, including bigint IDs serialized as strings at the API boundary.
 - Provision the Hyperdrive binding in tooling/infra/alchemy.run.ts with nodejs_compat. Use local Hyperdrive connection configuration for Docker development and a direct Neon connection for Python ingestion. Load credentials through environment/secrets or securely connected Executor accounts.
 - Implement research/catalogue.ts and research/query-dataset.ts with validated search_catalogue, inspect_dataset, and query_dataset tools. Start with metadata/text catalogue search. Use optional existing catalogue embeddings only with the same text-embedding-3-small model and 1536 dimensions. Missing embeddings must preserve discovery.
 - Use allowlisted parameterized filters, fields, aggregations, ordering, and pagination for supported source schemas. Preserve raw JSONB strings and codes, explicitly parse numerical values and units, and fail clearly for unsupported column definitions. Derive initial mappings by inspecting representative loaded rows for tourist-flats, population, incasol, and ine-59061.
@@ -23,7 +23,7 @@ The pulled database and ingestion implementation provides versioned official dat
 
 ## Implementation Notes
 
-Depends on TASK-002; follow the execution order in .viktor/tasks.json. Read .viktor/architecture.md and the existing README.md, db/schema.sql, compose.yaml, and scripts/ingest.py.
+Prerequisites — TASK-001. Proposed owner — Person B. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Our team owns the query tools. db/schema.sql remains the existing schema baseline. Add reviewed additive SQL migrations under db/migrations when changes are needed and mirror them in Drizzle mappings. Docker init scripts only initialize empty volumes, so document how to apply later migrations to existing local volumes and Neon. Use the Executor connector for available Cloudflare/account tooling and connect a Neon MCP only if it materially helps execution.
 

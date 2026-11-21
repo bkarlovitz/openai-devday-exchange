@@ -96,3 +96,5 @@ TASK-001 should be runnable without OpenAI credentials. AI milestones require an
 Executor is available for development-time service discovery and connected account tools. Planning discovery found a connected Cloudflare tool namespace and no installed Neon tool namespace. Discover current capabilities again when executing setup tasks. Connect or import a relevant Neon MCP through Executor if useful. Use secure connection flows for credentials and show any tool-requested approval to the user. The application's research tools use its own API/database integrations.
 
 Preserve stable task IDs. TASK-012 and TASK-013 were added after the data work landed; .viktor/tasks.json defines their execution positions before TASK-003 and TASK-009 respectively.
+
+For two-person implementation, use [the team plan](team-plan.md) and explicit task prerequisites. The ordered task index remains usable by one worker. Parallel human work uses coordinated task assignments.

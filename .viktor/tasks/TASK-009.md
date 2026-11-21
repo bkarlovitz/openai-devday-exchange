@@ -21,7 +21,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Implementation Notes
 
-Depends on TASK-013; the ordered index assumes all earlier tasks are complete. All application paths are proposed additions. Read .viktor/architecture.md before implementing.
+Prerequisites — TASK-013. Proposed owner — Person B. See .viktor/team-plan.md for parallel execution and shared-file ownership.
 
 Use the existing ingestion pipeline and database research tools with official-first search. Topic coverage is intentionally configurable. Do not assume legacy endpoint names from rough-plan.md are working until checked.
 
