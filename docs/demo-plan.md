@@ -78,3 +78,7 @@ These are real completed runs on the development deployment, suitable as a fallb
 | Long official document | 33 terminal claims, two technical retrieval errors, one excluded unanchored candidate; overlap observed | [Open](https://council-checker-dev.snapnda.workers.dev/runs/7c9ae7fe-e9f3-4e9b-b611-42aa1f96effe) |
 
 The final long document demonstrates progressive processing and visible partial failures; it is not a claim of complete factual coverage. Extraction and verdicts remain model-assisted. Keep source scope visible and inspect citations during rehearsal.
+
+## YouTube deployment note
+
+The private yt-dlp caption container and POST `/api/runs/youtube` are deployed. Requested intervals are at most180 seconds. The checked official council recording has no usable captions; use the sourced text example for a dependable walkthrough. A successful AP caption import contained only a short non-factual caption in its opening interval; another test video returned a retrieval503. Verify that the selected interval contains meaningful spoken subtitles before using a YouTube example. Audio transcription is out of this build's scope.

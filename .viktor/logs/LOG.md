@@ -89,3 +89,11 @@
 - **Timestamp:** 2026-11-21T13:27:00Z
 - **Summary:** Pulled teammate YouTube container/import commit96471d7 and merged it with transcript processing. Preserved exact-source quote anchoring and the teammate's cross-cue timestamp behavior. Kept both README sections. After merge, typecheck, lint and all58 tests passed. Container deployment verification is recorded below when complete.
 - **Integration ownership:** TASK-009 remains assigned to the teammate; its latest source mappings and assessment correction are incorporated. The rent regression now passes live, as recorded in topic-coverage.md.
+
+### Cloudflare caption-import container deployment
+
+- **Timestamp:** 2026-11-21T13:31:00Z
+- **Outcome:** container deployed; live caption path verified with coverage limits
+- **Deployment:** Built and pushed the Python3.13/yt-dlp image to Cloudflare Container Registry, provisioned one lite container and its private Durable Object binding, and deployed the merged Worker. Configured the shared importer token only in ignored local environment/Worker secret bindings. No secret was committed.
+- **Validation:** Merged-source typecheck/lint and all58 tests passed. Python caption cropping preserves UTF-16 passage offsets. Deployed ZIP matches the local artifact. Official council video DEJF6IGRuxA returned422 for unavailable captions. AP News video jib4QzBhixw returned202 and created8da5e1df-1471-463b-94c8-3b297561c4fd; its0–30s track contained one character and completed with no factual claims. A separate OpenAI video retrieval attempt returned503, so arbitrary-video retrieval is not claimed reliable. Preflight any chosen video before presenting.
+- **Scope:** Captions only, with a maximum180-second requested interval. Audio transcription is explicitly deferred by the user. Caption retrieval is currently exposed through POST /api/runs/youtube; text/subtitle import remains the general document input path.
