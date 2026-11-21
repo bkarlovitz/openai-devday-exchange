@@ -8,6 +8,8 @@ The four evidence verdicts retain their distinct labels. Branded phrases accompa
 
 ## Artwork
 
+The [brand asset index](night-broadcast/ASSETS.md) records the supplied character expression sheet, four-view turnaround, construction and props sheet, original media, and generated side-panel revisions. The latest owner-supplied sheets guide character consistency; generated revisions remain design candidates until reviewed.
+
 Mascot: `packages/ui/assets/wingman-judge.png`. Generated with the built-in imagegen tool from the supplied landing hero reference, then copied to the project. Prompt: “Isolate the friendly pigeon judge character from the reference, preserving its exact visual identity: grey pigeon with purple-pink neck edge, big dark navy eyeglasses, orange beak, dark navy judicial robe, crisp ivory neck bands. Upper-body portrait in three quarter view, one wing holding up a small ivory evidence sheet with simple lines, other wing resting down. Faithful polished 2D cartoon, bold navy outlines, subtle shading as reference. Fully transparent background. Centered full silhouette without cropping head or wing, generous transparent margin. No desk, no spotlight, no text, no typography, no labels, no UI, no scenery.”
 
 ## Verification

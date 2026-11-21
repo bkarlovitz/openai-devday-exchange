@@ -45,7 +45,7 @@ Use a visible label and a shape with color. The fills below are the baseline sha
 
 ## Art direction and motion
 
-Keep light reading surfaces for product UI. For campaign scenes, use the Night Broadcast navy set, cool blue bounce, and warm ivory spotlight. The [character sheets](night-broadcast/References/) guide the full judge’s rounded rectangular glasses, robe, proportions and poses. Use neutral feather shading and warm or blue light for new artwork. Use the [blue-lit mascot](night-broadcast/Artwork/pigeon-judge.png) for the shared product artwork.
+Keep light reading surfaces for product UI. For campaign scenes, use the Night Broadcast navy set, cool blue bounce, and warm ivory spotlight. The [character sheets](night-broadcast/ASSETS.md) guide the full judge’s rounded rectangular glasses, robe, proportions and poses. Use neutral feather shading and warm or blue light for new artwork. Use the [blue-lit mascot](night-broadcast/Artwork/pigeon-judge.png) for the shared product artwork.
 
 The exhibit arrives before the reaction. Follow the [motion notes](night-broadcast/Motion/Timing%20and%20performance.txt) for stamp, held gavel and splat. The contradicted sequence runs about 3 seconds, with the ivory splat at about 2.2 seconds on the edge of the claim bubble. Keep the claim, verdict and sources readable. For reduced motion, use one static pose and show the result immediately. Keep repeat reactions compact and make the performance legible in silence.
 
