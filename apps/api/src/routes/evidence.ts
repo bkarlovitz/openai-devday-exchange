@@ -1,7 +1,9 @@
-import { sql } from "drizzle-orm";
+import { QueryDatasetInput } from "@council/contracts";
+import { Schema } from "effect";
 import { Hono } from "hono";
-import { withEvidenceDb } from "../db/client";
 import type { Env } from "../env";
+import { inspectDataset, searchCatalogue } from "../research/catalogue";
+import { queryDataset } from "../research/query-dataset";
 import { readDocumentPassage, searchDocuments } from "../research/query-documents";
 
 export const evidence = new Hono<{ Bindings: Env }>();
@@ -22,15 +24,16 @@ evidence.onError((error, c) => {
 });
 
 evidence.get("/catalogue", async (c) => {
-  const result = await withEvidenceDb(c.env.EVIDENCE_DB!, (db) =>
-    db.execute(sql`
-      SELECT d.id AS "datasetId", d.source_url AS "sourceUrl", d.search_text AS "description",
-             count(s.id)::integer AS "resourceCount"
-      FROM dataset d LEFT JOIN latest_snapshot s ON s.dataset_id = d.id
-      GROUP BY d.id ORDER BY d.id LIMIT 100
-    `),
-  );
-  return c.json(result.rows);
+  const query = c.req.query("q")?.trim();
+  if (query !== undefined && (!query || query.length > 200)) {
+    return c.json({ error: "Provide a query between 1 and 200 characters." }, 400);
+  }
+  return c.json(await searchCatalogue(c.env.EVIDENCE_DB!, query));
+});
+
+evidence.get("/catalogue/:datasetId", async (c) => {
+  const result = await inspectDataset(c.env.EVIDENCE_DB!, c.req.param("datasetId"));
+  return result ? c.json(result) : c.json({ error: "Dataset not found." }, 404);
 });
 
 evidence.get("/documents", async (c) => {
@@ -54,4 +57,17 @@ evidence.get("/documents/:snapshotId/:passageNumber", async (c) => {
   }
   const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, snapshotId, number);
   return passage ? c.json(passage) : c.json({ error: "Passage not found." }, 404);
+});
+
+evidence.post("/query-dataset", async (c) => {
+  const body: unknown = await c.req.json().catch(() => undefined);
+  const decoded = Schema.decodeUnknownEither(QueryDatasetInput, {
+    onExcessProperty: "error",
+  })(body);
+  if (decoded._tag === "Left" || (decoded.right.afterRow && !decoded.right.snapshotId)) {
+    return c.json({ error: "Invalid dataset query. Pagination requires a snapshot ID." }, 400);
+  }
+
+  const result = await queryDataset(c.env.EVIDENCE_DB!, decoded.right);
+  return result ? c.json(result) : c.json({ error: "Snapshot not found for this resource." }, 404);
 });
