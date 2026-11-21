@@ -335,7 +335,10 @@ function syncFilters(items: Entry[]) {
 function renderMarkers(items: Entry[], start: number, end: number) {
   const groups: { entry: Entry; fraction: number; seconds: number }[][] = [];
   const spacing = 20 / Math.max(marks.clientWidth, 250);
-  for (const entry of items) {
+  const chronological = [...items].sort(
+    (a, b) => (a.startSeconds ?? Infinity) - (b.startSeconds ?? Infinity),
+  );
+  for (const entry of chronological) {
     const seconds = entry.startSeconds;
     if (seconds === undefined || seconds < start || seconds > end) continue;
     const value = { entry, seconds, fraction: (seconds - start) / (end - start) };

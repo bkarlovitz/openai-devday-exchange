@@ -414,9 +414,7 @@
         busy: Boolean(job),
         live: Boolean(liveBackend),
         retry: retry?.backend ?? null,
-        entries: [...timeline.values()].sort(
-          (a, b) => (a.startSeconds ?? Infinity) - (b.startSeconds ?? Infinity),
-        ),
+        entries: [...timeline.values()].reverse(),
       });
     }
     if (!videoKey || !video) return;
