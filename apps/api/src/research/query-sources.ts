@@ -87,6 +87,8 @@ function evidenceRow(datasetId: QueryDatasetInput["datasetId"], row: SourceRow) 
 
 export function queryPublishedDataset(env: Env, input: unknown) {
   const options = Schema.decodeUnknownSync(QueryDatasetInput, { onExcessProperty: "error" })(input);
+  const aggregate = "aggregate" in options ? options.aggregate : undefined;
+  const population = aggregate === "sum_population";
   return queryDataset(env, {
     datasetId: options.datasetId,
     resourceKey: options.resourceKey,
@@ -94,13 +96,39 @@ export function queryPublishedDataset(env: Env, input: unknown) {
     afterRow: options.afterRow,
     limit: options.limit ?? 25,
     filters: filtersFor(options),
+    aggregate: aggregate
+      ? population
+        ? { operation: "sum", field: "Valor" }
+        : { operation: "count_distinct", field: "N_EXPEDIENT" }
+      : undefined,
   }).pipe(
-    Effect.map((result) => ({
-      snapshot: { ...result.snapshot, sourceUrl: result.snapshot.resourceUrl },
-      query: { ...options, snapshotId: result.snapshot.id, limit: options.limit ?? 25 },
-      rows: result.rows.map((row) => evidenceRow(options.datasetId, row)),
-      nextAfterRow:
-        result.totalRows > result.rows.length ? (result.rows.at(-1)?.rowNumber ?? null) : null,
-    })),
+    Effect.map((result) => {
+      const snapshot = { ...result.snapshot, sourceUrl: result.snapshot.resourceUrl };
+      if (aggregate && result.aggregate) {
+        const present = result.aggregate.status === "complete";
+        return {
+          snapshot,
+          query: { ...options, snapshotId: result.snapshot.id },
+          aggregate: {
+            operation: aggregate,
+            unit: population ? "people" : "registered tourist flats",
+            value: result.totalRows > 0 ? result.aggregate.value : null,
+            matchedRows: result.totalRows,
+            missingRows:
+              result.totalRows -
+              (result.aggregate.numericRows ??
+                result.aggregate.validRows ??
+                (present ? result.totalRows : 0)),
+          },
+        };
+      }
+      return {
+        snapshot,
+        query: { ...options, snapshotId: result.snapshot.id, limit: options.limit ?? 25 },
+        rows: result.rows.map((row) => evidenceRow(options.datasetId, row)),
+        nextAfterRow:
+          result.totalRows > result.rows.length ? (result.rows.at(-1)?.rowNumber ?? null) : null,
+      };
+    }),
   );
 }
