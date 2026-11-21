@@ -1,4 +1,5 @@
 @import "./brand-fonts.css";
+@import "./verdict-motion.css";
 :root {
   --desk: #fff5df;
   --surface: #ffffff;
@@ -438,6 +439,13 @@ h2 {
   font-style: italic;
   font-size: 14px;
   color: var(--ink);
+}
+.assessment-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 .assessment-ruling {
   font: 700 23px/1.2 var(--font-display);

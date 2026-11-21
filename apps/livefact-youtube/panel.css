@@ -1,5 +1,6 @@
 @import "../../packages/ui/src/brand-fonts.css";
 @import "../../packages/ui/src/pigeon-expressions.css";
+@import "../../packages/ui/src/verdict-motion.css";
 
 :root {
   color-scheme: light;
@@ -541,6 +542,10 @@ summary::-webkit-details-marker {
   color: #263951;
   font-size: 13.5px;
   line-height: 1.55;
+}
+.detail > .verdict-motion {
+  margin-inline-start: auto;
+  margin-bottom: 10px;
 }
 .detail p {
   margin: 0 0 10px;

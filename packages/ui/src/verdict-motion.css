@@ -1,0 +1,42 @@
+.verdict-motion {
+  --verdict-cuts: 4;
+  --verdict-duration: 2.6s;
+  display: block;
+  flex: none;
+  width: clamp(64px, 25vw, 104px);
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  background-size: calc((var(--verdict-cuts) + 1) * 100%) 100%;
+}
+.verdict-motion[data-verdict="supported"] {
+  --verdict-duration: 2.2s;
+  background-image: url("../assets/verdict-supported.webp");
+}
+.verdict-motion[data-verdict="mixed_evidence"] {
+  background-image: url("../assets/verdict-mixed-evidence.webp");
+}
+.verdict-motion[data-verdict="insufficient_evidence"] {
+  background-image: url("../assets/verdict-insufficient-evidence.webp");
+}
+.verdict-motion[data-verdict="contradicted"] {
+  --verdict-cuts: 6;
+  --verdict-duration: 3.2s;
+  background-image: url("../assets/verdict-contradicted.webp");
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  details[open] .verdict-motion:not(.is-resting) {
+    animation: verdict-reaction var(--verdict-duration) steps(var(--verdict-cuts));
+  }
+}
+
+@keyframes verdict-reaction {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 100%;
+  }
+}
