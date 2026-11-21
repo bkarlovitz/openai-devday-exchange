@@ -289,7 +289,7 @@ textarea::placeholder {
   line-height: 1.6;
 }
 .error {
-  color: #a22c24;
+  color: var(--ink);
   font-size: 14px;
   line-height: 1.6;
 }

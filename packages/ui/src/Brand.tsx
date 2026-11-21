@@ -12,8 +12,8 @@ export function WingmanMascot({ className = "" }: { className?: string }) {
     <img
       className={`wingman-mascot ${className}`}
       src={judgeUrl}
-      width="420"
-      height="420"
+      width="1198"
+      height="1313"
       alt="Wingman's pigeon judge holding up an evidence sheet"
     />
   );

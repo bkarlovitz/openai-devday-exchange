@@ -40,7 +40,7 @@ export function ClaimPreview({ claim }: { claim: Claim }) {
       </span>
       <span className="preview-main">
         <span className="preview-quote">“{claim.quote}”</span>
-        <span className="category-symbol" aria-label={label}>
+        <span className="category-symbol" aria-hidden="true">
           {symbol}
         </span>
       </span>

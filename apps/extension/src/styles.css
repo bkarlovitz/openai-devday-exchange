@@ -38,7 +38,7 @@ a:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 2px solid #5f9270;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .panel {
@@ -125,7 +125,7 @@ summary:focus-visible {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #89a993;
+  background: var(--accent);
   transition: width 0.25s;
 }
 .counts {
@@ -255,7 +255,7 @@ summary:focus-visible {
   border-left: 3px solid #9aabbd;
 }
 .result-error {
-  border-left: 3px solid #c96b67;
+  border-left: 3px solid var(--muted);
 }
 .result-item[open] > summary {
   border-bottom: 1px solid #e9ebe4;
@@ -370,16 +370,16 @@ summary:focus-visible {
   line-height: 1.6;
 }
 .error {
-  color: #a64036;
+  color: var(--ink);
   font-size: 12px;
   line-height: 1.6;
 }
 .error button {
   padding: 7px 10px;
-  border: 1px solid #dfc4be;
+  border: 1px solid var(--line);
   border-radius: 5px;
-  background: #fff8f5;
-  color: #9d493d;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 11px;
   margin-bottom: 12px;
 }
