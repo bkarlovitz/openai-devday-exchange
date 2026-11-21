@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Install Council Check</title>
+    <style>
+      body {
+        font:
+          17px/1.65 system-ui,
+          sans-serif;
+        max-width: 680px;
+        margin: 64px auto;
+        padding: 0 24px;
+        color: #203124;
+        background: #fafbf7;
+      }
+      a {
+        color: #286647;
+      }
+      h1 {
+        line-height: 1.2;
+      }
+      li {
+        margin: 14px 0;
+      }
+      code {
+        background: #edf0e7;
+        padding: 3px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/">← Council Check</a>
+    <h1>Check claims while you read.</h1>
+    <p>
+      This hackathon extension connects to the same Cloudflare app and Neon evidence database as the
+      web client.
+    </p>
+    <ol>
+      <li>
+        <a href="/downloads/council-check-extension.zip" download>Download the extension ZIP</a> and
+        extract it into a folder.
+      </li>
+      <li>
+        Open <code>chrome://extensions</code> in desktop Chrome and turn on
+        <strong>Developer mode</strong>.
+      </li>
+      <li>
+        Choose <strong>Load unpacked</strong> and select the extracted folder containing
+        <code>manifest.json</code>.
+      </li>
+      <li>
+        Visit a normal web page, select a factual passage, right-click, and choose
+        <strong>Check claims</strong>.
+      </li>
+    </ol>
+    <p>
+      The side panel checks the selection automatically. You can also click the extension icon and
+      paste text. Results include evidence and a link to open the same check in the web app.
+    </p>
+    <p>
+      Chrome internal pages and the Chrome Web Store restrict extension access; use a normal page or
+      the paste fallback.
+    </p>
+  </body>
+</html>

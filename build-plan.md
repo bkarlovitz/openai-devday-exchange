@@ -67,7 +67,7 @@ The main records would be text submissions, source passages, claims, evidence it
 1. **Agree on the workflow and contracts.** Define the text input contract, expected assessments, and the first client interaction. Define the shared records and module interfaces so work can proceed independently.
 2. **Make automatic checking work.** Connect text submission, extraction, the first-pass decision, deeper research, and assessments through the API and a usable web results view. Validate with varied claims across topics, including cases with insufficient evidence.
 3. **Handle longer text submissions.** Preserve context across passages, combine repeated claims, and expose processing progress so a user can submit a full transcript or document and inspect its claims. Retain source metadata when supplied.
-4. **Connect the browser extension.** Reuse the API and result components in the agreed page-based workflow. The extension and web work can proceed alongside backend work once the contracts are agreed.
+4. **Connect the browser extension.** First review the supplied [side-panel HTML and PDF design](docs/design/README.md), map its layout onto real input, progress, verdict, evidence, and error states, then build the panel against the shared API and result components. Prioritize the main layout and interactions for the hackathon. The extension and web work can proceed alongside backend work once the contracts are agreed.
 5. **Verify the complete system.** Exercise fresh numerical and broader factual claims, check quotes and source links, verify that cited passages address the assertion, reproduce calculations, and check handling of conflicting or insufficient evidence.
 
 ## Hackathon engineering scope
@@ -109,3 +109,7 @@ Existing task IDs are preserved. Execute in task-index order, which places datab
 ## Two-person execution
 
 [The team execution plan](.viktor/team-plan.md) assigns application processing to Person A and evidence integration plus the extension to Person B. Explicit task prerequisites enable parallel work after the scaffold. Both people finish with full-system verification. Assignments are proposed and can be swapped.
+
+## Current time-boxed delivery
+
+The current hackathon build prioritizes the deployed text-to-cited-verdict web flow, the selected-text Chrome extension using the supplied design, and a real end-to-end check on Cloudflare and Neon. The extension is distributed as an unpacked ZIP. Longer research loops, stage-level retries, advanced long-text handling, language switching, broader coverage, and extra visual polish stay in the task backlog. Completed task status is recorded in the task index; this delivery scope does not imply that the entire roadmap is complete.

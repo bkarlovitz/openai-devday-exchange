@@ -80,7 +80,7 @@
     "id": "TASK-010",
     "title": "Check selected text and open shared results in a side panel",
     "milestone": "M6: Chrome extension client",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-010.md"
   },
   {

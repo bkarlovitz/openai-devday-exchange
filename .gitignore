@@ -13,3 +13,5 @@ repos/
 dist/
 playwright-report/
 test-results/
+
+/apps/web/public/downloads/council-check-extension.zip

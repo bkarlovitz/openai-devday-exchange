@@ -69,6 +69,14 @@ export function SubmissionPage() {
         ) : null}
       </form>
       <p className="scope-note">
+        Check selected text from any page with the Chrome extension.{" "}
+        <a href="/downloads/council-check-extension.zip" download>
+          Download extension
+        </a>
+        {" · "}
+        <a href="/extension-install.html">Installation instructions</a>
+      </p>
+      <p className="scope-note">
         Claims are checked against official data and published sources, with evidence you can
         inspect.
       </p>

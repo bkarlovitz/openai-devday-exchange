@@ -48,3 +48,19 @@
 - **Summary** For housing, tourism and municipal claims routed to public records, initial research now searches stored council minutes and reads up to two pinned passages. An empty search leaves one web search and one source read within the three-action budget. Evidence retains the passage and extraction version, and the shared results card links directly to the cited PDF page.
 - **Local validation** Catalan, Spanish and English inputs about file 25XF0640 retrieved the exact original passage on page 8 from Docker PostgreSQL through the application research path with controlled model responses. Chromium rendered the resulting citation with the page anchor. Worker checks confirmed historical lookup after adding a newer fixture snapshot and distinguished empty/scanned, unsupported and error extraction states. Typecheck, lint, 22 tests and build passed.
 - **Live provider** Local submission reached the workflow, but OpenAI extraction returned HTTP 401. The tracked task remains open pending successful live-provider verification.
+
+### TASK-010: Check selected text and open shared results in a side panel
+
+- **Timestamp:** 2026-11-21T12:52:00Z
+- **Outcome:** done
+- **Summary:** Added the MV3 Chrome extension with context-menu selection, automatic submission, paste fallback, tab-scoped persistent drafts/receipts, stable submission keys, transport retry, progress filters and shared cited assessment UI. Incorporated the supplied side-panel HTML/PDF design. Pinned the public extension identity and configured exact API CORS. Builds now publish a downloadable extension ZIP and install page with the web assets.
+- **Validation:** Loaded the actual unpacked package in Chromium. Dispatched its registered selection event through Chrome, verified automatic live submission, Supported verdict, exact shared web-run link, and reload restoration with no page errors. A separate real Spanish paste check passed; switching between two tabs restored distinct runs. Expanded evidence rendered at 400px without horizontal overflow. Native browser context-menu UI clicking was not automated; the real registered handler and Chrome APIs were exercised. Typecheck, all 22 tests, lint and full extension/web/Worker build passed. ZIP inspection found no credential-like tokens or env files. Hosted ZIP bytes match the local artifact, install page loads, exact-origin preflight passes, and an unrelated origin receives no CORS permission.
+- **Review:** Fixed the independently identified pending-submission tab-switch saving-state race before verification. Retry/language controls for future backend stages remain deferred with TASK-006/008; submission language and connection retries are available now.
+- **Deployment:** https://council-checker-dev.snapnda.workers.dev with Neon through Hyperdrive. ZIP: /downloads/council-check-extension.zip. Install page: /extension-install.html.
+
+### Hackathon delivery verification (subset of TASK-011)
+
+- **Timestamp:** 2026-11-21T12:52:00Z
+- **Outcome:** verified scoped build; full TASK-011 remains open
+- **Summary:** Verified the deployed text-to-claim-to-evidence-to-verdict web and extension flow. The user time-boxed the deliverable to a hackathon build; TASK-005–009 and TASK-013 remain follow-up tasks, as does complete roadmap evaluation.
+- **Evidence:** Live deployed numerical run aea1cfd9-2bbf-442f-9def-7421d908e12d (Neon snapshot → Supported). Extension English run 15fed423-b291-402e-a750-a4b28a0d8194 and Spanish paste run a785ce5a-0db8-46a1-8138-6732033de28b (official web passages → Supported). Desktop/mobile web and compact extension evidence rendering passed. Hosted ZIP SHA-256: 50093853b0e97838dbcc4e8e50bd2b9dc2d7dd252519b98683b136cba6686745. Native right-click menu UI and toolbar-icon clicking should receive a quick teammate smoke check in desktop Chrome.

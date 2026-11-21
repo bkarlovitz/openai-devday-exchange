@@ -4,7 +4,7 @@ A text-based council claim checker. The web app extracts traceable factual claim
 
 ## Run the app locally
 
-Use Node.js 22.18 or newer and npm.
+Use Node.js 22.18 or newer, npm, and Python 3 (for the extension ZIP packaging).
 
 ```sh
 npm install
@@ -26,7 +26,7 @@ npm run build
 npm test
 ```
 
-Build creates the web assets and dry-runs Worker bundling. The focused test suite covers traceable compound claims, supplied context, invented-quote rejection, and multi-chunk Unicode offsets. Live API and browser smoke checks cover the processing path.
+Build packages the Chrome extension, creates the web assets (including its ZIP download), and dry-runs Worker bundling. The focused test suite covers traceable compound claims, supplied context, invented-quote rejection, and multi-chunk Unicode offsets. Live API and browser smoke checks cover the processing path.
 
 To deploy a development environment, configure OAuth with `npx alchemy configure` or supply Cloudflare credentials in a root .env using .env.example. Set ALCHEMY_PASSWORD to encrypt deployment state, then run `npm run deploy:dev`. The account needs access to Workers, R2, Durable Objects, and Workflows. Alchemy provisions the bucket, bindings, Workflow, and SQLite Durable Object migration. Deployment credentials are server-side. Set CLOUDFLARE_PROFILE in .env if the configured profile has a custom name. Local and deployed data use separate stores.
 
@@ -249,3 +249,50 @@ Decisions supplies checkability, topic and evidence-scope triage. The assessor i
 GET /api/runs/{runId}/claims/{claimId} returns the shared ClaimDetail contract. The [frontend handoff](.viktor/frontend-contract.md) includes evidence/assessment fields and real rendering fixtures. Shared cards are exported by @council/ui for both clients.
 
 Model IDs are configurable through EXTRACT_MODEL, DECISION_MODEL, RESEARCH_MODEL, SEARCH_MODEL, and EXPLAIN_MODEL. Model requests use explicit timeouts. This initial pass precedes the configurable longer research loop in TASK-005.
+
+### Provider request examples
+
+The search integration sends `POST https://api.openai.com/v1/responses` with this shape (the assertion is placed in the input, and the API key is a server-side Authorization header):
+
+```json
+{
+  "model": "gpt-6.2-astra",
+  "store": false,
+  "reasoning": { "effort": "low" },
+  "max_tool_calls": 1,
+  "max_output_tokens": 1000,
+  "tools": [{ "type": "web_search", "search_context_size": "low" }],
+  "tool_choice": "required",
+  "include": ["web_search_call.action.sources"],
+  "input": "Find primary evidence for: Barcelona is the capital of Catalonia. Start with official sources."
+}
+```
+
+The completed response provides `output[].action.sources[]` and/or message `content[].annotations[]` URL citations. These identify candidates, not verified quotations. The app reads at most two candidate URLs and reconstructs exact retained source passages; a generated summary is never stored as a quotation. Search has a 30-second request timeout and non-completed/error responses are technical failures.
+
+Decisions sends `POST https://api.openai.com/v1/decisions`, for example:
+
+```json
+{
+  "model": "gpt-6-luna",
+  "input": "{\"assertion\":\"Barcelona is the capital of Catalonia.\"}",
+  "questions": [{
+    "type": "choice",
+    "name": "topic",
+    "instructions": "Which topic best describes the assertion?",
+    "choices": [{ "value": "municipal" }, { "value": "general" }]
+  }]
+}
+```
+
+The response contains typed `answers`, such as `{"type":"choice","name":"topic","choice":"municipal"}`. Decisions has a 15-second timeout. Checkability classifies the kind of assertion independently of whether it is true. Probabilities and routing decisions are not factual verdicts.
+
+## Hackathon deployment and Chrome extension
+
+The shared development app is [Council Check](https://council-checker-dev.snapnda.workers.dev). It runs on the connected Cloudflare account with R2, Workflows and Durable Objects, and queries the Neon evidence database through Hyperdrive. OpenAI credentials remain in Worker bindings. This is the single-user hackathon environment; saved run links grant access to the submitted text.
+
+[Download the extension ZIP](https://council-checker-dev.snapnda.workers.dev/downloads/council-check-extension.zip), unzip it, open `chrome://extensions`, enable Developer mode, choose Load unpacked, and select the folder containing `manifest.json`. The [hosted install page](https://council-checker-dev.snapnda.workers.dev/extension-install.html) repeats these steps. On a normal page, select text, right-click and choose **Check claims**. The side panel submits the selected passage to the same deployed API. The extension icon opens a paste fallback. **Open in web app** uses the exact same saved run.
+
+`npm run build:extension` writes `apps/extension/dist`, `dist/council-check-extension.zip`, and the generated web download. The generated ZIP is not committed; `npm run build`, `npm run dev` and `npm run deploy:dev` recreate it. The manifest includes a public key so the unpacked extension ID stays `fhfebjohcmngiobjfcamkcknhmfhafbk` across teammates. The Worker permits that exact origin by default; EXTENSION_ORIGINS can override it with a comma-separated list. The extension host permission and API URL target the development deployment; update both and the Worker origin configuration when changing environments.
+
+The [supplied extension design](docs/design/README.md) is retained as HTML and PDF. TASK-010 maps the design to real submission, progress, verdict and evidence states. The time-boxed deliverable prioritizes the core layout and working interactions. Remaining roadmap tasks are still tracked in `.viktor/tasks.json`.
