@@ -10,3 +10,7 @@ Implementation is tracked in [TASK-010](../../.viktor/tasks/TASK-010.md). Review
 ## Latest complete reference
 
 The latest supplied [Fact Check demo HTML](fact-check-demo.html) supersedes the earlier side-panel reference for visual implementation. Its full [review and state inventory](fact-check-demo-review.md), browser evidence, and [TASK-014 implementation plan](../../.viktor/tasks/TASK-014.md) are retained in the repository. The original HTML remains unchanged. No redesign has been implemented by the review itself.
+
+## Wingman identity
+
+Use the [Wingman design system](DESIGN.md) and the [approved logo kit](wingman-logo/Wingman-logo-kit.zip). The kit includes the [preview sheet](wingman-logo/wingman-preview.png), primary and alternate wordmarks, and app icon and favicon exports.

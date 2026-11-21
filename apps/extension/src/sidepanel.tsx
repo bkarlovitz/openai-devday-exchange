@@ -6,7 +6,7 @@ import { BadgeCheck, ExternalLink, LoaderCircle, Plus } from "lucide-react";
 import { MAX_TEXT_CHARACTERS } from "@council/contracts";
 import type { Claim } from "@council/contracts";
 import {
-  BrandMark,
+  BrandLogo,
   WingmanMascot,
   ClaimOverview,
   ClaimPreview,
@@ -318,12 +318,7 @@ function Panel() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <span className="brand">
-          <span className="brand-mark">
-            <BrandMark />
-          </span>{" "}
-          Wingman
-        </span>
+        <BrandLogo />
         {receipt ? (
           <button
             className="icon-button"

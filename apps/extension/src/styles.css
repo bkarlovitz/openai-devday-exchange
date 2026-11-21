@@ -53,24 +53,6 @@ summary:focus-visible {
   padding: 16px;
   border-bottom: 1px solid #e8e9e5;
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 650;
-  letter-spacing: -0.25px;
-}
-.brand-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  background: #20221f;
-  border-radius: 8px;
-  color: #fff;
-}
 .icon-button {
   display: flex;
   align-items: center;
@@ -623,12 +605,6 @@ summary:focus-visible {
   min-height: 61px;
   border-color: #e5dfd1;
 }
-.panel-header .brand {
-  font-size: 17px;
-}
-.brand-mark {
-  background: transparent;
-}
 .icon-button {
   width: 44px;
   height: 44px;
@@ -760,13 +736,6 @@ body {
   border-bottom: 3px solid #47b1e4;
   min-height: 70px;
   padding-left: 18px;
-}
-.panel-header .brand {
-  font-size: 22px;
-}
-.brand-mark {
-  width: 36px;
-  height: 36px;
 }
 .composer {
   padding: 20px 22px 28px;

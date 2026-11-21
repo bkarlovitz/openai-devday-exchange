@@ -4,8 +4,10 @@ This specification uses the product UI merged in [PR #18](https://github.com/bka
 
 ## Identity
 
+[Approved logo kit and preview](wingman-logo/wingman-preview.png) · [Download all logo files](wingman-logo/Wingman-logo-kit.zip)
+
 - **Product name:** Wingman.
-- **Product mark:** retain the white magnifier and check on the dark rounded tile from the deployed release. Use the shared [mark SVG](../../packages/ui/assets/wingman-mark.svg) for the product header and source the favicon and toolbar images from that geometry. Use the pigeon as a campaign character and verdict reaction.
+- **Product logo:** use the approved [Wingman wordmark and pigeon SVG](../../packages/ui/assets/wingman-logo.svg) in headers. The pigeon has round glasses and an orange beak. Use the [blue favicon](../../packages/ui/assets/wingman-favicon.svg) and the 16, 32 and 128 px blue toolbar icon exports. The illustrated judge with a robe remains the campaign and verdict character.
 - **Campaign line:** “Every claim gets its turn.”
 - The judge can be theatrical. The finding describes what the evidence establishes in plain language. Preserve the exact quote and apply the same visual and evidentiary standards to each speaker.
 

@@ -34,13 +34,10 @@ a {
   border-bottom: 1px solid #ded8ca;
 }
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  font-size: 25px;
-  font-weight: 750;
-  text-decoration: none;
-  letter-spacing: -1px;
+  min-width: 0;
+}
+.site-header .wingman-logo {
+  width: 164px;
 }
 .header-nav {
   display: flex;
@@ -644,8 +641,8 @@ textarea::placeholder {
     padding: 15px 18px;
     gap: 12px;
   }
-  .brand {
-    font-size: 22px;
+  .site-header .wingman-logo {
+    width: 138px;
   }
   .header-nav > a:first-child {
     display: none;
