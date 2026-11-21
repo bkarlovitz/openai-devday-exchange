@@ -1,9 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-<rect width="64" height="64" rx="17" fill="#112344"/>
-<path d="M14 55 18 29C18 9 45 8 47 29l4 26c-12 5-25 5-37 0Z" fill="#89949D" stroke="#FFF5DF" stroke-width="2"/>
-<path d="M18 46c8 7 20 8 30 0l3 9c-12 5-25 5-37 0Z" fill="#707887"/>
-<path d="m27 37 6-6 7 6-7 7-6-7Z" fill="#F6A034" stroke="#112344" stroke-width="2"/>
-<g stroke="#112344" stroke-width="3"><rect x="15" y="23" width="17" height="15" rx="6" fill="#DBE9EB"/><rect x="35" y="23" width="17" height="15" rx="6" fill="#DBE9EB"/><path d="M32 28h3M12 26h4M51 26h3"/></g>
-<g fill="#112344"><ellipse cx="25" cy="30" rx="2.4" ry="4"/><ellipse cx="43" cy="30" rx="2.4" ry="4"/></g>
-<path d="m22 51 11 5 10-5-4 10H27Z" fill="#FFF5DF"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Wingman pigeon">
+  <title>Wingman pigeon</title>
+  <path fill="#142944" d="M56 7C36 7 23 19 21 41c-2 20 1 32-13 48a3 3 0 0 0 .5 4C20 103 37 108 56 108s36-5 47.5-15a3 3 0 0 0 .5-4C90 73 93 61 91 41 89 19 76 7 56 7Z"/>
+  <path fill="#94A7B6" d="M56 12c-17 0-28 11-30 30-2 17 .8 33-12.5 48C24 98 39 103 56 103s32-5 42.5-13C85.2 75 88 59 86 42 84 23 73 12 56 12Z"/>
+  <path fill="#627A8E" d="M81.8 26.6A39 39 0 0 1 86 42c2 17-.8 33 12.5 48C88 98 73 103 56 103s-32-5-42.5-13c14 5.5 28.2 7 42.5 5.2 11.1-1.5 20.7-5.3 25.7-11.9 5.5-7.3 3.4-20.8 2.2-33.9-.6-7.3-1.3-14.9-2.1-22.8Z"/>
+  <path fill="none" stroke="#142944" stroke-linecap="round" stroke-width="5" d="M47 48c5.3-5.6 12.7-5.6 18 0"/>
+  <circle cx="33" cy="48" r="16.5" fill="#DBF2FA" stroke="#142944" stroke-width="5"/>
+  <circle cx="79" cy="48" r="16.5" fill="#DBF2FA" stroke="#142944" stroke-width="5"/>
+  <path fill="#142944" d="M35 42a3.6 3.6 0 0 1 3.6 3.6v4.8a3.6 3.6 0 0 1-7.2 0v-4.8A3.6 3.6 0 0 1 35 42Zm42 0a3.6 3.6 0 0 1 3.6 3.6v4.8a3.6 3.6 0 0 1-7.2 0v-4.8A3.6 3.6 0 0 1 77 42Z"/>
+  <path fill="#FF9C37" stroke="#142944" stroke-width="3.6" stroke-linejoin="round" d="M44 60.4c3.2-2.8 8.7-7.8 12-7.8s8.8 5 12 7.8c1.9 1.7 1.7 4 .2 5.5l-8.7 8.5a5 5 0 0 1-7 0l-8.7-8.5c-1.5-1.5-1.7-3.8.2-5.5Z"/>
+  <path fill="none" stroke="#142944" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m45 65 11 3.5L67 65"/>
 </svg>

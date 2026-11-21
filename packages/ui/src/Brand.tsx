@@ -1,10 +1,8 @@
 import judgeUrl from "../assets/wingman-judge.png";
-import markUrl from "../assets/wingman-mark.svg";
+import logoUrl from "../assets/wingman-logo.svg";
 
-export function BrandMark() {
-  return (
-    <img className="wingman-mark" src={markUrl} width="36" height="36" alt="" aria-hidden="true" />
-  );
+export function BrandLogo() {
+  return <img className="wingman-logo" src={logoUrl} width="508" height="112" alt="Wingman" />;
 }
 
 export function WingmanMascot({ className = "" }: { className?: string }) {
