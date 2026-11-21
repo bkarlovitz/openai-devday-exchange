@@ -621,7 +621,7 @@ summary:focus-visible {
 .panel-header {
   padding: 8px 8px 8px 16px;
   min-height: 61px;
-  border-color: #ededea;
+  border-color: #e5dfd1;
 }
 .panel-header .brand {
   font-size: 17px;
@@ -642,7 +642,7 @@ summary:focus-visible {
 }
 .check-overview {
   padding: 0 16px 14px;
-  border-color: #ededea;
+  border-color: #e5dfd1;
 }
 .check-overview .claim-overview {
   padding-top: 4px;
@@ -656,15 +656,15 @@ summary:focus-visible {
 .panel-footer {
   padding: 8px 16px 12px;
   min-height: 60px;
-  border-color: #ededea;
+  border-color: #e5dfd1;
   font-size: 11px;
   background: #fff;
 }
 .panel-footer a {
-  color: #1f4fd1;
+  color: #176a96;
 }
 .footer-state {
-  color: #3f3f3b;
+  color: #45536a;
 }
 .composer {
   padding: 36px 24px 24px;
@@ -673,7 +673,7 @@ summary:focus-visible {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
-  color: #1b1b19;
+  color: #112344;
 }
 .composer .muted {
   font-size: 13px;
@@ -683,20 +683,20 @@ summary:focus-visible {
   font-size: 12.5px;
 }
 .composer textarea {
-  background: #fafaf8;
+  background: #fffaf0;
   border-color: #cfcfc9;
   font-size: 14px;
   border-radius: 10px;
 }
 .composer .primary {
-  background: #1b1b19;
+  background: #112344;
   border-radius: 10px;
   min-height: 44px;
   font-size: 13px;
 }
 .composer select {
   border-color: #cfcfc9;
-  color: #3f3f3b;
+  color: #45536a;
 }
 .character-count {
   font-family: var(--font-mono);
@@ -716,21 +716,21 @@ summary:focus-visible {
   font-size: 12px;
 }
 .web-handoff a {
-  color: #1f4fd1;
+  color: #176a96;
 }
 .pipeline-status {
   font-size: 11px;
   line-height: 1.6;
 }
 .claim .muted {
-  color: #5f5f5a;
+  color: #5b6575;
 }
 .claim .uncertainty {
-  color: #5f5f5a;
+  color: #5b6575;
   font-size: 12px;
 }
 .empty-state {
-  color: #5f5f5a;
+  color: #5b6575;
 }
 .extraction-warnings {
   border: 1px solid #f0d486;
@@ -743,9 +743,91 @@ summary:focus-visible {
 }
 .detail-retry {
   margin: 12px;
-  border: 1px solid #dadad5;
+  border: 1px solid #d9d4c9;
   border-radius: 8px;
   padding: 8px;
   background: #fff;
-  color: #1f4fd1;
+  color: #176a96;
+}
+
+/* Wingman panel shell. Content and verdicts use the shared theme. */
+body {
+  background: #fff5df;
+  color: #112344;
+}
+.panel-header {
+  background: #fff5df;
+  border-bottom: 3px solid #47b1e4;
+  min-height: 70px;
+  padding-left: 18px;
+}
+.panel-header .brand {
+  font-size: 22px;
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+}
+.composer {
+  padding: 20px 22px 28px;
+}
+.composer-mascot {
+  height: 156px;
+  background: #dff0f8;
+  border-radius: 90px 90px 8px 8px;
+  border-bottom: 8px solid #112344;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+.composer-mascot .wingman-mascot {
+  width: 164px;
+  height: 164px;
+  margin: 0 auto;
+}
+.composer .eyebrow {
+  font-size: 9px;
+  margin-bottom: 10px;
+}
+.composer h1 {
+  font-size: 29px;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  color: #112344;
+}
+.composer textarea {
+  background: #fffdf7;
+  color: #112344;
+  border-color: #d9d4c9;
+}
+.composer .primary {
+  background: #112344;
+  color: #fff5df;
+  border-radius: 7px;
+}
+.composer .primary:hover {
+  background: #213b60;
+}
+.composer form {
+  margin-top: 20px;
+}
+.source-context {
+  background: #fffdf7;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e5dfd1;
+}
+.panel-footer {
+  background: #fff5df;
+  border-top: 2px solid #47b1e4;
+}
+.result-item .preview-quote {
+  font-size: 16px;
+}
+.result-item .preview-bottom {
+  gap: 8px;
+}
+.result-item .verdict-phrase {
+  font-size: 12px;
+}
+.panel .preview-more {
+  font-size: 11px;
 }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Wingman",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Check factual claims in selected text against official sources.",
   "minimum_chrome_version": "116",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4kzjz3K9EtOJ1DUaGgPh8nhNXz2RxJNymvI6biZkBl8HqK1Xw1IovPZ89D2R823BAgRW1Q7AU1gM2WdFN9t9Ipvb+uJIUeS+0Z2a6a/HxluSkp8LG60KLgdv94gGgVR0el9W7ICCHtbxZdnZ4V8DstZyXApF2FqeQlowK79hZpq/uioizYLqnKs7HkOsn2lmFUrnFHSoG1QtchWUgCBfgwqK3+H0FKivS2wo8OJ+Lh7HB+kelkWRliZJT91uYM/SLYYE9loWbqEPau70JiOZao5oBBfKolWsrxYcmYbIgSEQXZHGSHw4YnfDoGVprF3bJGNTEL+xFEq9BYN1C+ifJQIDAQAB",
@@ -15,7 +15,11 @@
     "default_path": "sidepanel.html"
   },
   "action": {
-    "default_title": "Open Wingman"
+    "default_title": "Open Wingman",
+    "default_icon": "icon.png"
   },
-  "short_name": "Wingman"
+  "short_name": "Wingman",
+  "icons": {
+    "128": "icon.png"
+  }
 }

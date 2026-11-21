@@ -22,6 +22,12 @@ const rootRoute = createRootRoute({
         <Link to="/" className="brand">
           <BrandMark /> Wingman
         </Link>
+        <nav className="header-nav" aria-label="Main navigation">
+          <a href="/#check">Check a claim</a>
+          <a className="header-extension" href="/extension-install.html">
+            Get the extension <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
       </header>
       <Outlet />
     </>

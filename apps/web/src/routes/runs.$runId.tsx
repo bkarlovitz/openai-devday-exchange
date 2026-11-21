@@ -5,6 +5,7 @@ import { ArrowLeft, Check, LoaderCircle } from "lucide-react";
 import { Effect } from "effect";
 import type { Claim, Run } from "@council/contracts";
 import {
+  WingmanMascot,
   ClaimOverview,
   ClaimPreview,
   CheckabilityNotice,
@@ -125,11 +126,14 @@ export function SavedSubmissionPage() {
         </div>
       ) : (
         <>
-          <section className="intro">
+          <section className="intro report-intro">
+            <WingmanMascot className="report-mascot" />
             <div className="saved-label">
               <Check size={16} /> Text saved
             </div>
-            <h1>Your fact check.</h1>
+            <h1>
+              {state.run.status === "complete" ? "The evidence is in." : "Your evidence desk."}
+            </h1>
             <p>Saved {new Date(state.run.createdAt).toLocaleString()}</p>
           </section>
           <ExplanationLanguageControl

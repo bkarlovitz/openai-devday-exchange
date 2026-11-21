@@ -7,12 +7,20 @@ export const verdictLabels: Record<Verdict, string> = {
   insufficient_evidence: "Insufficient evidence",
 };
 
+export const verdictPhrases: Record<Verdict, string> = {
+  supported: "Checks out.",
+  contradicted: "Spectacular miss.",
+  mixed_evidence: "Jury’s still out.",
+  insufficient_evidence: "Jury’s still out.",
+};
+
 export function AssessmentView({ assessment }: { assessment: Assessment }) {
   return (
     <section className="assessment" aria-label="Assessment">
       <span className={`verdict verdict-${assessment.verdict}`}>
         {verdictLabels[assessment.verdict]}
       </span>
+      <p className="assessment-ruling">{verdictPhrases[assessment.verdict]}</p>
       <p className="assessment-explanation">{assessment.explanation}</p>
       {assessment.uncertainty.length ? (
         <div className="uncertainty">

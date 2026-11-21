@@ -279,7 +279,21 @@ function renderEntry(item: Entry, opened: Set<string>) {
   action.textContent = "Análisis";
   const summaryFooter = document.createElement("span");
   summaryFooter.className = "summary-footer";
-  summaryFooter.append(state, action);
+  summaryFooter.append(state);
+  const rulingText: Partial<Record<Status, string>> = {
+    supported: "Checks out.",
+    mixed: "Jury’s still out.",
+    context: "Jury’s still out.",
+    contradicted: "Spectacular miss.",
+  };
+  if (rulingText[item.status]) {
+    const ruling = document.createElement("span");
+    ruling.className = "ruling";
+    ruling.lang = "en";
+    ruling.textContent = rulingText[item.status]!;
+    summaryFooter.append(ruling);
+  }
+  summaryFooter.append(action);
   const claimLine = document.createElement("span");
   claimLine.className = "claim-line";
   const symbol = document.createElement("span");

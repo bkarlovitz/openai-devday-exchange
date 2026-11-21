@@ -9,3 +9,5 @@ export * from "./RunActions";
 export * from "./ClaimPreview";
 
 export * from "./ClaimOverview";
+
+export * from "./Brand";

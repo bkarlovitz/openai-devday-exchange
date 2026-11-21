@@ -1,21 +1,6 @@
 import type { Claim } from "@council/contracts";
-import { verdictLabels } from "./AssessmentView";
+import { verdictLabels, verdictPhrases } from "./AssessmentView";
 
-export function BrandMark() {
-  return (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-      <rect width="30" height="30" rx="8" fill="#1B1B19" />
-      <circle cx="13" cy="12.5" r="6.5" stroke="white" strokeWidth="1.8" />
-      <path
-        d="m17.7 17.2 4.3 4.3M10.3 12.5l1.8 1.8 3.3-3.4"
-        stroke="white"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 export function ClaimPreview({ claim }: { claim: Claim }) {
   const pending = ["awaiting_research", "researching", "assessing"].includes(claim.status);
   const symbol = pending
@@ -61,6 +46,9 @@ export function ClaimPreview({ claim }: { claim: Claim }) {
       </span>
       <span className="preview-bottom">
         <span className="status-chip">{label}</span>
+        {!pending && claim.verdict ? (
+          <span className="verdict-phrase">{verdictPhrases[claim.verdict]}</span>
+        ) : null}
         <span className="preview-more">
           View analysis <span aria-hidden="true">⌄</span>
         </span>
