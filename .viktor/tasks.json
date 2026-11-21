@@ -10,7 +10,7 @@
     "id": "TASK-002",
     "title": "Extract traceable claims and show them as processing progresses",
     "milestone": "M1: Automatic claim detection",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-002.md"
   },
   {

@@ -36,3 +36,7 @@ Run standard checks and a Vitest fixture for compound assertions, an opinion wit
 ## Completion Notes
 
 When complete, set done to true for this task in .viktor/tasks.json, append actual changes and validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Never mark validation complete when credentials or external access prevented it.
+
+### Completed implementation
+
+Live extraction and progressive UI are implemented. Four targeted fixtures and live local/deployed checks passed. The frontend handoff and example response are in .viktor/frontend-contract.md and .viktor/examples/extracted-run.json.

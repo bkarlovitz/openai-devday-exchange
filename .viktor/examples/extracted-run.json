@@ -1,0 +1,36 @@
+{
+  "runId": "2ad1f807-82db-49be-a28e-23179c3e935e",
+  "submission": {
+    "submissionKey": "2ad1f807-82db-49be-a28e-23179c3e935e",
+    "text": "Barcelona té més d’un milió d’habitants."
+  },
+  "status": "processing",
+  "createdAt": "2026-11-21T11:58:06.184Z",
+  "revision": 3,
+  "extraction": {
+    "attemptId": "2ad1f807-82db-49be-a28e-23179c3e935e-extract-1",
+    "completedChunks": 1,
+    "totalChunks": 1,
+    "done": true
+  },
+  "detectedLanguage": "ca",
+  "explanationLanguage": "ca",
+  "claims": [
+    {
+      "claimId": "2ad1f807-82db-49be-a28e-23179c3e935e-0-0",
+      "quote": "Barcelona té més d’un milió d’habitants.",
+      "assertion": "Barcelona té més d’un milió d’habitants.",
+      "start": 0,
+      "end": 40,
+      "context": "Barcelona té més d’un milió d’habitants.",
+      "entities": [
+        "Barcelona"
+      ],
+      "dates": [],
+      "metric": "més d’un milió d’habitants",
+      "place": "Barcelona",
+      "comparison": "més d’un milió",
+      "status": "awaiting_research"
+    }
+  ]
+}

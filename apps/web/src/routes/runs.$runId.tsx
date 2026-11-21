@@ -4,7 +4,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Check, LoaderCircle } from "lucide-react";
 import { Effect } from "effect";
 import { loadRun } from "../services/api";
-import { runState } from "../state/submission";
+import { runState, needsExtractionPolling } from "../state/run";
 
 export function SavedSubmissionPage() {
   const { runId } = useParams({ strict: false }) as { runId: string };
@@ -21,7 +21,7 @@ export function SavedSubmissionPage() {
         return;
       }
       setState({ status: "loaded", run: result.right });
-      if (result.right.status === "queued") {
+      if (needsExtractionPolling(result.right)) {
         timer = setTimeout(refresh, 2000);
       }
     }
@@ -62,11 +62,55 @@ export function SavedSubmissionPage() {
             <span className="status-dot" />
             <div>
               <strong>
-                {state.run.status === "queued" ? "Preparing submission" : "Awaiting processing"}
+                {state.run.status === "error"
+                  ? "Extraction failed"
+                  : state.run.status === "extracting"
+                    ? "Finding factual claims"
+                    : state.run.status === "queued"
+                      ? "Preparing submission"
+                      : state.run.extraction?.done
+                        ? "Extraction complete"
+                        : "Awaiting processing"}
               </strong>
-              <p>Your text is saved. Claim extraction will be available in the next build.</p>
+              {state.run.error ? (
+                <p role="alert">{state.run.error}</p>
+              ) : state.run.extraction?.done ? (
+                <p>
+                  {state.run.claims.length
+                    ? `${state.run.claims.length} claims found. Evidence research is the next stage.`
+                    : "No checkable factual claims were found."}
+                </p>
+              ) : (
+                <p>
+                  {state.run.extraction
+                    ? `${state.run.extraction.completedChunks} of ${state.run.extraction.totalChunks} passages processed.`
+                    : "Your original text is saved."}
+                </p>
+              )}
             </div>
           </section>
+          {state.run.claims.length > 0 ? (
+            <section className="claims-list" aria-label="Extracted claims">
+              <h2>Factual claims</h2>
+              {state.run.claims.map((claim) => (
+                <article className="surface claim" key={claim.claimId}>
+                  <p className="muted">Awaiting evidence research</p>
+                  <h3>{claim.assertion}</h3>
+                  <blockquote>{claim.quote}</blockquote>
+                  {claim.speaker ? (
+                    <p>
+                      {claim.speaker}
+                      {claim.startSeconds !== undefined ? ` · ${claim.startSeconds}s` : ""}
+                    </p>
+                  ) : null}
+                  <details>
+                    <summary>Context</summary>
+                    <p>{claim.context}</p>
+                  </details>
+                </article>
+              ))}
+            </section>
+          ) : null}
           <section className="surface saved-text">
             <h2>Original text</h2>
             {state.run.submission.source?.url ? (

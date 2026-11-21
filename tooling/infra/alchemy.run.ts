@@ -13,7 +13,15 @@ import {
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 config({ path: path.join(root, ".env") });
-const app = await alchemy("council-checker", { stage: process.env.ALCHEMY_STAGE ?? "dev" });
+for (const name of ["CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"]) {
+  if (!process.env[name]) delete process.env[name];
+}
+const app = await alchemy("council-checker", {
+  stage: process.env.ALCHEMY_STAGE ?? "dev",
+  password:
+    process.env.ALCHEMY_PASSWORD ||
+    (process.argv.includes("--dev") ? "local-development" : undefined),
+});
 // The pinned provider initializes an API client in local mode, even though all
 // bindings are emulated. Supply an emulator identity only in that mode.
 if (app.local) {
@@ -32,8 +40,9 @@ const workflow = Workflow("check-run", {
   className: "CheckRun",
 });
 const evidenceOrigin = app.local
-  ? process.env.LOCAL_EVIDENCE_DATABASE_URL
-  : process.env.HYPERDRIVE_ORIGIN;
+  ? process.env.LOCAL_EVIDENCE_DATABASE_URL ||
+    "postgresql://council:council_local@127.0.0.1:5432/council"
+  : process.env.HYPERDRIVE_ORIGIN || process.env.DATABASE_URL;
 const evidenceDb = evidenceOrigin
   ? await Hyperdrive("evidence-db", {
       origin: alchemy.secret(evidenceOrigin),
@@ -54,10 +63,16 @@ const worker = await Worker("app", {
   },
   bindings: {
     ...(evidenceDb ? { EVIDENCE_DB: evidenceDb } : {}),
-    ...(app.local ? { ENABLE_EVIDENCE_DEBUG: "true" } : {}),
+    ...(app.local || process.env.ENABLE_EVIDENCE_DEBUG === "true"
+      ? { ENABLE_EVIDENCE_DEBUG: "true" }
+      : {}),
     SUBMISSIONS: submissions,
     RUN_COORDINATOR: coordinator,
     CHECK_RUN: workflow,
+    EXTRACT_MODEL: process.env.EXTRACT_MODEL ?? "gpt-5.4-mini",
+    ...(process.env.OPENAI_API_KEY
+      ? { OPENAI_API_KEY: alchemy.secret(process.env.OPENAI_API_KEY) }
+      : {}),
     ASSETS: await Assets({ path: path.join(root, "apps/web/dist") }),
   },
 });
