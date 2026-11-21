@@ -127,7 +127,7 @@
       ? Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0")
       : "";
     button.querySelector(".origin").textContent = [
-      "LiveFact",
+      "Wingman",
       item.preview ? "Ejemplo" : item.saved ? "Guardado" : item.demo ? "Ensayo" : "",
       stamp,
     ]
@@ -136,7 +136,7 @@
     button.querySelector(".action").textContent = item.preview ? "Cerrar ×" : "Ver análisis ↗";
     button.setAttribute(
       "aria-label",
-      item.preview ? "Cerrar aviso de ejemplo" : label + ". Abrir en LiveFact",
+      item.preview ? "Cerrar aviso de ejemplo" : label + ". Abrir en Wingman",
     );
     button.title = item.assertion;
     button.addEventListener("click", (event) => {

@@ -182,7 +182,7 @@ export function SubmissionPage() {
       </form>
       <p className="scope-note">
         Check selected text from any page with the Chrome extension.{" "}
-        <a href="/downloads/council-check-extension.zip" download>
+        <a href="/downloads/wingman-extension.zip" download>
           Download extension
         </a>
         {" · "}
