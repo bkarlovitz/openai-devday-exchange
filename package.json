@@ -10,14 +10,14 @@
   "scripts": {
     "dev": "npm run build:extension && npm run build --workspace @council/web && npm run dev --workspace @council/infra",
     "build": "npm run build:extension && npm run build --workspace @council/web && wrangler deploy --dry-run --config apps/api/wrangler.jsonc --outdir dist/worker",
-    "typecheck": "tsc --noEmit -p apps/api && tsc --noEmit -p apps/web && tsc --noEmit -p tooling/infra && tsc --noEmit -p apps/extension",
+    "typecheck": "tsc --noEmit -p apps/api && tsc --noEmit -p apps/web && tsc --noEmit -p tooling/infra && tsc --noEmit -p apps/extension && npm run typecheck --workspace @council/livefact-youtube",
     "lint": "oxlint apps packages tooling && oxfmt --check apps packages tooling package.json tsconfig.json",
     "format": "oxfmt apps packages tooling package.json tsconfig.json",
     "test": "vitest run",
     "deploy:dev": "npm run build:extension && npm run build --workspace @council/web && npm run deploy:dev --workspace @council/infra",
     "vendor:sync": "node tools/vendor/sync.ts sync",
     "vendor:status": "node tools/vendor/sync.ts status",
-    "build:extension": "npm run build --workspace @council/extension && node tools/publish-extension.mjs"
+    "build:extension": "npm run build --workspace @council/extension && npm run build --workspace @council/livefact-youtube && node tools/publish-extension.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261121.1",

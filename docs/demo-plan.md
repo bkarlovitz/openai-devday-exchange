@@ -82,3 +82,7 @@ The final long document demonstrates progressive processing and visible partial 
 ## YouTube deployment note
 
 The private yt-dlp caption container and POST `/api/runs/youtube` are deployed. Requested intervals are at most180 seconds. The checked official council recording has no usable captions; use the sourced text example for a dependable walkthrough. A successful AP caption import contained only a short non-factual caption in its opening interval; another test video returned a retrieval503. Verify that the selected interval contains meaningful spoken subtitles before using a YouTube example. Audio transcription is out of this build's scope.
+
+## YouTube playback client
+
+The teammate's LiveFact YouTube client is now integrated in `apps/livefact-youtube` and packaged separately as `/downloads/livefact-youtube.zip`. Its [runbook](../apps/livefact-youtube/README.md) includes a verified speech excerpt, saved-result replay explicitly labelled as rehearsal, and a fresh visible-caption mode. This client reads visible YouTube CC through the browser; the server container API is a separate caption-ingestion option.
