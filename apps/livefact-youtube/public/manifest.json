@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "LiveFact · YouTube",
+  "version": "0.4.2",
+  "minimum_chrome_version": "116",
+  "description": "Vuelve al momento de una afirmación y consulta su contexto mientras ves YouTube.",
+  "permissions": ["storage", "sidePanel"],
+  "host_permissions": [
+    "http://localhost:8787/*",
+    "https://council-checker-dev.snapnda.workers.dev/*"
+  ],
+  "icons": { "128": "icon.png" },
+  "action": { "default_title": "Abrir LiveFact", "default_icon": "icon.png" },
+  "side_panel": { "default_path": "index.html" },
+  "background": { "service_worker": "worker.js", "type": "module" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["status.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
