@@ -1,8 +1,9 @@
 import { Schema } from "effect";
+import { Language } from "./languages";
+import { Claim, ExtractionProgress } from "./claims";
+export { Language } from "./languages";
 
 export const MAX_TEXT_CHARACTERS = 200_000;
-
-export const Language = Schema.Literal("en", "es", "ca");
 
 export const SubmissionText = Schema.String.pipe(
   Schema.filter(
@@ -58,7 +59,19 @@ export type Submission = typeof Submission.Type;
 export const Run = Schema.Struct({
   runId: Schema.UUID,
   submission: Submission,
-  status: Schema.Literal("queued", "awaiting_processing"),
+  status: Schema.Literal(
+    "queued",
+    "awaiting_processing",
+    "extracting",
+    "processing",
+    "complete",
+    "error",
+  ),
+  claims: Schema.optionalWith(Schema.Array(Claim), { default: () => [] }),
+  extraction: Schema.optional(ExtractionProgress),
+  detectedLanguage: Schema.optional(Language),
+  explanationLanguage: Schema.optional(Language),
+  error: Schema.optional(Schema.String),
   createdAt: Schema.String,
   revision: Schema.Number,
 });

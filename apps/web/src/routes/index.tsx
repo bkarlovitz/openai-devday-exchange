@@ -58,7 +58,7 @@ export function SubmissionPage() {
           </p>
           <button type="submit" disabled={state.pending || tooLong}>
             {state.pending ? <LoaderCircle size={17} className="spin" /> : null}
-            {state.pending ? "Saving…" : "Save submission"}
+            {state.pending ? "Starting…" : "Extract claims"}
             {!state.pending ? <ArrowRight size={17} /> : null}
           </button>
         </div>
@@ -69,7 +69,7 @@ export function SubmissionPage() {
         ) : null}
       </form>
       <p className="scope-note">
-        This first build saves your text. Claim extraction and evidence research are coming next.
+        Factual claims are extracted automatically. Evidence research is the next stage.
       </p>
     </main>
   );

@@ -7,4 +7,6 @@ export interface Env {
   EVIDENCE_DB?: Hyperdrive;
   ENABLE_EVIDENCE_DEBUG?: string;
   ASSETS: Fetcher;
+  OPENAI_API_KEY?: string;
+  EXTRACT_MODEL?: string;
 }

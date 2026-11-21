@@ -1,60 +1,96 @@
-import { sql } from "drizzle-orm";
-import { withEvidenceDb } from "../db/client";
+import { and, asc, eq, ilike, or, sql } from "drizzle-orm";
+import { Schema } from "effect";
+import { CatalogueInput, InspectDatasetInput } from "@council/contracts";
+import type { SnapshotReference } from "@council/contracts";
+import type { Env } from "../env";
+import { databaseEffect } from "../db/client";
+import { dataset, latestSnapshot, snapshot, sourceRow } from "../db/schema";
+import { describeFields } from "./dataset-fields";
 
-type CatalogueEntry = {
-  datasetId: string;
-  sourceUrl: string;
-  description: string;
-  resourceCount: number;
-};
+export class QueryInputError extends Error {}
+export class EvidenceNotFound extends Error {}
 
-type CatalogueResource = {
-  resourceKey: string;
-  snapshotId: string;
-  sourceUrl: string;
-  sha256: string;
-  fetchedAt: string;
-  lastSeenAt: string;
-  rowCount: number;
-};
+export function snapshotReference(row: typeof snapshot.$inferSelect): SnapshotReference {
+  return {
+    id: row.id.toString(),
+    datasetId: row.datasetId,
+    resourceKey: row.resourceKey,
+    resourceUrl: row.resourceUrl,
+    sha256: row.sha256,
+    fetchedAt: row.fetchedAt.toISOString(),
+    lastSeenAt: row.lastSeenAt.toISOString(),
+    rowCount: row.rowCount,
+  };
+}
 
-export function searchCatalogue(binding: Hyperdrive, query?: string) {
-  const document = sql`to_tsvector('simple', d.id || ' ' || d.search_text)`;
-  return withEvidenceDb(binding, async (db) => {
-    const result = await db.execute<CatalogueEntry>(sql`
-      SELECT d.id AS "datasetId", d.source_url AS "sourceUrl", d.search_text AS "description",
-        (SELECT count(*)::integer FROM latest_snapshot s WHERE s.dataset_id = d.id) AS "resourceCount"
-      FROM dataset d
-      ${
-        query
-          ? sql`CROSS JOIN plainto_tsquery('simple', ${query}) AS q
-                WHERE ${document} @@ q
-                ORDER BY ts_rank(${document}, q) DESC, d.id`
-          : sql`ORDER BY d.id`
-      }
-      LIMIT 100
-    `);
-    return result.rows;
+export function searchCatalogue(env: Env, input: unknown) {
+  const options = Schema.decodeUnknownSync(CatalogueInput)(input);
+  return databaseEffect(env, async (db) => {
+    const vector = options.embedding ? JSON.stringify(options.embedding) : null;
+    const distance = vector
+      ? sql<
+          number | null
+        >`CASE WHEN ${dataset.embeddingModel} = 'text-embedding-3-small' THEN ${dataset.embedding} <=> ${vector}::vector ELSE NULL END`
+      : sql<null>`NULL`;
+    const condition =
+      options.query && !vector
+        ? or(
+            ilike(dataset.id, `%${options.query}%`),
+            ilike(dataset.searchText, `%${options.query}%`),
+          )
+        : undefined;
+    const rows = await db
+      .select({
+        id: dataset.id,
+        sourceUrl: dataset.sourceUrl,
+        description: dataset.searchText,
+        updatedAt: dataset.updatedAt,
+        distance,
+        resources: sql<number>`(SELECT count(*)::int FROM latest_snapshot l WHERE l.dataset_id = "dataset"."id")`,
+      })
+      .from(dataset)
+      .where(condition)
+      .orderBy(...(vector ? [sql`${distance} ASC NULLS LAST`, asc(dataset.id)] : [asc(dataset.id)]))
+      .limit(options.limit);
+    return { datasets: rows, embeddingModel: vector ? "text-embedding-3-small" : null };
   });
 }
 
-export function inspectDataset(binding: Hyperdrive, datasetId: string) {
-  return withEvidenceDb(binding, async (db) => {
-    const result = await db.execute<Omit<CatalogueEntry, "resourceCount">>(sql`
-      SELECT id AS "datasetId", source_url AS "sourceUrl", search_text AS "description"
-      FROM dataset WHERE id = ${datasetId}
-    `);
-    const dataset = result.rows[0];
-    if (!dataset) {
-      return null;
+export function inspectDataset(env: Env, input: unknown) {
+  const options = Schema.decodeUnknownSync(InspectDatasetInput)(input);
+  return databaseEffect(env, async (db) => {
+    const [entry] = await db.select().from(dataset).where(eq(dataset.id, options.datasetId));
+    if (!entry) throw new EvidenceNotFound("Dataset not found.");
+    const table = options.snapshotId ? snapshot : latestSnapshot;
+    const resources = await db
+      .select()
+      .from(table)
+      .where(
+        and(
+          eq(table.datasetId, options.datasetId),
+          options.snapshotId ? eq(table.id, BigInt(options.snapshotId)) : undefined,
+          options.resourceKey ? eq(table.resourceKey, options.resourceKey) : undefined,
+        ),
+      )
+      .orderBy(asc(table.resourceKey));
+    if (!resources.length) throw new EvidenceNotFound("Dataset snapshot not found.");
+    const details = [];
+    for (const resource of resources) {
+      const samples = await db
+        .select({ rowNumber: sourceRow.rowNumber, data: sourceRow.data })
+        .from(sourceRow)
+        .where(eq(sourceRow.snapshotId, resource.id))
+        .orderBy(asc(sourceRow.rowNumber))
+        .limit(2);
+      details.push({
+        snapshot: snapshotReference(resource),
+        fields: describeFields(options.datasetId, samples[0]?.data ?? {}),
+        sampleRows: samples,
+      });
     }
-    const resources = await db.execute<CatalogueResource>(sql`
-      SELECT resource_key AS "resourceKey", id::text AS "snapshotId",
-             resource_url AS "sourceUrl", sha256, fetched_at::text AS "fetchedAt",
-             last_seen_at::text AS "lastSeenAt", row_count AS "rowCount"
-      FROM latest_snapshot WHERE dataset_id = ${datasetId}
-      ORDER BY resource_key
-    `);
-    return { ...dataset, resources: resources.rows };
+    return {
+      dataset: { id: entry.id, sourceUrl: entry.sourceUrl, description: entry.searchText },
+      resources: details,
+    };
   });
 }
