@@ -9,7 +9,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { RegistryProvider } from "@effect-atom/atom-react";
-import { BrandMark } from "@council/ui";
+import { BrandLogo } from "@council/ui";
 import { SubmissionPage } from "./routes/index";
 import { SavedSubmissionPage } from "./routes/runs.$runId";
 import "./styles.css";
@@ -20,7 +20,7 @@ const rootRoute = createRootRoute({
     <>
       <header className="site-header">
         <Link to="/" className="brand">
-          <BrandMark /> Wingman
+          <BrandLogo />
         </Link>
         <nav className="header-nav" aria-label="Main navigation">
           <a href="/#check">Check a claim</a>

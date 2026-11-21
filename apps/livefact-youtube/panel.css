@@ -71,21 +71,14 @@ select:focus-visible {
   flex: none;
 }
 .brand h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  min-width: 0;
   margin: 0;
-  font: 700 17px/1 var(--font-display);
-  letter-spacing: -0.01em;
 }
-.brand-icon {
-  background: var(--ink);
-  color: white;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
+.wingman-logo {
+  display: block;
+  width: 145px;
+  max-width: 100%;
+  height: auto;
 }
 .toggle {
   display: flex;
@@ -815,14 +808,6 @@ body[data-busy="true"] .footer-dot {
   background: #fff5df;
   border-bottom: 3px solid #47b1e4;
   min-height: 70px;
-}
-.brand h1 {
-  font-size: 21px;
-}
-.brand-icon {
-  width: 34px;
-  height: 34px;
-  background: transparent;
 }
 .panel-footer {
   background: #fff5df;

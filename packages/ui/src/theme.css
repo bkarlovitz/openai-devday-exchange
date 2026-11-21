@@ -413,9 +413,11 @@ h2 {
 }
 
 /* Wingman brand elements shared across the two React clients. */
-.wingman-mark {
+.wingman-logo {
   display: block;
-  flex: none;
+  width: 145px;
+  max-width: 100%;
+  height: auto;
 }
 .wingman-mascot {
   display: block;
