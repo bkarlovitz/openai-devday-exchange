@@ -105,7 +105,25 @@ export function queryDataset(env: Env, input: unknown) {
       const { operation, field: name } = options.aggregate;
       if (operation === "count")
         result.aggregate = { operation, value: String(counts.total), status: "complete" };
-      else {
+      else if (operation === "count_distinct") {
+        if (!name) throw new QueryInputError("This aggregation requires a field.");
+        requireField(fields, name);
+        const value = sql`NULLIF(btrim(${sourceRow.data}->>${name}), '')`;
+        const [distinct] = await db
+          .select({
+            value: sql<string>`count(DISTINCT ${value})::text`,
+            valid: sql<number>`count(${value})::int`,
+          })
+          .from(sourceRow)
+          .where(where);
+        result.aggregate = {
+          operation,
+          field: name,
+          validRows: distinct.valid,
+          value: distinct.valid === counts.total ? distinct.value : null,
+          status: distinct.valid === counts.total ? "complete" : "missing_values",
+        };
+      } else {
         if (!name) throw new QueryInputError("This aggregation requires a field.");
         const field = requireField(fields, name);
         if (field.type !== "number")

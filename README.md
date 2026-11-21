@@ -237,3 +237,5 @@ La misma ruta admite estas fuentes. Obtén `resourceKey` del catálogo y reutili
 | `population` | `referenceDate` con formato `AAAA-01-01`. Opcionales `districtCode`, `neighbourhoodCode` y `censusSection`. |
 | `tourist-flats` | `districtCode` y `neighbourhoodCode` opcionales, tal como salen en el CSV (por ejemplo, `"01"`). La fecha de descarga figura en el snapshot. |
 | `ine-59061` | `seriesCode` (por ejemplo, `IPVA4962`) y `year` de cuatro dígitos. La respuesta conserva los códigos de unidad y escala del INE. |
+
+Para obtener un total reproducible, añade `"aggregate":"sum_population"` al consultar padrón o `"aggregate":"count_tourist_flats"` al consultar turismo, sin campos de paginación. La primera operación suma habitantes para la fecha y el ámbito filtrados. La segunda cuenta expedientes distintos del registro descargado. Ambas devuelven los filtros, la versión consultada y el número de filas utilizadas. Si faltan filas o valores necesarios, el total se devuelve como `null`.

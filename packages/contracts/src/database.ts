@@ -55,7 +55,7 @@ export const DatasetQueryInput = Schema.Struct({
   afterRow: Schema.optional(Schema.Int.pipe(Schema.between(1, 2147483647))),
   aggregate: Schema.optional(
     Schema.Struct({
-      operation: Schema.Literal("count", "sum", "avg", "min", "max"),
+      operation: Schema.Literal("count", "count_distinct", "sum", "avg", "min", "max"),
       field: Schema.optional(Field),
     }),
   ),
@@ -101,7 +101,8 @@ export interface DatasetEvidence {
     unit?: string;
     value: string | null;
     numericRows?: number;
-    status: "complete" | "missing_numeric_values";
+    validRows?: number;
+    status: "complete" | "missing_numeric_values" | "missing_values";
   };
 }
 
@@ -128,6 +129,7 @@ export const QueryDatasetInput = Schema.Union(
   Schema.Struct({
     ...page,
     datasetId: Schema.Literal("population"),
+    aggregate: Schema.optional(Schema.Literal("sum_population")),
     resourceKey: Schema.UUID,
     filters: Schema.Struct({
       referenceDate: Schema.String.pipe(Schema.pattern(/^\d{4}-01-01$/)),
@@ -139,6 +141,7 @@ export const QueryDatasetInput = Schema.Union(
   Schema.Struct({
     ...page,
     datasetId: Schema.Literal("tourist-flats"),
+    aggregate: Schema.optional(Schema.Literal("count_tourist_flats")),
     resourceKey: Schema.UUID,
     filters: Schema.Struct({
       districtCode: Schema.optional(areaCode),
@@ -158,5 +161,11 @@ export const QueryDatasetInput = Schema.Union(
   Schema.filter((query) => query.afterRow === undefined || query.snapshotId !== undefined, {
     message: () => "Pagination requires a snapshot ID.",
   }),
+  Schema.filter(
+    (query) =>
+      !("aggregate" in query && query.aggregate) ||
+      (query.afterRow === undefined && query.limit === undefined),
+    { message: () => "Aggregate queries cannot use pagination." },
+  ),
 );
 export type QueryDatasetInput = typeof QueryDatasetInput.Type;
