@@ -56,6 +56,24 @@ describe("assessment evidence guards", () => {
       expect(validateAssessment(proposal(verdict), [source], sufficient).verdict).toBe(verdict);
     },
   );
+  it("repairs the explanation while preserving verified calculations", async () => {
+    const { calculations: _, ...correction } = proposal("supported");
+    vi.mocked(generateObject)
+      .mockReturnValueOnce(
+        Effect.succeed({
+          ...proposal("supported"),
+          calculations: [
+            { operation: "percentage_change", operands, result: 50, formula: "", unit: "%" },
+          ],
+        }),
+      )
+      .mockReturnValueOnce(Effect.succeed({ ...correction, explanation: "The change was 0.47%." }));
+    const result = await Effect.runPromise(assessClaim(env, claim, [source], "en", sufficient));
+    expect(result.explanation).toBe("The change was 0.47%.");
+    expect(result.calculations[0].result).toBeCloseTo(0.4702567);
+    expect(result.calculations[0].operands).toEqual(operands);
+  });
+
   it("rejects unknown citations", () => {
     expect(() =>
       validateAssessment({ ...proposal("supported"), evidenceIds: ["invented"] }, [source]),
