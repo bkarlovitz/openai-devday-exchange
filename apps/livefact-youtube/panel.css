@@ -412,7 +412,11 @@ output {
   --score: #17773f;
   --score-ink: #fff;
 }
-.row[data-status="mixed"],
+.row[data-status="mixed"] {
+  --chip: #d6e9fb;
+  --score: #295e92;
+  --score-ink: #fff;
+}
 .row[data-status="context"] {
   --state: #7a5000 !important;
   --wash: #fff9e8 !important;

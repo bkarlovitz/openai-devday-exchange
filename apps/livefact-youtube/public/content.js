@@ -18,6 +18,7 @@
     startSeconds: 855,
     speaker: "Pedro Sánchez",
     assertion: "La vivienda en Europa subió un 48 % en la última década",
+    noticeText: "Vivienda en la UE: el 48 % corresponde a 2010–2023",
     evidence: "Eurostat registra un aumento del 48 % en la UE entre 2010 y 2023.",
     argument: "La cifra coincide. El periodo abarca trece años y el ámbito de la serie es la UE.",
     source: {
@@ -54,7 +55,7 @@
     const status = statuses[item.status];
     const host = document.createElement("div");
     host.style.cssText =
-      "position:absolute;right:12px;top:12px;z-index:60;width:clamp(286px,46%,320px);max-width:calc(100% - 24px);pointer-events:auto";
+      "position:absolute;right:12px;top:12px;z-index:60;container-type:inline-size;width:clamp(228px,44%,370px);max-width:calc(100% - 24px);pointer-events:auto";
     const root = host.attachShadow({ mode: "open" });
     const label = item.label || status.label;
     root.innerHTML = `<style>
@@ -66,7 +67,7 @@
       background:var(--state);color:#fff;font-size:12px;font-weight:700;line-height:1.3}
       i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:#fff;color:var(--state);font:700 12px/1 system-ui}
       .subject{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;
-      overflow-wrap:anywhere;margin:7px 0;font-size:16px;font-weight:680;line-height:1.28}
+      overflow-wrap:anywhere;margin:7px 0;font-size:clamp(14px,5.4cqi,19px);font-weight:680;line-height:1.28}
       .foot{font-size:11px;color:#554f46;font-variant-numeric:tabular-nums}
       .action{margin-left:auto;color:var(--state)}
       @media(prefers-reduced-motion:no-preference){button{animation:enter .15s ease-out}@keyframes enter{from{opacity:0;transform:translateY(-3px)}}}
@@ -77,7 +78,7 @@
     button.style.setProperty("--edge", status.edge);
     button.querySelector("i").textContent = status.icon;
     button.querySelector(".state").textContent = label;
-    button.querySelector(".subject").textContent = item.assertion;
+    button.querySelector(".subject").textContent = item.noticeText || item.assertion;
     const t = Math.floor(item.startSeconds);
     const stamp = Number.isFinite(t)
       ? Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0")
@@ -279,7 +280,6 @@
             demo: true,
             kind: "argument",
             status: "context",
-            label: "Falta contexto",
             assertion: "¿Qué explica la subida del alquiler?",
             context:
               "Incasòl publica rentas de contratos con fianza depositada. La serie describe cómo cambian los importes.",
@@ -315,12 +315,12 @@
   };
 
   function claimState(claim) {
-    if (claim.status === "error") return { status: "unavailable", label: "Error de comprobación" };
+    if (claim.status === "error")
+      return { status: "unavailable", label: statuses.unavailable.label };
     if (claim.status === "not_checkable") return { status: "unavailable", label: "No verificable" };
     if (claim.status === "complete" && claim.verdict) {
       return {
         status: verdictStatus[claim.verdict],
-        label: claim.verdict === "insufficient_evidence" ? "Evidencia insuficiente" : undefined,
       };
     }
     return { status: "pending" };

@@ -8,7 +8,7 @@ type Backend = "local" | "team";
 declare global {
   var liveFactStatuses: Record<
     Status,
-    { icon: string; label: string; color: string; wash: string; edge: string }
+    { icon: string; label: string; color: string; marker: string; wash: string; edge: string }
   >;
 }
 
@@ -370,13 +370,13 @@ function syncSummary(items: Entry[]) {
   const labels: Record<Status, string> = {
     supported: "Respaldadas",
     contradicted: "Contradichas",
-    mixed: "Evidencia mixta",
-    context: "Falta contexto",
+    mixed: "Coincide en parte",
+    context: "Faltan pruebas",
     pending: "Comprobando",
     unavailable: "Sin comprobar",
   };
   for (const [status, count] of groups) {
-    const color = liveFactStatuses[status].color;
+    const color = liveFactStatuses[status].marker;
     const segment = document.createElement("span");
     segment.style.width = `${(count / items.length) * 100}%`;
     segment.style.background = color;
@@ -414,14 +414,14 @@ function renderMarkers(items: Entry[], start: number, end: number) {
     button.title =
       group.length > 1
         ? `${time(seconds)} · ${group.length} afirmaciones cercanas`
-        : `${time(seconds)} · ${status.label} · ${entry.assertion}`;
+        : `${time(seconds)} · ${entry.label || status.label} · ${entry.assertion}`;
     button.setAttribute("aria-label", button.title);
     button.setAttribute(
       "aria-current",
       String(group.some(({ entry }) => entry.id === activeEntry)),
     );
     button.hidden = filter !== "all" && !group.some(({ entry }) => entry.kind === filter);
-    for (const color of new Set(group.map(({ entry }) => liveFactStatuses[entry.status].color))) {
+    for (const color of new Set(group.map(({ entry }) => liveFactStatuses[entry.status].marker))) {
       const line = document.createElement("span");
       line.style.background = color;
       button.append(line);
