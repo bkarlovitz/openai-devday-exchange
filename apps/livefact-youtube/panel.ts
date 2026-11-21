@@ -52,6 +52,7 @@ function el<T extends HTMLElement>(id: string) {
 }
 
 const enabled = el<HTMLInputElement>("enabled");
+const previewNotice = el<HTMLButtonElement>("preview-notice");
 const seek = el<HTMLInputElement>("seek");
 const marks = el("marks");
 const entries = el("entries");
@@ -299,7 +300,20 @@ function renderEntry(item: Entry, opened: Set<string>) {
     appendDetail(detail, "Contexto", context);
   }
   appendDetail(detail, "Qué podemos concluir", item.argument);
-  appendDetail(detail, "Estado", item.error);
+  if (item.error) {
+    const reason = item.error.includes("sources failed retrieval")
+      ? "No se pudieron consultar las fuentes."
+      : item.error.includes("calculation operand")
+        ? "La fuente citada no contiene todos los datos del cálculo."
+        : "El servidor no pudo completar esta comprobación.";
+    appendDetail(detail, "Estado", reason);
+    const diagnostic = document.createElement("details");
+    diagnostic.className = "context-detail";
+    const heading = document.createElement("summary");
+    heading.textContent = "Detalle técnico";
+    diagnostic.append(heading, document.createTextNode(item.error));
+    detail.append(diagnostic);
+  }
   if (item.source) detail.append(sourceLink(item.source.label, item.source.url));
   if (item.runUrl)
     detail.append(
@@ -418,6 +432,12 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
     ? "Al abrir un vídeo, podrás revisar las citas y volver a su minuto desde este panel."
     : "Activa CC y analiza un fragmento para ver sus afirmaciones en la línea de tiempo.";
   if (snapshot) enabled.checked = snapshot.enabled;
+  previewNotice.disabled = !snapshot?.ready || !snapshot.enabled;
+  previewNotice.title = !snapshot?.ready
+    ? "Abre un vídeo en YouTube"
+    : !snapshot.enabled
+      ? "Activa Avisos para probarlo"
+      : "Mostrar un aviso en el vídeo";
   syncCapture();
   demo.disabled = !snapshot?.ready || snapshot.busy || snapshot.live;
   capture.disabled ||= Boolean(snapshot?.live);
@@ -489,6 +509,12 @@ enabled.addEventListener(
 backend.addEventListener("change", () => {
   void chrome.storage.local.set({ backend: backend.value });
   syncCapture();
+});
+previewNotice.addEventListener("click", async () => {
+  if (!(await send<boolean>({ type: "previewNotice" }))) {
+    feedback.hidden = false;
+    feedback.textContent = "Abre el vídeo y espera a que termine cualquier anuncio.";
+  }
 });
 seek.addEventListener("change", () => void jump(Number(seek.value)));
 live.addEventListener("click", () => {

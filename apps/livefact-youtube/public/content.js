@@ -54,21 +54,22 @@
     const status = statuses[item.status];
     const host = document.createElement("div");
     host.style.cssText =
-      "position:absolute;right:12px;top:12px;z-index:60;width:240px;max-width:calc(100% - 24px);pointer-events:auto";
+      "position:absolute;right:12px;top:12px;z-index:60;width:286px;max-width:calc(100% - 24px);pointer-events:auto";
     const root = host.attachShadow({ mode: "open" });
     const label = item.label || status.label;
     root.innerHTML = `<style>
-      button{display:block;width:100%;padding:7px 9px 8px;border-radius:11px;border:1px solid var(--edge);box-sizing:border-box;
-      background:var(--wash);color:#302d27;box-shadow:0 2px 12px #221b1b3b;font:650 12px/1.3 system-ui;text-align:left;cursor:pointer}
+      button{display:block;width:100%;padding:10px 13px;border-radius:13px;border:1px solid var(--edge);border-inline-start:3px solid var(--state);box-sizing:border-box;
+      background:var(--wash);color:#302d27;box-shadow:0 2px 5px #221b1b16,0 6px 20px #221b1b26;font:600 13px/1.35 system-ui;text-align:left;cursor:pointer}
       button:focus-visible{outline:2px solid var(--state);outline-offset:2px}
-      .top{display:flex;align-items:center;gap:5px;color:var(--state);min-width:0}
-      i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;border:1px solid var(--edge);font:700 11px/1 system-ui}
-      .state{font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      small{margin-left:auto;color:var(--state);font-size:9px;white-space:nowrap}
-      .subject{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;
-      overflow-wrap:anywhere;margin-top:3px;padding-left:2px;font-size:12px;line-height:1.26}
-      @media(prefers-reduced-motion:no-preference){button{animation:enter .18s ease-out}@keyframes enter{from{opacity:0;transform:translateY(-3px)}}}
-    </style><button type="button" aria-describedby="subject"><span class="top"><i aria-hidden="true"></i><span class="state"></span><small aria-hidden="true"></small></span><span class="subject" id="subject"></span></button>`;
+      .top,.foot{display:flex;align-items:center;gap:6px}
+      .top{color:var(--state);font-size:11px;font-weight:700}
+      i{display:grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:var(--state);color:white;font:700 11px/1 system-ui}
+      .subject{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;
+      overflow-wrap:anywhere;margin:5px 0 6px;font-size:14px;line-height:1.32}
+      .foot{font-size:10px;color:#554f46;font-variant-numeric:tabular-nums}
+      .action{margin-left:auto;color:var(--state)}
+      @media(prefers-reduced-motion:no-preference){button{animation:enter .15s ease-out}@keyframes enter{from{opacity:0;transform:translateY(-3px)}}}
+    </style><button type="button" aria-describedby="subject"><span class="top"><i aria-hidden="true"></i><span class="state"></span></span><span class="subject" id="subject"></span><span class="foot"><span class="origin"></span><span class="action"></span></span></button>`;
     const button = root.querySelector("button");
     button.style.setProperty("--state", status.color);
     button.style.setProperty("--wash", status.wash);
@@ -76,25 +77,56 @@
     button.querySelector("i").textContent = status.icon;
     button.querySelector(".state").textContent = label;
     button.querySelector(".subject").textContent = item.assertion;
-    button.querySelector("small").textContent = item.saved
-      ? "Guardado ↗"
-      : item.demo
-        ? "Ensayo ↗"
-        : "↗";
-    button.setAttribute("aria-label", label + ". Abrir en LiveFact");
+    const t = Math.floor(item.startSeconds);
+    const stamp = Number.isFinite(t)
+      ? Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0")
+      : "";
+    button.querySelector(".origin").textContent = [
+      "LiveFact",
+      item.preview ? "Ejemplo" : item.saved ? "Guardado" : item.demo ? "Ensayo" : "",
+      stamp,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    button.querySelector(".action").textContent = item.preview ? "Cerrar ×" : "Ver análisis ↗";
+    button.setAttribute(
+      "aria-label",
+      item.preview ? "Cerrar aviso de ejemplo" : label + ". Abrir en LiveFact",
+    );
     button.title = item.assertion;
     button.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (item.preview) {
+        dismiss();
+        showNextNotice();
+        return;
+      }
       chrome.runtime.sendMessage({ type: "open" }).catch(() => {});
       selected = item.id;
       revision++;
     });
     parent.append(host);
     noticeHost = host;
-    noticeTimer = setTimeout(() => {
-      dismiss();
-      showNextNotice();
-    }, 3300);
+    function scheduleDismiss() {
+      clearTimeout(noticeTimer);
+      if (host.matches(":hover") || root.activeElement) return;
+      noticeTimer = setTimeout(() => {
+        dismiss();
+        showNextNotice();
+      }, 5500);
+    }
+    host.addEventListener("pointerenter", () => clearTimeout(noticeTimer));
+    host.addEventListener("pointerleave", scheduleDismiss);
+    button.addEventListener("focus", () => clearTimeout(noticeTimer));
+    button.addEventListener("blur", scheduleDismiss);
+    button.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        dismiss();
+        showNextNotice();
+      }
+    });
+    scheduleDismiss();
   }
 
   let selected = "";
@@ -514,6 +546,17 @@
         .sendMessage({ type: "detail", ...item.claimRef })
         .then(reply, () => reply(null));
       return true;
+    }
+    if (message.type === "previewNotice") {
+      if (!enabled || player().classList.contains("ad-showing")) {
+        reply(false);
+        return;
+      }
+      dismiss();
+      const latest = [...timeline.values()].at(-1);
+      notices.unshift(latest || { ...clip, preview: true, startSeconds: undefined });
+      showNextNotice();
+      reply(true);
     }
     if (message.type === "seek") {
       const { start, end } = clock(video);
