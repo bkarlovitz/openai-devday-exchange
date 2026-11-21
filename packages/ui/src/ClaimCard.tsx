@@ -72,7 +72,12 @@ export function ClaimCard({
           Explanation: {{ en: "English", es: "Español", ca: "Català" }[claim.explanationLanguage]}
         </p>
       ) : null}
-      {detail?.assessment ? <AssessmentView assessment={detail.assessment} /> : null}
+      {detail?.assessment ? (
+        <AssessmentView
+          assessment={detail.assessment}
+          explanationLanguage={claim.explanationLanguage}
+        />
+      ) : null}
       {claim.status === "not_checkable" && detail?.research?.notes.length ? (
         <p className="muted">{detail.research.notes.join(" ")}</p>
       ) : null}

@@ -22,6 +22,7 @@ declare global {
 type Entry = {
   id: string;
   status: Status;
+  examiningEvidence?: boolean;
   assertion: string;
   kind: Exclude<Filter, "all">;
   label?: string;
@@ -234,6 +235,13 @@ function bindAssessment(outer: HTMLDetailsElement, container: HTMLElement, id: s
   void load();
 }
 
+const verdictExpressions: Partial<Record<Status, string>> = {
+  supported: "supported",
+  mixed: "uncertain",
+  context: "uncertain",
+  contradicted: "contradicted",
+};
+
 function renderEntry(item: Entry, opened: Set<string>) {
   const status = liveFactStatuses[item.status];
   const row = document.createElement("li");
@@ -277,7 +285,10 @@ function renderEntry(item: Entry, opened: Set<string>) {
   const summary = document.createElement("summary");
   const state = document.createElement("span");
   state.className = "result";
-  state.textContent = `${status.icon} ${item.label || status.label}`;
+  const label =
+    item.label ||
+    (item.status === "pending" && item.examiningEvidence ? "Revisando las pruebas…" : status.label);
+  state.textContent = `${status.icon} ${label}`;
   const assertion = document.createElement("strong");
   assertion.className = "claim";
   assertion.textContent = item.assertion;
@@ -303,11 +314,21 @@ function renderEntry(item: Entry, opened: Set<string>) {
   summaryFooter.append(action);
   const claimLine = document.createElement("span");
   claimLine.className = "claim-line";
+  const reaction = document.createElement("span");
+  reaction.className = "claim-reaction";
+  reaction.setAttribute("aria-hidden", "true");
+  const expression =
+    item.status === "pending"
+      ? item.examiningEvidence
+        ? "reading"
+        : "listening"
+      : verdictExpressions[item.status];
+  if (expression) reaction.dataset.expression = expression;
   const symbol = document.createElement("span");
-  symbol.className = "status-symbol";
+  symbol.className = "status-symbol reaction-symbol";
   symbol.textContent = status.icon;
-  symbol.setAttribute("aria-hidden", "true");
-  claimLine.append(assertion, symbol);
+  reaction.append(symbol);
+  claimLine.append(assertion, reaction);
   summary.append(claimLine, summaryFooter);
 
   const detail = document.createElement("div");

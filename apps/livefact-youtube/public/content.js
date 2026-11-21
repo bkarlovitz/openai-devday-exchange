@@ -367,7 +367,7 @@
         status: verdictStatus[claim.verdict],
       };
     }
-    return { status: "pending" };
+    return { status: "pending", examiningEvidence: claim.status === "assessing" };
   }
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

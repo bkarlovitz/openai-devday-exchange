@@ -1,5 +1,6 @@
 @import "../../packages/ui/src/brand-fonts.css";
 @import "../../packages/ui/src/brand-tokens.css";
+@import "../../packages/ui/src/pigeon-expressions.css";
 @import "../../packages/ui/src/verdict-motion.css";
 
 :root {
@@ -538,9 +539,8 @@ summary::-webkit-details-marker {
   line-height: 1.55;
 }
 .detail > .verdict-motion {
-  float: inline-end;
-  margin-inline-start: 12px;
-  margin-bottom: 8px;
+  margin-inline-start: auto;
+  margin-bottom: 10px;
 }
 .detail p {
   margin: 0 0 10px;

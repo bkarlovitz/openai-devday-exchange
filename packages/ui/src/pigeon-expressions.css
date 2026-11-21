@@ -1,0 +1,50 @@
+/* Portrait crops from the supplied Night Broadcast character expression sheet. */
+.claim-reaction[data-expression] {
+  position: relative;
+  flex: none;
+  display: block;
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  background-image: url("../assets/wingman-expression-sheet.webp");
+  background-repeat: no-repeat;
+}
+
+.claim-reaction[data-expression] > .reaction-symbol {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.claim-reaction[data-expression="uncertain"] > .reaction-symbol {
+  padding-top: 5px;
+}
+
+.claim-reaction[data-expression="listening"] {
+  background-size: 671.515% auto;
+  background-position: 8.696% 12.225%;
+}
+
+.claim-reaction[data-expression="reading"] {
+  background-size: 714.839% auto;
+  background-position: 40.504% 6.897%;
+}
+
+.claim-reaction[data-expression="supported"] {
+  background-size: 714.839% auto;
+  background-position: 68.206% 50.431%;
+}
+
+.claim-reaction[data-expression="uncertain"] {
+  background-size: 724.183% auto;
+  background-position: 94.921% 50.429%;
+}
+
+.claim-reaction[data-expression="contradicted"] {
+  background-size: 726.557% auto;
+  background-position: 67.19% 6.967%;
+}

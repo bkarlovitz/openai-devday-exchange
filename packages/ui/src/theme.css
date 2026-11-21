@@ -113,6 +113,9 @@ h2 {
   padding: 10px 12px 12px;
   cursor: pointer;
 }
+.result-item > summary:focus-visible {
+  outline-offset: -3px;
+}
 .result-item > summary::-webkit-details-marker {
   display: none;
 }
@@ -305,7 +308,7 @@ h2 {
   color: var(--ink);
 }
 .error {
-  color: var(--contradicted);
+  color: var(--ink);
 }
 .count-supported {
   color: var(--supported);

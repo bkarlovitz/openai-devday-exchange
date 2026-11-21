@@ -1,4 +1,4 @@
-import type { Assessment, Verdict } from "@council/contracts";
+import type { Assessment, Claim, Verdict } from "@council/contracts";
 
 export const verdictLabels: Record<Verdict, string> = {
   supported: "Supported",
@@ -14,7 +14,13 @@ export const verdictPhrases: Record<Verdict, string> = {
   insufficient_evidence: "Jury’s still out.",
 };
 
-export function AssessmentView({ assessment }: { assessment: Assessment }) {
+export function AssessmentView({
+  assessment,
+  explanationLanguage,
+}: {
+  assessment: Assessment;
+  explanationLanguage?: Claim["explanationLanguage"];
+}) {
   return (
     <section className="assessment" aria-label="Assessment">
       <div className="assessment-heading">
@@ -26,13 +32,17 @@ export function AssessmentView({ assessment }: { assessment: Assessment }) {
         </div>
         <span className="verdict-motion" data-verdict={assessment.verdict} aria-hidden="true" />
       </div>
-      <p className="assessment-explanation">{assessment.explanation}</p>
+      <p className="assessment-explanation" lang={explanationLanguage}>
+        {assessment.explanation}
+      </p>
       {assessment.uncertainty.length ? (
         <div className="uncertainty">
           <h4>Limits and uncertainty</h4>
           <ul>
             {assessment.uncertainty.map((item, index) => (
-              <li key={index}>{item}</li>
+              <li key={index} lang={explanationLanguage}>
+                {item}
+              </li>
             ))}
           </ul>
         </div>

@@ -256,7 +256,7 @@ textarea::placeholder {
   line-height: 1.6;
 }
 .error {
-  color: var(--contradicted);
+  color: var(--ink);
   font-size: 14px;
   line-height: 1.6;
 }
