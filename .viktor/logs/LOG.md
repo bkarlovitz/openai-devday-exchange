@@ -64,3 +64,9 @@
 - **Outcome:** verified scoped build; full TASK-011 remains open
 - **Summary:** Verified the deployed text-to-claim-to-evidence-to-verdict web and extension flow. The user time-boxed the deliverable to a hackathon build; TASK-005–009 and TASK-013 remain follow-up tasks, as does complete roadmap evaluation.
 - **Evidence:** Live deployed numerical run aea1cfd9-2bbf-442f-9def-7421d908e12d (Neon snapshot → Supported). Extension English run 15fed423-b291-402e-a750-a4b28a0d8194 and Spanish paste run a785ce5a-0db8-46a1-8138-6732033de28b (official web passages → Supported). Desktop/mobile web and compact extension evidence rendering passed. Hosted ZIP SHA-256: 50093853b0e97838dbcc4e8e50bd2b9dc2d7dd252519b98683b136cba6686745. Native right-click menu UI and toolbar-icon clicking should receive a quick teammate smoke check in desktop Chrome.
+
+### TASK-013: Verify deployed council page citations
+
+- **Outcome** done.
+- **Live validation** The council minutes were available in deployed Neon as snapshot 6. Search and direct passage lookup returned the same original passage for file 25XF0640 on page 8. A fresh Catalan submission completed Supported and cited that passage in run `35060a39-11f0-40b7-879c-7c5164a0e2a7`. Chromium confirmed the deployed evidence link ends in `#page=8`.
+- **Control** Deployed Incasòl run `c01c1787-7c10-4cf8-80e7-7eb346c1b8e8` completed Supported with two structured evidence records. This supplements the earlier isolated validation with real provider and deployed database results.
