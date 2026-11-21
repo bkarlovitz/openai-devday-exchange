@@ -62,11 +62,14 @@
 
 - **Timestamp:** 2026-11-21T12:52:00Z
 - **Outcome:** verified scoped build; full TASK-011 remains open
-- **Summary:** Verified the deployed text-to-claim-to-evidence-to-verdict web and extension flow. The user time-boxed the deliverable to a hackathon build; TASK-005–009 and TASK-013 remain follow-up tasks, as does complete roadmap evaluation.
+- **Summary:** Verified the deployed text-to-claim-to-evidence-to-verdict web and extension flow. The user time-boxed the deliverable to a hackathon build; TASK-005–009 remain follow-up tasks, as does complete roadmap evaluation. TASK-013 received live verification after the subsequent team merge, recorded below.
 - **Evidence:** Live deployed numerical run aea1cfd9-2bbf-442f-9def-7421d908e12d (Neon snapshot → Supported). Extension English run 15fed423-b291-402e-a750-a4b28a0d8194 and Spanish paste run a785ce5a-0db8-46a1-8138-6732033de28b (official web passages → Supported). Desktop/mobile web and compact extension evidence rendering passed. Hosted ZIP SHA-256: 50093853b0e97838dbcc4e8e50bd2b9dc2d7dd252519b98683b136cba6686745. Native right-click menu UI and toolbar-icon clicking should receive a quick teammate smoke check in desktop Chrome.
 
-### TASK-013: Verify deployed council page citations
+### TASK-013: Live Neon and deployed document-citation verification
 
-- **Outcome** done.
-- **Live validation** The council minutes were available in deployed Neon as snapshot 6. Search and direct passage lookup returned the same original passage for file 25XF0640 on page 8. A fresh Catalan submission completed Supported and cited that passage in run `35060a39-11f0-40b7-879c-7c5164a0e2a7`. Chromium confirmed the deployed evidence link ends in `#page=8`.
-- **Control** Deployed Incasòl run `c01c1787-7c10-4cf8-80e7-7eb346c1b8e8` completed Supported with two structured evidence records. This supplements the earlier isolated validation with real provider and deployed database results.
+- **Timestamp:** 2026-11-21T12:56:00Z
+- **Outcome:** done
+- **Integration:** Pulled teammate commit ac5f5a4 (stored council research and page citations) before final delivery. Applied the existing additive migration and ledger to Neon, ingested only council/minutes, and extracted 31 council HTML passages (snapshot 5) and 21 minutes PDF passages (snapshot 6). The loaded minutes are the 31 October 2025 session; this is sample coverage, not a claim that linked sessions are loaded.
+- **Validation:** The teammate's recorded local checks cover en/es/ca search, historical passages, extraction states and page rendering. Live deployed run d61010de-c2d4-4962-8123-a606567b1c40 checked the unanimous 1,040 EUR credit recognition for file 25XF0640. It completed Supported with no claim errors, citing retained Neon snapshot 6, passage/page 8, extraction version 1 and SHA-256 88d0fbd14b65d3bce2126401a3808081e614bcb8a82e9f5672082ee6fcfbcaf9. The deployed mobile web page rendered the source link ending #page=8 with no JavaScript errors. All 22 tests, typecheck, lint and full build passed after the merge.
+- **Final deployed source:** ca60131aea3068dd8a4dae183e93ecdef823eee6. Final hosted extension ZIP bytes matched the local artifact; SHA-256: 83af6f05f29d39a535fff79f3e318411fdedbed7921d5530dca5d2a7c83831cf. The final documentation commit changes delivery records only. TASK-011 stays open for full-roadmap evaluation.
+- **Independent deployed checks:** Run `35060a39-11f0-40b7-879c-7c5164a0e2a7` also completed Supported for file 25XF0640, citing snapshot 6, page 8. Search and direct passage lookup returned identical text, and Chromium confirmed the link ends in `#page=8`. The Incasòl control `c01c1787-7c10-4cf8-80e7-7eb346c1b8e8` completed Supported with two structured evidence records.
