@@ -1,3 +1,4 @@
+import type { YoutubeImporter } from "./containers/youtube-importer";
 import type { RunCoordinator } from "./coordinator/run-coordinator";
 
 export interface Env {
@@ -13,5 +14,8 @@ export interface Env {
   RESEARCH_MODEL?: string;
   SEARCH_MODEL?: string;
   EXPLAIN_MODEL?: string;
+  YOUTUBE_IMPORTER?: DurableObjectNamespace<YoutubeImporter>;
+  YOUTUBE_IMPORT_URL?: string;
+  YOUTUBE_IMPORT_TOKEN?: string;
   EXTENSION_ORIGINS?: string;
 }

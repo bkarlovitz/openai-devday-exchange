@@ -53,6 +53,27 @@ describe("traceable extraction", () => {
     expect(result.claims[0].startSeconds).toBe(30);
   });
 
+  it("retains the video timestamp when an exact quote crosses subtitle cues", () => {
+    const text = "The council\napproved the measure.";
+    const result = validateExtraction(
+      {
+        language: "en",
+        claims: [{ ...base, quote: text, assertion: "The council approved the measure." }],
+      },
+      chunkText(text)[0],
+      {
+        submissionKey: runId,
+        text,
+        passages: [
+          { start: 0, end: 11, startSeconds: 120.5 },
+          { start: 12, end: text.length, startSeconds: 122 },
+        ],
+      },
+      runId,
+    );
+    expect(result.claims[0].startSeconds).toBe(120.5);
+  });
+
   it("handles missing metadata, rejects invented quotes, and accepts an empty result", () => {
     const text = "El Consell va aprovar la mesura.";
     const submission = { submissionKey: runId, text };

@@ -28,6 +28,7 @@ app.onError((error, c) => {
 });
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));
 
+export { YoutubeImporter } from "./containers/youtube-importer";
 export { RunCoordinator } from "./coordinator/run-coordinator";
 export { CheckRun } from "./workflows/check-run";
 export default app;
