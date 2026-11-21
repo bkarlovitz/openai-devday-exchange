@@ -28,4 +28,14 @@ await copyFile(
   new URL("../dist/livefact-youtube.zip", import.meta.url),
   new URL("livefact-youtube.zip", downloads),
 );
-console.log("LiveFact YouTube extension download prepared.");
+console.log("Wingman YouTube extension download prepared.");
+
+for (const [original, branded] of [
+  ["council-check-extension", "wingman-extension"],
+  ["livefact-youtube", "wingman-youtube"],
+]) {
+  const source = new URL(`../dist/${original}.zip`, import.meta.url);
+  await copyFile(source, new URL(`../dist/${branded}.zip`, import.meta.url));
+  await copyFile(source, new URL(`${branded}.zip`, downloads));
+}
+console.log("Wingman branded downloads prepared; previous links remain available.");

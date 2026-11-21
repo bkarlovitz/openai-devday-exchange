@@ -20,7 +20,7 @@ const rootRoute = createRootRoute({
     <>
       <header className="site-header">
         <Link to="/" className="brand">
-          <BrandMark /> Fact Check
+          <BrandMark /> Wingman
         </Link>
       </header>
       <Outlet />

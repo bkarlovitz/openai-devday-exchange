@@ -321,7 +321,7 @@ function Panel() {
           <span className="brand-mark">
             <BrandMark />
           </span>{" "}
-          Fact Check
+          Wingman
         </span>
         {receipt ? (
           <button

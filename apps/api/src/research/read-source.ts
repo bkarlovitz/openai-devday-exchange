@@ -46,7 +46,7 @@ export function readSource(source: SearchSource) {
         throw new Error("Source URL must use HTTP or HTTPS.");
       const response = await fetch(source.url, {
         signal: AbortSignal.timeout(15_000),
-        headers: { "User-Agent": "CouncilCheck/0.1" },
+        headers: { "User-Agent": "Wingman/0.1" },
       });
       if (!response.ok) throw new Error(`Source retrieval failed (HTTP ${response.status}).`);
       const contentType = response.headers.get("content-type") ?? "";

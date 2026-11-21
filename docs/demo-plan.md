@@ -1,4 +1,4 @@
-# Council Check walkthrough
+# Wingman walkthrough
 
 Use the working text-to-evidence path for a three-to-five-minute walkthrough. The input collection combines an authentic official-record excerpt with team-authored verification statements. Source versions and expected arithmetic are recorded with each input.
 
@@ -31,7 +31,7 @@ Ready-to-import `.txt` files accompany the JSON provenance records. Use the web 
 
 ## Three-to-five-minute sequence
 
-- **Opening, about 30 seconds.** Show the official minutes and select the item headed 25XF0640. Explain that Council Check accepts text supplied from documents, transcripts, or other producers.
+- **Opening, about 30 seconds.** Show the official minutes and select the item headed 25XF0640. Explain that Wingman accepts text supplied from documents, transcripts, or other producers.
 - **Authentic source, about one minute.** Paste the exact excerpt or open its completed run. Show the extracted assertion, original wording, official PDF citation, and page number. Explain precisely what the record establishes.
 - **Numerical comparison, about one minute.** Say that the two housing statements were authored by the team as controlled checks. Show their actual assessments, the pinned rows, the common price band and geography, and the executable percentage-change calculation.
 - **Coverage boundary, about 45 seconds.** Show the payment statement if preflight produced an appropriate result. Walk through the difference between the approval recorded in the minutes and the further evidence needed to establish a completed payment.

@@ -1,10 +1,10 @@
-# LiveFact para Chrome
+# Wingman para Chrome
 
-LiveFact acompaña al reproductor de YouTube con avisos cortos. Su panel lateral muestra las afirmaciones en una línea de tiempo. Cada marca abre el análisis y lleva al segundo de la cita cuando el reproductor todavía permite consultarlo.
+Wingman acompaña al reproductor de YouTube con avisos cortos. Su panel lateral muestra las afirmaciones en una línea de tiempo. Cada marca abre el análisis y lleva al segundo de la cita cuando el reproductor todavía permite consultarlo.
 
 ## Instalar
 
-Descomprime el ZIP y abre `chrome://extensions`. Activa **Modo desarrollador**, elige **Cargar descomprimida** y selecciona la carpeta `LiveFact-Chrome`, que contiene `manifest.json`. Si ya cargaste LiveFact, actualiza su instalación desde esa pantalla. Recarga las pestañas de YouTube y abre el panel con el icono de LiveFact.
+Descomprime el ZIP y abre `chrome://extensions`. Activa **Modo desarrollador**, elige **Cargar descomprimida** y selecciona la carpeta `LiveFact-Chrome`, que contiene `manifest.json`. Si ya cargaste Wingman, actualiza su instalación desde esa pantalla. Recarga las pestañas de YouTube y abre el panel con el icono de Wingman.
 
 Para compilar desde el repositorio, ejecuta `npm ci` y `npm run build --workspace @council/livefact-youtube`. Carga `apps/livefact-youtube/dist`. Usa `npm run typecheck --workspace @council/livefact-youtube` para comprobar los tipos.
 
@@ -27,7 +27,7 @@ El service worker usa `createApiClient` de `@council/contracts`. Envía pasajes 
 
 En el vídeo de EL PAÍS del 13 de enero de 2025, Pedro Sánchez cifra en un 48 % el aumento del precio de la vivienda en Europa durante la última década. La captura del ensayo del equipo sitúa el porcentaje en torno a 14:15. La Moncloa recoge la intervención completa.
 
-1. En Chrome, abre LiveFact en una pestaña de YouTube y pulsa **Opciones y ensayo → Ver fragmento del 48 %**. También puedes usar el [enlace al fragmento con reproducción del análisis guardado](https://www.youtube.com/watch?v=kvm8yYvF1Ws&t=845s#livefact-demo).
+1. En Chrome, abre Wingman en una pestaña de YouTube y pulsa **Opciones y ensayo → Ver fragmento del 48 %**. También puedes usar el [enlace al fragmento con reproducción del análisis guardado](https://www.youtube.com/watch?v=kvm8yYvF1Ws&t=845s#livefact-demo).
 2. Deja **Avisos** activo, reproduce desde 14:05 y espera a 14:15. La extensión presenta una síntesis del resultado guardado. Pulsa el aviso y abre la fuente o la comprobación original en el panel.
 3. Para un análisis nuevo, abre [el mismo minuto en modo normal](https://www.youtube.com/watch?v=kvm8yYvF1Ws&t=845s), activa los CC en español, elige **Desarrollo del equipo** e inicia el análisis en directo. La segmentación de los CC y el tiempo de investigación pueden cambiar las afirmaciones y el resultado.
 

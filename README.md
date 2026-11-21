@@ -1,4 +1,4 @@
-# Council Check
+# Wingman
 
 A text-based council claim checker. The web app extracts traceable factual claims in English, Spanish, and Catalan. OpenAI Decisions routes claims to official datasets or web research, then an evidence-grounded assessment publishes a verdict, cited sources, uncertainty, and code-computed calculations.
 
@@ -289,7 +289,7 @@ The response contains typed `answers`, such as `{"type":"choice","name":"topic",
 
 ## Hackathon deployment and Chrome extension
 
-The shared development app is [Council Check](https://council-checker-dev.snapnda.workers.dev). It runs on the connected Cloudflare account with R2, Workflows and Durable Objects, and queries the Neon evidence database through Hyperdrive. OpenAI credentials remain in Worker bindings. This is the single-user hackathon environment; saved run links grant access to the submitted text.
+The shared development app is [Wingman](https://council-checker-dev.snapnda.workers.dev). It runs on the connected Cloudflare account with R2, Workflows and Durable Objects, and queries the Neon evidence database through Hyperdrive. OpenAI credentials remain in Worker bindings. This is the single-user hackathon environment; saved run links grant access to the submitted text.
 
 [Download the extension ZIP](https://council-checker-dev.snapnda.workers.dev/downloads/council-check-extension.zip), unzip it, open `chrome://extensions`, enable Developer mode, choose Load unpacked, and select the folder containing `manifest.json`. The [hosted install page](https://council-checker-dev.snapnda.workers.dev/extension-install.html) repeats these steps. On a normal page, select text, right-click and choose **Check claims**. The side panel submits the selected passage to the same deployed API. The extension icon opens a paste fallback. **Open in web app** uses the exact same saved run.
 
@@ -345,3 +345,7 @@ The web results page and text extension expose retry controls for technical fail
 Language changes translate only explanation/uncertainty from retained assessments, cache each language against its immutable source artifact, and preserve verdicts, evidence and arithmetic. Poll while `run.translation.status` is processing even if the checking run is complete. New assessment completions respect the latest selected language. The YouTube panel links to the same web result for these controls.
 
 The latest supplied Fact Check design has been applied across the app and both panels, using bundled reference fonts and real categorical verdicts. [Reference review](docs/design/fact-check-demo-review.md) records the full prototype inspection and intentional semantic adaptations.
+
+## Product name
+
+The app and Chrome clients are branded Wingman. Download the general extension as `/downloads/wingman-extension.zip` and the YouTube client as `/downloads/wingman-youtube.zip`. Existing package names, service URLs, extension IDs and previous download links remain stable so installed clients and shared runs continue working.

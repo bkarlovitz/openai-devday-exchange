@@ -1,4 +1,4 @@
-# Council Check extension
+# Wingman extension
 
 Build with `npm run build:extension` from the repository root. Load `apps/extension/dist` unpacked via `chrome://extensions`, or unzip the generated `dist/council-check-extension.zip`. The deployed web app serves the same package and [install instructions](https://council-checker-dev.snapnda.workers.dev/extension-install.html).
 
