@@ -17,10 +17,15 @@ export const verdictPhrases: Record<Verdict, string> = {
 export function AssessmentView({ assessment }: { assessment: Assessment }) {
   return (
     <section className="assessment" aria-label="Assessment">
-      <span className={`verdict verdict-${assessment.verdict}`}>
-        {verdictLabels[assessment.verdict]}
-      </span>
-      <p className="assessment-ruling">{verdictPhrases[assessment.verdict]}</p>
+      <div className="assessment-heading">
+        <div>
+          <span className={`verdict verdict-${assessment.verdict}`}>
+            {verdictLabels[assessment.verdict]}
+          </span>
+          <p className="assessment-ruling">{verdictPhrases[assessment.verdict]}</p>
+        </div>
+        <span className="verdict-motion" data-verdict={assessment.verdict} aria-hidden="true" />
+      </div>
       <p className="assessment-explanation">{assessment.explanation}</p>
       {assessment.uncertainty.length ? (
         <div className="uncertainty">

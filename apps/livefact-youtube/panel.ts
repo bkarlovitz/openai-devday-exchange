@@ -1,9 +1,16 @@
 import { YOUTUBE_MAX_INTERVAL_SECONDS, youtubeVideoId } from "@council/contracts";
-import type { Claim, ClaimDetail } from "@council/contracts";
+import type { Claim, ClaimDetail, Verdict } from "@council/contracts";
 
 type Status = "pending" | "supported" | "context" | "contradicted" | "mixed" | "unavailable";
 type Filter = "all" | "fact" | "argument";
 type Backend = "local" | "team";
+
+const verdictArtwork: Partial<Record<Status, Verdict>> = {
+  supported: "supported",
+  mixed: "mixed_evidence",
+  context: "insufficient_evidence",
+  contradicted: "contradicted",
+};
 
 declare global {
   var liveFactStatuses: Record<
@@ -351,6 +358,18 @@ function renderEntry(item: Entry, opened: Set<string>) {
     bindAssessment(details, assessment, item.id);
   }
   if (!detail.childNodes.length) appendDetail(detail, "Evidencia", status.label);
+  const verdict = item.kind === "fact" ? verdictArtwork[item.status] : undefined;
+  if (verdict) {
+    const motion = document.createElement("span");
+    motion.className = "verdict-motion";
+    motion.dataset.verdict = verdict;
+    motion.setAttribute("aria-hidden", "true");
+    motion.classList.toggle("is-resting", details.open);
+    details.addEventListener("toggle", () => {
+      if (!details.open) motion.classList.remove("is-resting");
+    });
+    detail.prepend(motion);
+  }
   details.append(summary, detail);
   row.append(meta, details);
   return row;
