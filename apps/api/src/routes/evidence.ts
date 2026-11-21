@@ -11,7 +11,7 @@ import {
 import { queryDataset } from "../research/query-dataset";
 import { queryPublishedDataset } from "../research/query-sources";
 import type { Env } from "../env";
-import { readDocumentPassage, searchDocuments } from "../research/query-documents";
+import { inspectDocument, readDocumentPassage, searchDocuments } from "../research/query-documents";
 
 export const evidence = new Hono<{ Bindings: Env }>();
 
@@ -113,25 +113,26 @@ evidence.post("/query", async (c) => {
   return toolResponse(c, () => queryDataset(c.env, input));
 });
 
-evidence.get("/documents", async (c) => {
-  const query = c.req.query("q")?.trim();
-  if (!query || query.length > 200) {
-    return c.json({ error: "Provide a query between 1 and 200 characters." }, 400);
-  }
-  return c.json(await searchDocuments(c.env.EVIDENCE_DB!, query, c.req.query("datasetId")));
-});
+evidence.get("/documents", (c) =>
+  toolResponse(c, () =>
+    searchDocuments(c.env, {
+      query: c.req.query("q"),
+      datasetId: c.req.query("datasetId"),
+      snapshotId: c.req.query("snapshotId"),
+    }),
+  ),
+);
 
-evidence.get("/documents/:snapshotId/:passageNumber", async (c) => {
+evidence.get("/documents/:snapshotId", (c) =>
+  toolResponse(c, () => inspectDocument(c.env, { snapshotId: c.req.param("snapshotId") })),
+);
+
+evidence.get("/documents/:snapshotId/:passageNumber", (c) => {
   const { snapshotId, passageNumber } = c.req.param();
-  const number = Number(passageNumber);
-  if (
-    !/^[1-9]\d{0,18}$/.test(snapshotId) ||
-    BigInt(snapshotId) > 9223372036854775807n ||
-    !/^[1-9]\d{0,9}$/.test(passageNumber) ||
-    number > 2147483647
-  ) {
-    return c.json({ error: "Invalid snapshot or passage identifier." }, 400);
-  }
-  const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, snapshotId, number);
-  return passage ? c.json(passage) : c.json({ error: "Passage not found." }, 404);
+  return toolResponse(c, () =>
+    readDocumentPassage(c.env, {
+      snapshotId,
+      passageNumber: /^[1-9]\d{0,9}$/.test(passageNumber) ? Number(passageNumber) : undefined,
+    }),
+  );
 });
