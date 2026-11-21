@@ -1,0 +1,17 @@
+{
+  "name": "@council/livefact-youtube",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@council/contracts": "*",
+    "effect": "3.22.5"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.7",
+    "vite": "^8.3.8"
+  }
+}

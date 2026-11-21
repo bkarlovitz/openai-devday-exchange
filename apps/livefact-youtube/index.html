@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LiveFact</title>
+  <link rel="stylesheet" href="./panel.css" />
+  <script src="/status.js"></script>
+  <body>
+    <header class="brand">
+      <h1><span class="brand-icon" aria-hidden="true">✓</span> LiveFact</h1>
+      <label class="toggle">Avisos <input id="enabled" type="checkbox" role="switch" /></label>
+    </header>
+    <main>
+      <section aria-labelledby="video" class="video">
+        <div class="video-type">
+          <span aria-hidden="true">▶</span> <span id="mode">YouTube</span>
+        </div>
+        <h2 id="video">Abre un vídeo de YouTube</h2>
+      </section>
+      <section aria-labelledby="timeline-title" class="timeline" id="timeline" hidden>
+        <div class="timeline-head">
+          <h2 id="timeline-title">Línea de tiempo</h2>
+          <output id="current">0:00</output>
+        </div>
+        <div class="rail">
+          <input
+            id="seek"
+            type="range"
+            min="0"
+            max="1"
+            value="0"
+            step="1"
+            aria-label="Posición en el vídeo"
+            disabled
+          />
+          <div id="marks" aria-label="Afirmaciones en el vídeo"></div>
+        </div>
+        <div class="times"><span id="start">0:00</span><span id="end">—</span></div>
+        <div id="filters" class="filters" role="group" aria-label="Tipo de afirmación" hidden>
+          <button type="button" data-filter="all" aria-pressed="true">Todo <span>0</span></button>
+          <button type="button" data-filter="fact" aria-pressed="false">
+            Datos <span>0</span>
+          </button>
+          <button type="button" data-filter="argument" aria-pressed="false">
+            Argumentos <span>0</span>
+          </button>
+        </div>
+        <ol id="entries"></ol>
+      </section>
+      <p class="empty" id="empty">Las citas y sus fuentes aparecerán aquí mientras ves el vídeo.</p>
+      <section class="controls" aria-label="Controles de verificación" id="controls" hidden>
+        <p id="feedback" role="status"></p>
+        <button id="live" class="primary" disabled>Iniciar análisis en directo</button>
+        <details class="options">
+          <summary>Opciones y ensayo</summary>
+          <label class="backend"
+            >Servidor
+            <select id="backend">
+              <option value="local">Local · localhost:8787</option>
+              <option value="team">Desarrollo del equipo</option>
+            </select>
+          </label>
+          <button id="capture" class="secondary" disabled>Analizar subtítulos recientes</button>
+          <button id="demo" class="secondary" disabled>Probar con un ejemplo</button>
+        </details>
+      </section>
+    </main>
+    <script type="module" src="./panel.ts"></script>
+  </body>
+</html>
