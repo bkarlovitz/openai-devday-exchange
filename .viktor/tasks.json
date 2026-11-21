@@ -1,0 +1,79 @@
+[
+  {
+    "id": "TASK-001",
+    "title": "Scaffold the workspace and run a persisted text submission",
+    "milestone": "M0: Runnable submission app",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-001.md"
+  },
+  {
+    "id": "TASK-002",
+    "title": "Extract traceable claims and show them as processing progresses",
+    "milestone": "M1: Automatic claim detection",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-002.md"
+  },
+  {
+    "id": "TASK-003",
+    "title": "Route claims with Decisions and retrieve official-source evidence",
+    "milestone": "M2: Cited factual assessments",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-003.md"
+  },
+  {
+    "id": "TASK-004",
+    "title": "Generate evidence-grounded verdicts and reproducible calculations",
+    "milestone": "M2: Cited factual assessments",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-004.md"
+  },
+  {
+    "id": "TASK-005",
+    "title": "Automatically investigate unresolved and conflicting claims",
+    "milestone": "M3: Bounded deeper research",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-005.md"
+  },
+  {
+    "id": "TASK-006",
+    "title": "Retry failed stages while preserving completed claim results",
+    "milestone": "M3: Bounded deeper research",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-006.md"
+  },
+  {
+    "id": "TASK-007",
+    "title": "Process full text submissions with stable context and repeated-claim links",
+    "milestone": "M4: Multilingual long-text checking",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-007.md"
+  },
+  {
+    "id": "TASK-008",
+    "title": "Switch explanation language using retained evidence",
+    "milestone": "M4: Multilingual long-text checking",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-008.md"
+  },
+  {
+    "id": "TASK-009",
+    "title": "Add replaceable topic collections and one structured-data connector",
+    "milestone": "M5: Barcelona source coverage",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-009.md"
+  },
+  {
+    "id": "TASK-010",
+    "title": "Check selected text and open shared results in a side panel",
+    "milestone": "M6: Chrome extension client",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-010.md"
+  },
+  {
+    "id": "TASK-011",
+    "title": "Evaluate complete checks and verify the deployed clients",
+    "milestone": "M7: Verified development build",
+    "done": false,
+    "task_file": ".viktor/tasks/TASK-011.md"
+  }
+]
