@@ -1,7 +1,10 @@
+import { QueryDatasetInput } from "@council/contracts";
+import { Schema } from "effect";
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { withEvidenceDb } from "../db/client";
 import type { Env } from "../env";
+import { queryDataset } from "../research/query-dataset";
 import { readDocumentPassage, searchDocuments } from "../research/query-documents";
 
 export const evidence = new Hono<{ Bindings: Env }>();
@@ -54,4 +57,17 @@ evidence.get("/documents/:snapshotId/:passageNumber", async (c) => {
   }
   const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, snapshotId, number);
   return passage ? c.json(passage) : c.json({ error: "Passage not found." }, 404);
+});
+
+evidence.post("/query-dataset", async (c) => {
+  const body: unknown = await c.req.json().catch(() => undefined);
+  const decoded = Schema.decodeUnknownEither(QueryDatasetInput, {
+    onExcessProperty: "error",
+  })(body);
+  if (decoded._tag === "Left" || (decoded.right.afterRow && !decoded.right.snapshotId)) {
+    return c.json({ error: "Invalid dataset query. Pagination requires a snapshot ID." }, 400);
+  }
+
+  const result = await queryDataset(c.env.EVIDENCE_DB!, decoded.right);
+  return result ? c.json(result) : c.json({ error: "Snapshot not found for this resource." }, 404);
 });

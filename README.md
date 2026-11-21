@@ -188,3 +188,13 @@ curl -fsSG http://127.0.0.1:8787/api/dev/evidence/documents \
 ```
 
 Con el `snapshotId` y `passageNumber` devueltos, recupera el mismo pasaje en `/api/dev/evidence/documents/<snapshotId>/<passageNumber>`. Las rutas de inspección solo se habilitan en el Worker local de Alchemy. Para un despliegue, `HYPERDRIVE_ORIGIN` configura el origen Neon mediante su URL directa de PostgreSQL.
+
+Consulta las filas de Incasòl desde el Worker local:
+
+```sh
+curl -fsS http://127.0.0.1:8787/api/dev/evidence/query-dataset \
+  -H 'Content-Type: application/json' \
+  -d '{"datasetId":"incasol","resourceKey":"qww9-bvhh","filters":{"municipalityCode":"08019","year":"2025","period":"abril-juny","priceBand":"> 600 euros/mes"}}'
+```
+
+Para comparar con 2026, cambia `year` y añade el `snapshotId` devuelto en `snapshot.id`. Los periodos y tramos se filtran por su etiqueta exacta. Si el periodo no aparece, la respuesta tiene `rows: []`. Una fila publicada con renta vacía conserva su valor original y devuelve `rent.value: null`.
