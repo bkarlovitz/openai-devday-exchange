@@ -14,6 +14,7 @@ This capability advances the agreed text-to-assessment workflow in .viktor/specs
 
 ## Requirements
 
+- Use the supplied [HTML design](../../docs/design/extension-side-panel.html) and [PDF design](../../docs/design/extension-side-panel.pdf) as the extension visual reference. First review its layout and map input, progress, verdict, evidence, and error states onto the working shared API. Implement the main side-panel layout and interactions for the hackathon; record any remaining visual polish separately. Do not let placeholder design content replace real results.
 - Create apps/extension/manifest.json with MV3 service worker, selection context menu, sidePanel/storage permissions, and API-origin host permissions. Add compatible Vite build and extension build/dev scripts.
 - Implement background.ts, sidepanel.tsx, and message contracts. From a user context-menu gesture, open the side panel, transfer selected text with page URL/title, submit automatically once, and show shared ClaimCard/AssessmentView components.
 - Retain draft and active run IDs in chrome.storage across panel suspension. Multiple tabs or repeated user gestures must not submit the same handoff twice or display a stale selection. Include paste fallback for pages without selection access.

@@ -51,3 +51,9 @@ A owns packages/contracts/src/api.ts, the shared API client, RunCoordinator, Wor
 B owns Hyperdrive/Neon additions in infrastructure after TASK-001. Coordinate edits to root package files, infrastructure, contract exports, README.md, and tasks.json. Reserve the next SQL migration number before writing it. A small interface change should be agreed and committed before its consumers are updated.
 
 Each task updates its own spec completion notes. Coordinate updates to tasks.json and the shared completion log when merging. Two autonomous Viktor loops need an explicit task-claim mechanism before running concurrently; manual task assignment is sufficient for this two-person workflow.
+
+## Hackathon delivery priority and extension design
+
+The current time-boxed build prioritizes TASK-003/004 cited web assessments, then TASK-010 selected-text extension and deployed client verification. Deeper research, stage recovery, advanced long-text handling, language switching, and broader coverage remain tracked follow-up tasks. This does not mark those tasks complete.
+
+Before implementing the extension panel, review the supplied [design references](../docs/design/README.md), map the design to real API states, and implement the main layout and interactions as part of TASK-010. Verify selection, persisted results, evidence, and the link to the same web run. Extra visual polish can follow the working hackathon build.
