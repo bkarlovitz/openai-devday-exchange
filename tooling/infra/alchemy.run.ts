@@ -114,5 +114,5 @@ const worker = await Worker("app", {
     ASSETS: await Assets({ path: path.join(root, "apps/web/dist") }),
   },
 });
-console.log(`Council Check: ${worker.url}`);
+console.log(`Wingman: ${worker.url}`);
 await app.finalize();
