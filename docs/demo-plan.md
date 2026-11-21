@@ -86,3 +86,11 @@ The private yt-dlp caption container and POST `/api/runs/youtube` are deployed. 
 ## YouTube playback client
 
 The teammate's LiveFact YouTube client is now integrated in `apps/livefact-youtube` and packaged separately as `/downloads/livefact-youtube.zip`. Its [runbook](../apps/livefact-youtube/README.md) includes a verified speech excerpt, saved-result replay explicitly labelled as rehearsal, and a fresh visible-caption mode. This client reads visible YouTube CC through the browser; the server container API is a separate caption-ingestion option.
+
+## Chrome extension demo kit
+
+Open the [Wingman demo kit](https://council-checker-dev.snapnda.workers.dev/demo.html) for prepared selection-only inputs. Each card separates team-authored input from presenter notes, expected behavior, official-source links and previously computed fallback results. Select only the input, right-click **Check claims**, and inspect the result in the Wingman side panel; the kit has no submission/API flow of its own.
+
+The kit includes opinion, the verified 845-record Ciutat Vella snapshot count, both exact controlled Catalan rent comparisons, a team-authored English rendering of the credit-approval fixture and the exact Spanish completed-payment statement. The English approval card links to the related authentic Catalan excerpt's saved run and labels that distinction.
+
+The YouTube section links the saved-results replay at 845 seconds, explicitly marked **Guardado**, and a plain URL for fresh visible-CC analysis. That 48% video uses wider-web/Eurostat evidence; it is separate from the loaded Barcelona dataset examples. The current YouTube package is [wingman-youtube.zip](https://council-checker-dev.snapnda.workers.dev/downloads/wingman-youtube.zip).

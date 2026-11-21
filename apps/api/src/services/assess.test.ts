@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Effect } from "effect";
 import type { Assessment, Claim, Evidence } from "@council/contracts";
 import { calculate } from "../research/calculate";
@@ -8,6 +8,7 @@ import type { Env } from "../env";
 const env = {} as Env;
 
 vi.mock("./generate-object", () => ({ generateObject: vi.fn() }));
+beforeEach(() => vi.mocked(generateObject).mockReset());
 
 const source: Evidence = {
   evidenceId: "rents",
@@ -138,6 +139,147 @@ describe("assessment evidence guards", () => {
     );
     expect(result.verdict).toBe("insufficient_evidence");
     expect(result.explanation).toContain("Approval");
+  });
+});
+
+describe("bounded invalid-calculation repair", () => {
+  const register: Evidence = {
+    evidenceId: "tourist-register",
+    kind: "dataset",
+    datasetId: "tourist-flats",
+    sourceUrl: "https://opendata-ajuntament.barcelona.cat/data/dataset/habitatges-us-turistic",
+    title: "Published tourist-flat register",
+    retrievedAt: "2026-11-21T13:00:00Z",
+    text: "Full-source count_distinct N_EXPEDIENT: 10707 records.",
+    totalRows: 10707,
+    rowsAreSample: true,
+    rows: [{ rowNumber: 1, data: { N_EXPEDIENT: "HUTB-000001", NUMERO_PLACES: "4" } }],
+    aggregate: {
+      operation: "count_distinct",
+      field: "N_EXPEDIENT",
+      value: "10707",
+      status: "complete",
+    },
+  };
+  const countClaim: Claim = {
+    ...claim,
+    quote: "Barcelona currently has 10,000 legal tourist apartments.",
+    assertion: "Barcelona currently has 10,000 legal tourist apartments.",
+    dates: [],
+    metric: "legal tourist apartments",
+    comparison: null,
+  };
+  const invalidCount: Assessment = {
+    verdict: "contradicted",
+    explanation: "The register count differs from the claim.",
+    evidenceIds: [register.evidenceId],
+    uncertainty: [],
+    calculations: [
+      {
+        operation: "difference",
+        formula: "10707 - 10000",
+        result: 707,
+        unit: "apartments",
+        operands: [
+          { label: "Registered", value: 10707, unit: "records", evidenceId: register.evidenceId },
+          { label: "Claimed", value: 10000, unit: "apartments", evidenceId: register.evidenceId },
+        ],
+      },
+    ],
+  };
+
+  it("repairs a claimed apartment count versus source records without relaxing arithmetic guards", async () => {
+    expect(() => validateAssessment(invalidCount, [register])).toThrow("matching units");
+    vi.mocked(generateObject)
+      .mockReturnValueOnce(Effect.succeed(invalidCount))
+      .mockReturnValueOnce(
+        Effect.succeed({
+          ...invalidCount,
+          verdict: "insufficient_evidence",
+          calculations: [],
+          explanation:
+            "The loaded register contains 10,707 distinct records. Its observation date and definition need to match the claim of 10,000 currently legal apartments.",
+          uncertainty: ["The asserted current date and rounding convention are not established."],
+        }),
+      );
+    const result = await Effect.runPromise(
+      assessClaim(env, countClaim, [register], "en", sufficient),
+    );
+    expect(result.verdict).toBe("insufficient_evidence");
+    expect(result.calculations).toEqual([]);
+    expect(result.evidenceIds).toEqual([register.evidenceId]);
+    expect(result.explanation).toContain("10,707");
+    expect(generateObject).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(generateObject).mock.calls[1][1]).toMatchObject({
+      name: "repair_assessment_proposal",
+      timeoutMs: 20_000,
+      input: {
+        validationFeedback: "Calculation operands must have finite values and matching units.",
+      },
+    });
+  });
+
+  it("rejects an unsupported claimed operand after the single repair attempt", async () => {
+    const unsupported: Assessment = {
+      ...invalidCount,
+      calculations: [
+        {
+          ...invalidCount.calculations[0],
+          unit: "records",
+          operands: invalidCount.calculations[0].operands.map((operand) => ({
+            ...operand,
+            unit: "records",
+          })),
+        },
+      ],
+    };
+    expect(() => validateAssessment(unsupported, [register])).toThrow("not present");
+    vi.mocked(generateObject)
+      .mockReturnValueOnce(Effect.succeed(invalidCount))
+      .mockReturnValueOnce(Effect.succeed(unsupported));
+    await expect(Effect.runPromise(assessClaim(env, countClaim, [register], "en"))).rejects.toThrow(
+      "not present",
+    );
+    expect(generateObject).toHaveBeenCalledTimes(2);
+  });
+
+  it("bounds initial generation, validation repair and arithmetic correction to seventy seconds", async () => {
+    const invalid = {
+      ...proposal("supported"),
+      calculations: [
+        {
+          operation: "percentage_change",
+          operands: [operands[0], { ...operands[1], unit: "apartments" }],
+          formula: "",
+          result: 42,
+          unit: "%",
+        },
+      ],
+    };
+    const repaired = {
+      ...proposal("supported"),
+      calculations: [
+        {
+          operation: "percentage_change",
+          operands,
+          formula: "",
+          result: 42,
+          unit: "%",
+        },
+      ],
+    };
+    const { calculations: _, ...corrected } = proposal("supported");
+    vi.mocked(generateObject)
+      .mockReturnValueOnce(Effect.succeed(invalid))
+      .mockReturnValueOnce(Effect.succeed(repaired))
+      .mockReturnValueOnce(
+        Effect.succeed({ ...corrected, explanation: "Rent rose approximately 0.47%." }),
+      );
+    const result = await Effect.runPromise(assessClaim(env, claim, [source], "en"));
+    expect(result.calculations[0].result).toBeCloseTo(0.4702567);
+    expect(vi.mocked(generateObject).mock.calls.map(([, options]) => options.timeoutMs)).toEqual([
+      30000, 20000, 20000,
+    ]);
   });
 });
 

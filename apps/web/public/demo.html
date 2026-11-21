@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Wingman · Demo kit</title>
+    <meta
+      name="description"
+      content="Prepared statements for checking public records with the Wingman Chrome extension."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1b1b19;
+        --muted: #5f5f5a;
+        --line: #e4e4e0;
+        --blue: #1f4fd1;
+        font:
+          14px/1.55 Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: #f5f5f1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      a {
+        color: var(--blue);
+        text-underline-offset: 3px;
+      }
+      a:hover {
+        color: #163a9c;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button,
+      a,
+      summary {
+        -webkit-tap-highlight-color: transparent;
+      }
+      :focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 4px;
+      }
+      header {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+        padding: 16px 5%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 750;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      .brand svg {
+        flex: none;
+      }
+      header > span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      main {
+        max-width: 1050px;
+        margin: auto;
+        padding: 48px 24px 64px;
+      }
+      .eyebrow {
+        color: var(--blue);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(34px, 6vw, 50px);
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+        margin: 12px 0 18px;
+      }
+      h2 {
+        font-size: 22px;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+        margin: 10px 0 18px;
+      }
+      .intro {
+        max-width: 750px;
+        font-size: 16px;
+        color: var(--muted);
+      }
+      .instructions {
+        margin: 28px 0;
+        padding: 22px 24px;
+        border: 1px solid #d9e1f3;
+        background: #f0f4ff;
+        border-radius: 14px;
+      }
+      .instructions strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .instructions ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .instructions li {
+        padding: 3px 0;
+      }
+      .instructions p {
+        font-size: 12px;
+        color: #4a4a46;
+        margin: 12px 0 0;
+      }
+      .jump-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 24px 0;
+      }
+      .jump-links a {
+        padding: 7px 12px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        font-size: 12px;
+        text-decoration: none;
+        color: #3f3f3b;
+      }
+      .case {
+        background: #fff;
+        border: 1px solid var(--line);
+        padding: 24px;
+        border-radius: 14px;
+        margin: 18px 0;
+        scroll-margin-top: 16px;
+      }
+      .case-top {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .number {
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: var(--blue);
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #eef2fd;
+      }
+      .dataset {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .input-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        color: #6b6b66;
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 0.07em;
+      }
+      .statement {
+        background: #fafaf8;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 18px;
+        font-size: 17px;
+        line-height: 1.6;
+        margin: 8px 0 14px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .statement::selection {
+        background: #cfdcff;
+        color: #142d78;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      button {
+        min-height: 42px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        border-radius: 9px;
+        padding: 8px 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #33332f;
+      }
+      .secondary {
+        background: #fff;
+        color: var(--ink);
+        border-color: #d4d4ce;
+      }
+      .secondary:hover {
+        background: #f2f2ef;
+      }
+      .action-status {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .source {
+        display: inline-block;
+        font-size: 13px;
+        margin-top: 16px;
+        overflow-wrap: anywhere;
+      }
+      details {
+        border-top: 1px solid var(--line);
+        margin-top: 20px;
+        padding-top: 14px;
+      }
+      summary {
+        cursor: pointer;
+        font-size: 13px;
+        color: #4a4a46;
+        font-weight: 600;
+      }
+      .notes {
+        padding-top: 8px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .notes p {
+        margin: 8px 0 12px;
+      }
+      .notes .expected {
+        font-weight: 650;
+        color: var(--ink);
+      }
+      .video {
+        background: #1b1b19;
+        color: #fff;
+        border-color: #1b1b19;
+        margin-top: 36px;
+      }
+      .video .eyebrow {
+        color: #a7beff;
+      }
+      .video p {
+        color: #d1d1ca;
+      }
+      .video a {
+        color: #b8ccff;
+      }
+      .video .video-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .video .video-links a {
+        padding: 10px 14px;
+        border: 1px solid #66665e;
+        border-radius: 9px;
+        text-decoration: none;
+      }
+      .video .video-links a:first-child {
+        background: #fff;
+        color: #1b1b19;
+        border-color: #fff;
+      }
+      .video .caution {
+        font-size: 12px;
+        color: #cacac2;
+        margin-top: 18px;
+      }
+      .footer {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 28px;
+      }
+      .footer a {
+        white-space: nowrap;
+      }
+      @media (max-width: 600px) {
+        header {
+          padding: 12px 16px;
+        }
+        header > span {
+          max-width: 100px;
+          text-align: right;
+        }
+        main {
+          padding: 30px 16px 40px;
+        }
+        .case {
+          padding: 18px;
+        }
+        .instructions {
+          padding: 18px;
+        }
+        .statement {
+          font-size: 16px;
+          padding: 14px;
+        }
+        .dataset {
+          font-size: 11px;
+        }
+        .input-head {
+          font-size: 9px;
+        }
+        .actions button {
+          flex: 1;
+        }
+        .action-status {
+          width: 100%;
+        }
+        .video .video-links {
+          flex-direction: column;
+        }
+        .video-links a {
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="brand"
+        ><svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+          <rect width="30" height="30" rx="8" fill="#1b1b19" />
+          <path
+            d="m7 9 4 13 4-9 4 9 4-13"
+            stroke="white"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          /></svg
+        >Wingman</a
+      ><span>Demo kit · Chrome extension</span>
+    </header>
+    <main>
+      <span class="eyebrow">Prepared inputs · inspectable evidence</span>
+      <h1>Check the statement.<br />Follow the evidence.</h1>
+      <p class="intro">
+        A short walkthrough using our loaded official Barcelona datasets and council records. These
+        are <strong>team-authored test statements</strong>, not quotations from speakers. Submit
+        only the input text; presenter notes and expected outcomes stay separate.
+      </p>
+      <section class="instructions" aria-label="How to use this demo">
+        <strong>Use Wingman in Chrome</strong>
+        <ol>
+          <li>
+            Open the installed Wingman text extension. Choose <b>Select text</b> on a case below.
+          </li>
+          <li>
+            Right-click the highlighted input and choose <b>Check claims</b>. Wingman opens the side
+            panel and checks that selection.
+          </li>
+          <li>
+            Open the cited evidence and explain its scope. Use <b>Open in web app</b> to inspect the
+            same run.
+          </li>
+        </ol>
+        <p>
+          <b>Copy input</b> is a fallback: paste into Wingman’s side panel. This page never submits
+          a check automatically. Saved links open earlier computed results, not a new check.
+        </p>
+      </section>
+      <nav class="jump-links" aria-label="Demo cases">
+        <a href="#opinion">Opinion</a><a href="#tourist">Registry count</a
+        ><a href="#rent-supported">Rent comparison</a><a href="#approval">Council decision</a
+        ><a href="#youtube">YouTube</a>
+      </nav>
+      <article class="case" id="opinion">
+        <div class="case-top">
+          <span class="number">01</span
+          ><span class="dataset">Checkability · no factual dataset required</span>
+        </div>
+        <h2>Start with an opinion</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>EN</span>
+        </div>
+        <p
+          class="statement"
+          lang="en"
+          id="input-opinion"
+          data-input="I would prefer fewer tourist apartments in Barcelona."
+        >
+          I would prefer fewer tourist apartments in Barcelona.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-opinion">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-opinion">Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://opendata-ajuntament.barcelona.cat/data/dataset/c748799e-1079-44b1-9e60-88d936a3fe70/resource/b32fa7f6-d464-403b-8a02-0292a64883bf/download"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Tourist-apartment register · topic context ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">Opinion / prediction; no factual verdict expected.</p>
+            <p>
+              A preference is not a numerical assertion. The statement-type notice is separate from
+              a truth verdict. Short-passage checkability is advisory.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/83270eb2-4d19-4a05-b6c2-1439c1d172b3"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Previously computed result · fallback ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <article class="case" id="tourist">
+        <div class="case-top">
+          <span class="number">02</span
+          ><span class="dataset"
+            >Tourism · stored registry snapshot · Ciutat Vella (district 01)</span
+          >
+        </div>
+        <h2>Count the records</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>CA</span>
+        </div>
+        <p
+          class="statement"
+          lang="ca"
+          id="input-tourist"
+          data-input="La versió consultada del registre municipal conté 845 registres d’habitatges d’ús turístic a Ciutat Vella."
+        >
+          La versió consultada del registre municipal conté 845 registres d’habitatges d’ús turístic
+          a Ciutat Vella.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-tourist">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-tourist">Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://opendata-ajuntament.barcelona.cat/data/dataset/c748799e-1079-44b1-9e60-88d936a3fe70/resource/b32fa7f6-d464-403b-8a02-0292a64883bf/download"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Official tourist-apartment registry CSV ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">
+              Previously observed: Supported, with an aggregate count of 845 records.
+            </p>
+            <p>
+              Count all matching records in the retained CSV, not the small row preview. This is a
+              snapshot-specific registry count, not a claim about every operating apartment today.
+              Snapshot retrieved 21 November 2026; SHA-256 5f0fd04393de…dc62440c.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/31b53de8-c499-42e2-be76-b68b92bd2da1"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Previously computed result · fallback ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <article class="case" id="rent-supported">
+        <div class="case-top">
+          <span class="number">03</span
+          ><span class="dataset"
+            >Housing · municipality 08019 · above €600/month · Q2 2025 → Q2 2026</span
+          >
+        </div>
+        <h2>Check a precise comparison</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>CA</span>
+        </div>
+        <p
+          class="statement"
+          lang="ca"
+          id="input-rent-supported"
+          data-input="La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025."
+        >
+          La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un
+          0,47% el segon trimestre de 2026 respecte al segon trimestre de 2025.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-rent-supported">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-rent-supported">
+            Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://analisi.transparenciacatalunya.cat/d/qww9-bvhh"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Official Incasòl rental dataset ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">Previously observed: Supported for the 0.47% statement.</p>
+            <p>
+              The matching rows contain €1,135.55/month and €1,140.89/month. (1140.89 − 1135.55) ÷
+              1135.55 × 100 = 0.4702567…%. Keep the municipality, price band, quarter and units
+              visible. This is not the average across every rent band. Snapshot hash
+              65f15b3a7a48…10b3070.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Previously computed result · fallback ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <article class="case" id="rent-contradicted">
+        <div class="case-top">
+          <span class="number">04</span
+          ><span class="dataset">Housing · exactly the same geography, rent band and periods</span>
+        </div>
+        <h2>Change one number</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>CA</span>
+        </div>
+        <p
+          class="statement"
+          lang="ca"
+          id="input-rent-contradicted"
+          data-input="La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un 50% el segon trimestre de 2026 respecte al segon trimestre de 2025."
+        >
+          La renda mitjana del tram de més de 600 euros al mes al municipi de Barcelona va pujar un
+          50% el segon trimestre de 2026 respecte al segon trimestre de 2025.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-rent-contradicted">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-rent-contradicted">
+            Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://analisi.transparenciacatalunya.cat/d/qww9-bvhh"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Official Incasòl rental dataset ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">Previously observed: Contradicted for the 50% statement.</p>
+            <p>
+              Use the same retained rows and computed percentage as the preceding case. Only the
+              asserted change is different. The actual source values support about 0.47%, not 50%.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Previously computed result · fallback ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <article class="case" id="approval">
+        <div class="case-top">
+          <span class="number">05</span
+          ><span class="dataset"
+            >Council records · file 25XF0640 · stored PDF snapshot 6 / page 8</span
+          >
+        </div>
+        <h2>Read what the council approved</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>EN</span>
+        </div>
+        <p
+          class="statement"
+          lang="en"
+          id="input-approval"
+          data-input="The Barcelona City Council plenary unanimously approved a recognition of credit of 1,040 euros for file 25XF0640."
+        >
+          The Barcelona City Council plenary unanimously approved a recognition of credit of 1,040
+          euros for file 25XF0640.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-approval">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-approval">Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf#page=8"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Official minutes · 31 October 2025 · page 8 ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">Expected: Supported for the approval recorded in the minutes.</p>
+            <p>
+              Team-authored English rendering of the council-credit fixture. The minutes establish
+              unanimous approval and recognition of an obligation for €1,040. Open page 8 and search
+              25XF0640. PDF hash 88d0fbd14b65…cfbcaf9. The fallback run below checked the authentic
+              Catalan excerpt, rather than this English rendering.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/092214d8-d963-4756-b1ac-5fd674513fe4"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Related saved check · authentic Catalan excerpt ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <article class="case" id="payment">
+        <div class="case-top">
+          <span class="number">06</span
+          ><span class="dataset"
+            >Council records · approval versus evidence of completed payment</span
+          >
+        </div>
+        <h2>Test the evidence boundary</h2>
+        <div class="input-head">
+          <span>INPUT · TEAM-AUTHORED TEST STATEMENT</span><span>ES</span>
+        </div>
+        <p
+          class="statement"
+          lang="es"
+          id="input-payment"
+          data-input="El Ayuntamiento de Barcelona ya pagó efectivamente los 1.040 euros correspondientes al expediente 25XF0640."
+        >
+          El Ayuntamiento de Barcelona ya pagó efectivamente los 1.040 euros correspondientes al
+          expediente 25XF0640.
+        </p>
+        <div class="actions">
+          <button type="button" data-select="input-payment">
+            Select text <span aria-hidden="true">↗</span></button
+          ><button class="secondary" type="button" data-copy="input-payment">Copy input</button
+          ><span class="action-status" role="status" aria-live="polite"></span>
+        </div>
+        <a
+          class="source"
+          href="https://ajuntament.barcelona.cat/sites/default/files/2025-12/CPlenari%2031-10-25-Acta.pdf#page=8"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Official minutes · page 8 · same file ↗</a
+        >
+        <details>
+          <summary>Presenter notes · expected behavior</summary>
+          <div class="notes">
+            <p class="expected">
+              Previously observed: Insufficient evidence for completed payment.
+            </p>
+            <p>
+              The loaded minutes record approval, authorization and recognition of an obligation. A
+              completed-payment assertion requires payment evidence. Insufficient evidence does not
+              mean the payment never happened. Additional public records may change a fresh
+              assessment.
+            </p>
+            <a
+              href="https://council-checker-dev.snapnda.workers.dev/runs/c003a1c7-bfaa-4543-a741-ba002cd3501c"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Previously computed result · fallback ↗</a
+            >
+          </div>
+        </details>
+      </article>
+      <section class="case video" id="youtube">
+        <span class="eyebrow">Separate video path</span>
+        <h2>Wingman alongside YouTube</h2>
+        <p>
+          The prepared 48% clip is a <strong>previously computed results replay</strong>. Wingman’s
+          YouTube panel labels it <b>Guardado</b>. It demonstrates synchronized playback of retained
+          results, rather than a fresh verification.
+        </p>
+        <div class="video-links">
+          <a
+            href="https://www.youtube.com/watch?v=kvm8yYvF1Ws&amp;t=845s#livefact-demo"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open saved-results replay ↗</a
+          ><a
+            href="https://www.youtube.com/watch?v=kvm8yYvF1Ws&amp;t=845s"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open video for a fresh check ↗</a
+          ><a href="/downloads/wingman-youtube.zip" download
+            >Download Wingman YouTube extension ↓</a
+          >
+        </div>
+        <p class="caution">
+          For a fresh check, use the plain video link, enable visible YouTube CC and start analysis
+          in the YouTube extension. Caption availability and retrieval can vary. The 48% video
+          example uses wider-web / Eurostat evidence; it is separate from the local Barcelona
+          dataset cases above.
+        </p>
+      </section>
+      <p class="footer">
+        Fresh results may differ as source coverage changes. Inspect the cited snapshot, dates,
+        geography and units. Technical failures can be retried in Wingman.
+        <a href="/extension-install.html">Extension installation instructions</a> ·
+        <a href="/">Open the web app</a>
+      </p>
+    </main>
+    <script>
+      // Exact canonical inputs stay independent of HTML formatting whitespace.
+      document.querySelectorAll(".statement[data-input]").forEach((node) => {
+        node.textContent = node.dataset.input;
+      });
+      function selectInput(id) {
+        var node = document.getElementById(id);
+        var range = document.createRange();
+        range.selectNodeContents(node);
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        return node.textContent;
+      }
+      document.addEventListener("click", async function (event) {
+        var button = event.target.closest("button[data-select],button[data-copy]");
+        if (!button) return;
+        var id = button.dataset.select || button.dataset.copy;
+        var status = button.parentElement.querySelector('[role="status"]');
+        var text = selectInput(id);
+        if (button.dataset.select) {
+          status.textContent = "Input selected. Right-click the highlighted text → Check claims.";
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          status.textContent = "Input copied. Paste into Wingman.";
+        } catch {
+          status.textContent = "Input selected. Press Ctrl+C (or ⌘C) to copy.";
+        }
+      });
+    </script>
+  </body>
+</html>
