@@ -52,6 +52,9 @@ export const Claim = Schema.Struct({
   verdict: Schema.optional(Verdict),
   evidenceCount: Schema.optional(Schema.Number),
   error: Schema.optional(Schema.String),
+  explanationLanguage: Schema.optional(Language),
+  translationStatus: Schema.optional(Schema.Literal("queued", "translating", "error")),
+  translationError: Schema.optional(Schema.String),
 });
 export type Claim = typeof Claim.Type;
 

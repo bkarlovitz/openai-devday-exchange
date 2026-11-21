@@ -1,21 +1,32 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "@effect-atom/atom-react";
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, Check, LoaderCircle } from "lucide-react";
 import { Effect } from "effect";
 import type { Claim, Run } from "@council/contracts";
-import { CheckabilityNotice, ClaimCard } from "@council/ui";
-import { loadClaim, loadRun } from "../services/api";
+import {
+  ClaimOverview,
+  ClaimPreview,
+  CheckabilityNotice,
+  ClaimCard,
+  ExplanationLanguageControl,
+  RetryAction,
+} from "@council/ui";
+import { loadClaim, loadRun, retryRun, changeLanguage } from "../services/api";
 import { claimDetailState, runState, needsRunPolling } from "../state/run";
 
 function ClaimResult({
   runId,
   claim,
   revision,
+  retryRevision,
+  onMutation,
 }: {
   runId: string;
   claim: Claim;
   revision: number;
+  retryRevision: number;
+  onMutation: () => void;
 }) {
   const [state, setState] = useAtom(claimDetailState(`${runId}/${claim.claimId}`));
   useEffect(() => {
@@ -29,7 +40,25 @@ function ClaimResult({
     });
     return () => controller.abort();
   }, [runId, claim.claimId, revision, setState]);
-  return <ClaimCard claim={claim} detail={state.detail} detailError={state.error} />;
+  return (
+    <div>
+      <details className={`result-item result-${claim.verdict ?? claim.status}`}>
+        <summary>
+          <ClaimPreview claim={claim} />
+        </summary>
+        <ClaimCard claim={claim} detail={state.detail} detailError={state.error} />
+      </details>
+      {claim.status === "error" ? (
+        <RetryAction
+          revision={retryRevision}
+          claimId={claim.claimId}
+          label="Retry this claim"
+          onRetry={(request) => Effect.runPromise(retryRun(runId, request))}
+          onAccepted={onMutation}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 function progressTitle(run: Run) {
@@ -51,6 +80,10 @@ function progressTitle(run: Run) {
 export function SavedSubmissionPage() {
   const { runId } = useParams({ strict: false }) as { runId: string };
   const [state, setState] = useAtom(runState(runId));
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [filter, setFilter] = useState<"all" | "checking" | "reviewed">("all");
+  const [observation, setObservation] = useState(0);
+  const onMutation = () => setRefreshKey((value) => value + 1);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,6 +96,7 @@ export function SavedSubmissionPage() {
         return;
       }
       setState({ status: "loaded", run: result.right });
+      setObservation((value) => value + 1);
       if (needsRunPolling(result.right)) timer = setTimeout(refresh, 2000);
     }
     void refresh();
@@ -70,7 +104,7 @@ export function SavedSubmissionPage() {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [runId, setState]);
+  }, [runId, refreshKey, setState]);
 
   return (
     <main className="page">
@@ -95,9 +129,23 @@ export function SavedSubmissionPage() {
             <div className="saved-label">
               <Check size={16} /> Text saved
             </div>
-            <h1>Your submission.</h1>
+            <h1>Your fact check.</h1>
             <p>Saved {new Date(state.run.createdAt).toLocaleString()}</p>
           </section>
+          <ExplanationLanguageControl
+            key={runId}
+            run={state.run}
+            onChangeLanguage={(request) => Effect.runPromise(changeLanguage(runId, request))}
+            onAccepted={onMutation}
+          />
+          {state.run.status === "error" || state.run.errorCount > 0 ? (
+            <RetryAction
+              key={`retry-${runId}`}
+              revision={observation}
+              onRetry={(request) => Effect.runPromise(retryRun(runId, request))}
+              onAccepted={onMutation}
+            />
+          ) : null}
           <CheckabilityNotice checkability={state.run.checkability} />
           <section className="status-note" role="status">
             <span className="status-dot" />
@@ -160,14 +208,51 @@ export function SavedSubmissionPage() {
           {state.run.claims.length ? (
             <section className="claims-list" aria-label="Claims and assessments">
               <h2>Factual claims</h2>
-              {state.run.claims.map((claim) => (
-                <ClaimResult
-                  key={claim.claimId}
-                  runId={runId}
-                  claim={claim}
-                  revision={state.run.revision}
-                />
-              ))}
+              <ClaimOverview claims={state.run.claims} />
+              <nav className="filters" aria-label="Filter claims">
+                {(["all", "checking", "reviewed"] as const).map((value) => (
+                  <button
+                    type="button"
+                    key={value}
+                    className={filter === value ? "selected" : ""}
+                    aria-pressed={filter === value}
+                    onClick={() => setFilter(value)}
+                  >
+                    {value === "all" ? "All" : value === "checking" ? "Checking" : "Reviewed"}
+                    <span>
+                      {
+                        state.run.claims.filter(
+                          (c) =>
+                            value === "all" ||
+                            (value === "checking"
+                              ? ["awaiting_research", "researching", "assessing"].includes(c.status)
+                              : !["awaiting_research", "researching", "assessing"].includes(
+                                  c.status,
+                                )),
+                        ).length
+                      }
+                    </span>
+                  </button>
+                ))}
+              </nav>
+              {state.run.claims
+                .filter(
+                  (c) =>
+                    filter === "all" ||
+                    (filter === "checking"
+                      ? ["awaiting_research", "researching", "assessing"].includes(c.status)
+                      : !["awaiting_research", "researching", "assessing"].includes(c.status)),
+                )
+                .map((claim) => (
+                  <ClaimResult
+                    key={claim.claimId}
+                    runId={runId}
+                    claim={claim}
+                    revision={state.run.revision}
+                    retryRevision={observation}
+                    onMutation={onMutation}
+                  />
+                ))}
             </section>
           ) : null}
           <section className="surface saved-text">

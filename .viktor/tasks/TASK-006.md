@@ -34,3 +34,7 @@ Inject extraction, research, and finalization failures separately. Retry via UI 
 ## Completion Notes
 
 When complete, set done to true for this task in .viktor/tasks.json, append actual changes and validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Never mark validation complete when credentials or external access prevented it.
+
+## Delivered hackathon scope
+
+The user explicitly prioritized this recovery slice before TASK-005. Failed extraction and selected failed claims can restart independently; successful and active siblings remain intact. Existing research/evidence checkpoints are reused, command identities survive lost responses, and stale attempt publication is rejected. No budget keys are reset; TASK-005 must verify its future deep-budget expiry integration when that capability is introduced. Real extraction recovery completed35claims without technical errors; scoped claim recovery preserved32siblings.

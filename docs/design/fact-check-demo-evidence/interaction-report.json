@@ -1,0 +1,36 @@
+[
+  {
+    "viewport": "desktop",
+    "cards": 11,
+    "colors": {
+      "green": 4,
+      "yellow": 4,
+      "red": 3
+    },
+    "afterJump": 0,
+    "newItemsPillObserved": true,
+    "overflow": {
+      "page": 0,
+      "panelWidth": 400
+    },
+    "actions": "no-video/link-invalid-close-valid/live-pending-resolved-details-dispute-jump-settings-pause-resume-ended-replay/recorded-speed-seek-markers-all11details-filters-ended-replay/restart-open-sample",
+    "sourceAnchorsOpened": 7
+  },
+  {
+    "viewport": "mobile",
+    "cards": 11,
+    "colors": {
+      "green": 4,
+      "yellow": 4,
+      "red": 3
+    },
+    "afterJump": 0,
+    "newItemsPillObserved": true,
+    "overflow": {
+      "page": 0,
+      "panelWidth": 390
+    },
+    "actions": "no-video/link-invalid-close-valid/live-pending-resolved-details-dispute-jump-settings-pause-resume-ended-replay/recorded-speed-seek-markers-all11details-filters-ended-replay/restart-open-sample",
+    "sourceAnchorsOpened": 7
+  }
+]

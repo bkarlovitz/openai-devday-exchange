@@ -3,6 +3,8 @@ import { ApiError, Run, SubmissionReceipt } from "./runs";
 import type { YoutubeSubmission } from "./youtube";
 import type { Submission } from "./runs";
 import { ClaimDetail } from "./claims";
+import { MutationReceipt } from "./mutations";
+import type { RetryCommand, LanguageCommand } from "./mutations";
 
 export function createApiClient(baseUrl = "") {
   async function request(path: string, init?: RequestInit): Promise<unknown> {
@@ -15,6 +17,34 @@ export function createApiClient(baseUrl = "") {
     return body;
   }
   return {
+    retryRun(runId: string, command: RetryCommand) {
+      return Effect.tryPromise({
+        try: async () =>
+          Schema.decodeUnknownSync(MutationReceipt)(
+            await request(`/api/runs/${runId}/retry`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(command),
+            }),
+          ),
+        catch: (cause) =>
+          cause instanceof Error ? cause : new Error("Could not retry this check."),
+      });
+    },
+    changeLanguage(runId: string, command: LanguageCommand) {
+      return Effect.tryPromise({
+        try: async () =>
+          Schema.decodeUnknownSync(MutationReceipt)(
+            await request(`/api/runs/${runId}/language`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(command),
+            }),
+          ),
+        catch: (cause) =>
+          cause instanceof Error ? cause : new Error("Could not change explanation language."),
+      });
+    },
     saveSubmission(submission: Submission) {
       return Effect.tryPromise({
         try: async () =>

@@ -335,3 +335,13 @@ curl -i http://127.0.0.1:8787/api/runs/youtube \
 ```
 
 El importador trabaja con subtítulos. Incluye las intervenciones de la pista que se solapan con el intervalo, de modo que un subtítulo en el borde puede empezar un poco antes o acabar un poco después. Los tiempos guardados son absolutos respecto al vídeo. Un intervalo sin subtítulos utilizables devuelve `422`. Los fallos de acceso a YouTube o del importador devuelven `503`.
+
+## Recover checks and change explanation language
+
+The web results page and text extension expose retry controls for technical failures and an English/Spanish/Catalan explanation selector. Retrying a failed claim preserves successful and active siblings. Extraction retries reuse saved section checkpoints; failed explanation retries reuse retained evidence. Mutations use a caller-generated UUID commandId, reused after a lost response. New deliberate attempts use a fresh UUID.
+
+`POST /api/runs/:runId/retry` takes `{ "commandId": "UUID", "claimId": "optional existing failed claim ID" }`. Omitting claimId retries failed stages. `POST /api/runs/:runId/language` takes `{ "commandId": "UUID", "language": "en" }` (also es/ca). Both return `{ runId, commandId }` with202. Reusing an ID for a different mutation returns409.
+
+Language changes translate only explanation/uncertainty from retained assessments, cache each language against its immutable source artifact, and preserve verdicts, evidence and arithmetic. Poll while `run.translation.status` is processing even if the checking run is complete. New assessment completions respect the latest selected language. The YouTube panel links to the same web result for these controls.
+
+The latest supplied Fact Check design has been applied across the app and both panels, using bundled reference fonts and real categorical verdicts. [Reference review](docs/design/fact-check-demo-review.md) records the full prototype inspection and intentional semantic adaptations.

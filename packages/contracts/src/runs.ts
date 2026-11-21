@@ -78,6 +78,15 @@ export const Run = Schema.Struct({
   detectedLanguage: Schema.optional(Language),
   explanationLanguage: Schema.optional(Language),
   checkability: Schema.optional(PassageCheckability),
+  languageRevision: Schema.optional(Schema.Number),
+  translation: Schema.optional(
+    Schema.Struct({
+      language: Language,
+      status: Schema.Literal("processing", "complete"),
+      pendingCount: Schema.Number,
+      errorCount: Schema.Number,
+    }),
+  ),
   error: Schema.optional(Schema.String),
   errorCount: Schema.optionalWith(Schema.Number, { default: () => 0 }),
   createdAt: Schema.String,

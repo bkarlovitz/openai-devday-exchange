@@ -34,3 +34,7 @@ Check the same run in all three languages and confirm only explanatory text chan
 ## Completion Notes
 
 When complete, set done to true for this task in .viktor/tasks.json, append actual changes and validation evidence to .viktor/logs/LOG.md, and create one git commit. Follow any configured Viktor completion-tag convention. Never mark validation complete when credentials or external access prevented it.
+
+## Delivered and verified
+
+Post-result en/es/ca switching, language changes during assessment, explicit user override, stale-generation/source-version guards, per-language caches, translation error/retry UI and continued polling are delivered. Defaults retain the existing extraction-language detection. Legacy artifacts without a declared explanation language are translated rather than trusted from inferred metadata. Live verification preserved quote/source/verdict/calculation records through all three languages; a rapid es→ca switch during an active assessment finished in Catalan. Web and the text extension expose the controls; the YouTube client can open its exact web result.

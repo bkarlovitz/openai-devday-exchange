@@ -90,3 +90,9 @@ Additive fields keep existing clients and text producers compatible:
 - `Claim.occurrences?`: `[{ start, end, speaker?, startSeconds? }]`, exact original UTF-16 offsets. Canonical claim IDs and completed results remain stable as occurrences append.
 
 Extraction and claim checking now overlap. A run with finished current claims and `extraction.done=false` is still processing and can publish more claims. Both clients should continue polling until terminal run status. YouTube ingestion should send text/source/passages through the existing POST `/api/runs`; no transport-specific contract is required.
+
+## Recovery and explanation commands
+
+Typed client methods: `retryRun(runId,{commandId,claimId?})` and `changeLanguage(runId,{commandId,language})`. They return a MutationReceipt. Preserve commandId across transport retries; a new deliberate action gets a fresh UUID. Retry targets technical failures, never a factual disagreement.
+
+`Run.languageRevision?` and `Run.translation?` expose target language, processing/complete, pendingCount and errorCount. `Claim.explanationLanguage?`, `translationStatus?` and `translationError?` identify the explanation actually displayed and any pending/error state. Continue polling translations beyond checking completion. Source quotations, evidence, verdict and calculations are invariant through language changes. All changes are additive to the text/YouTube producer contract.

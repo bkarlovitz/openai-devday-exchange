@@ -2,16 +2,25 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { RegistryProvider, useAtom } from "@effect-atom/atom-react";
 import { Effect } from "effect";
-import { BadgeCheck, Check, ChevronDown, ExternalLink, LoaderCircle, Plus, X } from "lucide-react";
+import { BadgeCheck, ExternalLink, LoaderCircle, Plus } from "lucide-react";
 import { MAX_TEXT_CHARACTERS } from "@council/contracts";
 import type { Claim } from "@council/contracts";
-import { CheckabilityNotice, ClaimCard, verdictLabels } from "@council/ui";
+import {
+  BrandMark,
+  ClaimOverview,
+  ClaimPreview,
+  CheckabilityNotice,
+  ClaimCard,
+  ExplanationLanguageControl,
+  RetryAction,
+} from "@council/ui";
 import { api, submitOnce } from "./api";
 import { API_ORIGIN } from "./config";
 import { storeSelection, tabCheckKey } from "./messages";
 import { claimState, runState } from "./state";
 import { useTabCheck } from "./use-tab-check";
 import "./styles.css";
+import "@council/ui/theme.css";
 
 type Filter = "all" | "checking" | "reviewed";
 
@@ -23,10 +32,14 @@ function ClaimResult({
   runId,
   claim,
   revision,
+  retryRevision,
+  onMutation,
 }: {
   runId: string;
   claim: Claim;
   revision: number;
+  retryRevision: number;
+  onMutation: () => void;
 }) {
   const [state, setState] = useAtom(claimState(`${runId}/${claim.claimId}`));
   const [retry, setRetry] = useState(0);
@@ -43,36 +56,18 @@ function ClaimResult({
   return (
     <details className={`result-item result-${claim.verdict ?? claim.status}`}>
       <summary>
-        <span className="result-meta">
-          {pending(claim) ? (
-            <LoaderCircle size={13} className="spin" />
-          ) : claim.verdict === "supported" ? (
-            <Check size={13} />
-          ) : claim.verdict === "contradicted" ? (
-            <X size={13} />
-          ) : (
-            <BadgeCheck size={13} />
-          )}
-          {pending(claim)
-            ? "Checking"
-            : claim.verdict
-              ? verdictLabels[claim.verdict]
-              : claim.status === "error"
-                ? "Check failed"
-                : "Not checkable"}
-        </span>
-        <span className="result-quote">“{claim.quote}”</span>
-        {claim.speaker ? (
-          <span className="result-speaker">
-            {claim.speaker}
-            {claim.startSeconds !== undefined ? ` · ${claim.startSeconds}s` : ""}
-          </span>
-        ) : null}
-        <span className="view-analysis">
-          View analysis <ChevronDown size={13} />
-        </span>
+        <ClaimPreview claim={claim} />
       </summary>
       <ClaimCard claim={claim} detail={state.detail} detailError={state.error} />
+      {claim.status === "error" ? (
+        <RetryAction
+          revision={retryRevision}
+          claimId={claim.claimId}
+          label="Retry this claim"
+          onRetry={(request) => Effect.runPromise(api.retryRun(runId, request))}
+          onAccepted={onMutation}
+        />
+      ) : null}
       {state.error ? (
         <button className="detail-retry" onClick={() => setRetry((value) => value + 1)}>
           Retry loading analysis
@@ -95,6 +90,7 @@ function Results({
 }) {
   const [state, setState] = useAtom(runState(runId));
   const [refresh, setRefresh] = useState(0);
+  const [observation, setObservation] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
@@ -108,7 +104,9 @@ function Results({
         return;
       }
       setState({ run: result.right });
+      setObservation((value) => value + 1);
       if (
+        result.right.translation?.status === "processing" ||
         ["queued", "awaiting_processing", "extracting", "processing"].includes(result.right.status)
       )
         timer = setTimeout(poll, 2000);
@@ -123,11 +121,6 @@ function Results({
   const claims = run?.claims ?? [];
   const checking = claims.filter(pending).length;
   const reviewed = claims.length - checking;
-  const supported = claims.filter((claim) => claim.verdict === "supported").length;
-  const contradicted = claims.filter((claim) => claim.verdict === "contradicted").length;
-  const uncertain = claims.filter((claim) =>
-    ["mixed_evidence", "insufficient_evidence"].includes(claim.verdict ?? ""),
-  ).length;
   const filtered = claims.filter(
     (claim) => filter === "all" || (filter === "checking" ? pending(claim) : !pending(claim)),
   );
@@ -143,6 +136,22 @@ function Results({
           </a>
         </aside>
       ) : null}
+      {run ? (
+        <ExplanationLanguageControl
+          key={runId}
+          run={run}
+          onChangeLanguage={(request) => Effect.runPromise(api.changeLanguage(runId, request))}
+          onAccepted={() => setRefresh((value) => value + 1)}
+        />
+      ) : null}
+      {run && (run.status === "error" || run.errorCount > 0) ? (
+        <RetryAction
+          key={`retry-${runId}`}
+          revision={observation}
+          onRetry={(request) => Effect.runPromise(api.retryRun(runId, request))}
+          onAccepted={() => setRefresh((value) => value + 1)}
+        />
+      ) : null}
       <CheckabilityNotice checkability={run?.checkability} />
       <section className="check-overview">
         {run?.extraction ? (
@@ -152,33 +161,14 @@ function Results({
             Checking claims: {reviewed} / {claims.length} finished.
           </p>
         ) : null}
-        <div className="progress-track">
-          <span
-            style={{
-              width: `${claims.length ? (reviewed / claims.length) * 100 : terminal ? 100 : 4}%`,
-            }}
-          />
-        </div>
-        <div className="counts">
-          <span className="count-supported">
-            ✓ <b>{supported}</b> supported
-          </span>
-          <span className="count-uncertain">
-            △ <b>{uncertain}</b> unclear
-          </span>
-          <span className="count-contradicted">
-            × <b>{contradicted}</b> contradicted
-          </span>
-          <span className="count-checking">
-            ● <b>{checking}</b> checking
-          </span>
-        </div>
+        <ClaimOverview claims={claims} />
       </section>
       <nav className="filters" aria-label="Filter claims">
         {(["all", "checking", "reviewed"] as const).map((value) => (
           <button
             key={value}
             className={filter === value ? "selected" : ""}
+            aria-pressed={filter === value}
             onClick={() => setFilter(value)}
           >
             {value === "all" ? "All" : value === "checking" ? "Checking" : "Reviewed"}
@@ -222,6 +212,8 @@ function Results({
             runId={runId}
             claim={claim}
             revision={run?.revision ?? 0}
+            retryRevision={observation}
+            onMutation={() => setRefresh((value) => value + 1)}
           />
         ))}
         {!claims.length && !state.error ? (
@@ -327,9 +319,9 @@ function Panel() {
       <header className="panel-header">
         <span className="brand">
           <span className="brand-mark">
-            <BadgeCheck size={19} />
+            <BrandMark />
           </span>{" "}
-          Council Check
+          Fact Check
         </span>
         {receipt ? (
           <button

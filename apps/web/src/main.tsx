@@ -9,17 +9,18 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { RegistryProvider } from "@effect-atom/atom-react";
-import { ScanText } from "lucide-react";
+import { BrandMark } from "@council/ui";
 import { SubmissionPage } from "./routes/index";
 import { SavedSubmissionPage } from "./routes/runs.$runId";
 import "./styles.css";
+import "@council/ui/theme.css";
 
 const rootRoute = createRootRoute({
   component: () => (
     <>
       <header className="site-header">
         <Link to="/" className="brand">
-          <ScanText size={25} strokeWidth={1.7} /> Council Check
+          <BrandMark /> Fact Check
         </Link>
       </header>
       <Outlet />

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fact Check Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: demo toolbar on top; a fake browser with the sample video on the left; the extension's side panel docked on the right at 400px */
+  --desk:#E7E7E2;
+  --surface:#FFFFFF;
+  --ink:#1B1B19;
+  --muted:#5F5F5A;
+  --line:#EDEDEA;
+  --accent:#1F4FD1;
+  --font-display:'Space Grotesk', Inter, system-ui, sans-serif;
+  --font-body:Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--desk);color:var(--ink);font-family:var(--font-body);font-size:14px;display:flex;flex-direction:column;overflow:hidden}
+button{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accent)}a:hover{color:#163A9C}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+[hidden]{display:none !important}
+
+/* ---------- demo toolbar ---------- */
+.demo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding:10px 20px;background:#F7F7F4;border-bottom:1px solid #D9D9D3}
+.demo-name{display:flex;align-items:center;gap:8px;font-weight:600}
+.demo-name small{font-weight:500;color:var(--muted);font-size:12.5px}
+.ctrl{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.seg{display:inline-flex;gap:3px;padding:3px;background:#E9E9E4;border-radius:9px}
+.seg button{border:0;background:transparent;height:30px;padding:0 12px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:#FFFFFF;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.btn-ghost{height:32px;padding:0 12px;border:1px solid #D4D4CE;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.demo-note{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* ---------- stage ---------- */
+.stage{flex:1;min-height:0;display:flex}
+.browser-area{flex:1;min-width:0;padding:24px;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
+.browser{width:100%;max-width:980px;background:#FFFFFF;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 28px rgba(0,0,0,.08);overflow:hidden}
+.b-top{display:flex;align-items:flex-end;gap:12px;padding:10px 12px 0;background:#ECECE8}
+.dots{display:flex;gap:6px;padding-bottom:12px}.dots span{width:11px;height:11px;border-radius:50%;background:#D0D0CA}
+.b-tab{background:#FFFFFF;border-radius:9px 9px 0 0;padding:8px 14px;font-size:12.5px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:8px}
+.b-tab i{width:14px;height:14px;border-radius:4px;background:#C62828;flex:none}
+.b-tab i.blank{background:#D0D0CA}
+.b-addr{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.addr{flex:1;min-width:0;height:32px;border-radius:999px;background:#F2F2EF;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:13px;color:#3F3F3B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ext-ico{width:32px;height:32px;border-radius:8px;background:#1B1B19;display:flex;align-items:center;justify-content:center;flex:none}
+.b-body{padding:20px}
+
+.novideo{min-height:420px;border:1.5px dashed #D9D9D3;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:32px}
+.novideo h2{margin:0;font-family:var(--font-display);font-size:22px;text-wrap:balance}
+.novideo p{margin:0;color:var(--muted);max-width:44ch;line-height:1.55}
+.btn-dark{height:44px;padding:0 20px;border:0;border-radius:10px;background:#1B1B19;color:#FFFFFF;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-line{height:44px;padding:0 16px;border:1px solid #DADAD5;border-radius:10px;background:#FFFFFF;color:#1B1B19;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+
+.video{position:relative;aspect-ratio:16/9;background:#15171B;border-radius:10px;overflow:hidden;color:#FFFFFF}
+.v-brand{position:absolute;top:16px;left:18px;font-family:var(--font-display);font-weight:600;font-size:14px;opacity:.8}
+.v-live{position:absolute;top:14px;right:16px;display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;background:#C62828;font-size:11px;font-weight:700;letter-spacing:.06em}
+.speakers{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12%}
+.spk{display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.55;transition:opacity .3s}
+.spk.on{opacity:1}
+.avatar{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:34px;font-weight:700;box-shadow:0 0 0 0 rgba(255,255,255,0);transition:box-shadow .3s}
+.spk.on .avatar{box-shadow:0 0 0 4px rgba(255,255,255,.85)}
+.spk-host .avatar{background:#2F5D8A}.spk-guest .avatar{background:#7A4E2D}
+.spk span{font-size:13px;font-weight:600}
+.caption{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(86%,640px);background:rgba(0,0,0,.72);border-radius:8px;padding:8px 12px;font-size:15px;line-height:1.45;text-align:center}
+.caption b{color:#F5C44B;font-weight:600;margin-right:6px}
+.big-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:#15171B;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.controls{display:flex;align-items:center;gap:12px;padding:12px 2px 4px}
+.ctl-btn{width:44px;height:44px;border:0;border-radius:10px;background:#F2F2EF;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.v-time{font-size:12.5px;color:#3F3F3B;min-width:104px}
+.seek{flex:1;min-width:0;accent-color:#C62828;height:24px;cursor:pointer}
+.live-bar{flex:1;height:4px;border-radius:4px;background:#C62828}
+.v-meta h1{margin:10px 0 4px;font-size:18px;font-weight:600;text-wrap:balance}
+.v-meta p{margin:0;font-size:13px;color:var(--muted)}
+
+/* ---------- side panel (approved design) ---------- */
+.panel{width:400px;flex:none;background:#FFFFFF;border-left:1px solid #D9D9D3;display:flex;flex-direction:column;min-height:0}
+.p-head{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 8px 16px;border-bottom:1px solid var(--line)}
+.p-logo{display:flex;align-items:center;gap:10px}
+.p-mark{width:30px;height:30px;border-radius:8px;background:#1B1B19;display:flex;align-items:center;justify-content:center}
+.p-name{font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.icon-btn{width:44px;height:44px;border:0;background:transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#3F3F3B}
+
+.p-empty{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:24px;padding:40px 24px 20px}
+.e-top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.e-ico{width:72px;height:72px;border-radius:20px;background:#F2F2EF;display:flex;align-items:center;justify-content:center}
+.e-top h2{margin:0;font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.01em}
+.e-top p{margin:0;font-size:14px;line-height:1.55;color:#4A4A46;max-width:300px}
+.e-btns{margin-top:6px;display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px}
+.e-msg{font-size:12.5px;line-height:1.45;color:#7A5000;background:#FEF4D6;border-radius:8px;padding:8px 10px;text-align:left;width:100%;max-width:300px}
+.link-form{width:100%;display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px;border:1px solid var(--line);border-radius:12px;background:#FAFAF8}
+.lf-head{display:flex;align-items:center;justify-content:space-between}
+.lf-head label{font-size:12.5px;font-weight:600;color:#33332F}
+.lf-close{width:32px;height:32px;margin:-6px -6px -6px 0;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lf-row{display:flex;gap:8px}
+.lf-row input{flex:1;min-width:0;height:44px;padding:0 12px;border-radius:9px;border:1px solid #CFCFC9;background:#FFFFFF;font-size:13.5px;font-family:inherit;color:var(--ink)}
+.lf-row input::placeholder{color:#8A8A84}
+.lf-row input[aria-invalid="true"]{border:1.5px solid #C62828}
+.lf-row button{height:44px;padding:0 16px;border:0;border-radius:9px;font-size:13.5px;font-weight:600;background:#1B1B19;color:#FFFFFF;cursor:pointer}
+.lf-row button:disabled{background:#E6E6E1;color:#6B6B66;cursor:not-allowed}
+.lf-help{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.lf-help.err{color:#A31F1F;font-weight:500}
+.lf-help.ok{color:#146C3A;font-weight:500}
+.legend{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.legend h3{margin:0;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.lg-row{display:flex;align-items:center;gap:12px}
+.lg-badge{flex:none;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px}
+.lg-row div{display:flex;flex-direction:column;gap:2px}
+.lg-row b{font-weight:600;font-size:13.5px}
+.lg-row span{font-size:12.5px;color:#4A4A46}
+
+.p-active{flex:1;min-height:0;display:flex;flex-direction:column}
+.p-ctx{padding:14px 16px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line)}
+.ctx-row{display:flex;align-items:center;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.badge.live{background:#FDECEC;color:#A31F1F}
+.badge.rec{background:#F2F2EF;color:#3F3F3B}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:#C62828}
+.ctx-clock{font-size:12px;color:var(--muted)}
+.ctx-dom{margin-left:auto;font-size:12px;color:var(--muted)}
+.ctx-title{font-weight:600;font-size:15px;line-height:1.35}
+.tl{display:flex;flex-direction:column;gap:6px}
+.tl-track{position:relative;height:22px}
+.tl-bg{position:absolute;left:0;right:0;top:9px;height:4px;border-radius:4px;background:var(--line)}
+.tl-played{position:absolute;left:0;top:9px;height:4px;border-radius:4px;background:#B9B9B3;width:0}
+.tl-head{position:absolute;top:0;width:2px;height:22px;background:#1B1B19;border-radius:2px;left:0}
+.tl-mk{position:absolute;top:4px;width:14px;height:14px;padding:0;border-radius:50%;border:2px solid #FFFFFF;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.tl-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.sum{display:flex;flex-direction:column;gap:8px}
+.sum-bar{display:flex;height:6px;border-radius:6px;overflow:hidden;background:var(--line)}
+.sum-bar div{height:6px;transition:width .5s}
+.sum-txt{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#3F3F3B}
+.sum-txt span{display:inline-flex;align-items:center;gap:5px}
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin:12px 16px 6px;background:#F2F2EF;border-radius:11px}
+.tabs button{height:36px;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--muted)}
+.tabs button[aria-pressed="true"]{background:#FFFFFF;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.tabs .n{font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:#E6E6E1;color:#3F3F3B}
+.feed-wrap{flex:1;min-height:0;position:relative}
+.feed{position:absolute;inset:0;overflow-y:auto;display:flex;flex-direction:column;padding:6px 16px 16px}
+.feed::-webkit-scrollbar{width:8px}.feed::-webkit-scrollbar-thumb{background:#DADAD5;border-radius:8px}
+.feed-inner{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.listening{display:flex;flex-direction:column;align-items:center;gap:10px;padding:56px 24px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.5}
+.new-pill{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);height:36px;padding:0 14px;border:0;border-radius:999px;background:#1B1B19;color:#FFFFFF;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+
+.card{--card:#F7F7F5;--border:#E4E4E0;--sbg:#E6E6E1;--sfg:#5F5F5A;--cbg:#EBEBE7;--cfg:#4A4A46;border-radius:12px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--border)}
+.card.green{--card:#F1FAF4;--border:#BFE3CC;--sbg:#17773F;--sfg:#FFFFFF;--cbg:#D9F0E1;--cfg:#146C3A}
+.card.yellow{--card:#FFF9E8;--border:#F0D486;--sbg:#F5B40B;--sfg:#2E2000;--cbg:#FCEBB8;--cfg:#7A5000}
+.card.red{--card:#FEF3F3;--border:#F2BDBD;--sbg:#C62828;--sfg:#FFFFFF;--cbg:#FADADA;--cfg:#A31F1F}
+.c-top{display:flex;align-items:center;gap:8px}
+.ts{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px 0 6px;border:0;border-radius:7px;background:#EEF2FD;color:var(--accent);font-family:var(--font-mono);font-size:12px;font-weight:600;cursor:pointer}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:3px 7px;border-radius:6px}
+.tag.fact{background:#F0F0EC;color:#3F3F3B}.tag.arg{background:#EEF1FB;color:#2B3F8F}
+.who{margin-left:auto;font-size:12px;color:var(--muted)}
+.c-main{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:0;margin:0;cursor:pointer;border-radius:8px}
+.c-main:disabled{cursor:default}
+.c-row{display:flex;gap:12px;align-items:flex-start;width:100%}
+.quote{flex:1;font-size:14.5px;line-height:1.45;color:var(--ink)}
+.card.pending .quote{color:var(--muted)}
+.score{flex:none;width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:19px;font-weight:700;background:var(--sbg);color:var(--sfg)}
+.c-row2{display:flex;align-items:center;gap:8px;width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 7px;border-radius:999px;font-size:12.5px;font-weight:600;background:var(--cbg);color:var(--cfg)}
+.crit{font-size:12px;color:var(--muted)}
+.more{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--accent)}
+.more svg{transition:transform .2s}
+.card.open .more svg{transform:rotate(180deg)}
+.detail{display:flex;flex-direction:column;gap:12px;border-top:1px solid rgba(0,0,0,.07);padding-top:12px}
+.detail p{margin:0;font-size:13.5px;line-height:1.55;color:#33332F}
+.pattern{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:#3F3F3B}
+.pattern b{font-weight:600}
+.pat{padding:2px 8px;border-radius:6px;background:#EEF1FB;color:#2B3F8F;font-weight:600}
+.sources{display:flex;flex-direction:column;gap:6px}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.sources a{display:inline-flex;align-items:center;gap:6px;font-size:13px;text-decoration:none}
+.d-actions{display:flex;gap:8px}
+.d-actions .btn-dark{flex:1;height:40px;font-size:13px;border-radius:9px}
+.d-actions .btn-line{height:40px;font-size:13px;font-weight:500;border-radius:9px}
+.d-actions .btn-line:disabled{color:var(--muted);cursor:default}
+.thanks{font-size:12.5px !important;color:#146C3A !important}
+
+.p-foot{border-top:1px solid var(--line);padding:8px 16px 12px;display:flex;flex-direction:column;gap:6px}
+.f-row{display:flex;align-items:center;gap:8px;min-height:36px}
+.f-dot{width:8px;height:8px;border-radius:50%}
+.f-txt{font-size:12.5px;color:#3F3F3B}
+.f-btn{margin-left:auto;height:36px;padding:0 14px;border:1px solid #DADAD5;border-radius:9px;background:#FFFFFF;font-size:12.5px;font-weight:600;cursor:pointer}
+.disclaimer{margin:0;font-size:11px;line-height:1.4;color:#6B6B66}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1B1B19;color:#FFFFFF;padding:10px 16px;border-radius:10px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:min(92vw,460px);z-index:10}
+
+/* motion */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes shimmer{0%{background-position:-120px 0}100%{background-position:120px 0}}
+@keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes resolve{from{background:#F7F7F5;border-color:#E4E4E0}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.spin{animation:spin .9s linear infinite;transform-origin:50% 50%}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+.shimmer{background:linear-gradient(90deg,#E6E6E1 0%,#F5F5F2 50%,#E6E6E1 100%) !important;background-size:240px 100% !important;animation:shimmer 1.3s linear infinite}
+.card.enter{animation:enter .35s ease-out}
+.card.resolved-now{animation:resolve .7s ease-out}
+.card.resolved-now .score{animation:pop .45s ease-out}
+@media (prefers-reduced-motion: reduce){
+  .spin,.pulse,.shimmer,.card.enter,.card.resolved-now,.card.resolved-now .score{animation:none !important}
+}
+
+/* narrow screens: stack the video above the panel */
+@media (max-width: 900px){
+  body{overflow:auto;height:auto}
+  html{height:auto}
+  .stage{flex-direction:column}
+  .browser-area{padding:16px;overflow:visible}
+  .panel{width:100%;height:760px;border-left:0;border-top:1px solid #D9D9D3}
+  .demo-note{margin-left:0;width:100%}
+  .avatar{width:64px;height:64px;font-size:24px}
+  .caption{font-size:13px;bottom:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <div class="demo-name">
+    <span class="p-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path><path d="M7.8 10.6l1.9 1.9 3.4-3.6"></path></svg></span>
+    Fact Check <small>Interactive demo</small>
+  </div>
+  <div class="ctrl" role="group" aria-label="Video type">Video
+    <div class="seg">
+      <button type="button" id="mLive" data-act="mode" data-mode="live" aria-pressed="true">Live</button>
+      <button type="button" id="mRec" data-act="mode" data-mode="recorded" aria-pressed="false">Recorded</button>
+    </div>
+  </div>
+  <div class="ctrl" role="group" aria-label="Playback speed">Speed
+    <div class="seg">
+      <button type="button" data-act="speed" data-speed="1" aria-pressed="true">1×</button>
+      <button type="button" data-act="speed" data-speed="2" aria-pressed="false">2×</button>
+      <button type="button" data-act="speed" data-speed="4" aria-pressed="false">4×</button>
+    </div>
+  </div>
+  <button type="button" class="btn-ghost" data-act="restart">
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"></path><path d="M4 4v4.5h4.5"></path></svg>
+    Restart demo
+  </button>
+  <span class="demo-note">Scripted sample: the video, claims and ratings are simulated.</span>
+</div>
+
+<div class="stage">
+  <div class="browser-area">
+    <div class="browser">
+      <div class="b-top">
+        <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="b-tab"><i id="tabIco" class="blank"></i><span id="tabTitle">New tab</span></div>
+      </div>
+      <div class="b-addr">
+        <div class="addr"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg><span id="addrTxt">Search or type a URL</span></div>
+        <span class="ext-ico" title="Fact Check extension (open)"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path><path d="M7.8 10.6l1.9 1.9 3.4-3.6"></path></svg></span>
+      </div>
+      <div class="b-body">
+        <div class="novideo" id="noVideo">
+          <h2>This tab has no video yet</h2>
+          <p>Open the sample episode to see the side panel check facts and arguments as they are said. You can also paste any link in the panel.</p>
+          <button type="button" class="btn-dark" data-act="open-sample">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>Open the sample video
+          </button>
+        </div>
+        <div id="player" hidden>
+          <div class="video">
+            <div class="v-brand">Markets &amp; Science</div>
+            <div class="v-live" id="vLive"><span class="pulse" style="width:7px;height:7px;border-radius:50%;background:#FFFFFF"></span>LIVE</div>
+            <div class="speakers" aria-hidden="true">
+              <div class="spk spk-host" id="spkHost"><div class="avatar">H</div><span>Host</span></div>
+              <div class="spk spk-guest" id="spkGuest"><div class="avatar">G</div><span>Guest</span></div>
+            </div>
+            <div class="caption" id="caption" aria-live="off"><b id="capWho">Host</b><span id="capTxt"></span></div>
+            <button type="button" class="big-play" id="bigPlay" data-act="play" aria-label="Play video">
+              <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>
+            </button>
+          </div>
+          <div class="controls">
+            <button type="button" class="ctl-btn" id="playBtn" data-act="play" aria-label="Play video"></button>
+            <span class="v-time mono" id="vTime">00:00 / 05:00</span>
+            <label for="seek" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Video position</label>
+            <input type="range" class="seek" id="seek" min="0" max="300" step="1" value="0">
+            <div class="live-bar" id="liveBar" title="Live stream"></div>
+          </div>
+          <div class="v-meta">
+            <h1>Markets &amp; Science Podcast · Ep. 42: coffee myths, debunked</h1>
+            <p>Sample episode made for this demo. Five minutes, 11 checkable claims.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel" aria-label="Fact Check side panel">
+    <header class="p-head">
+      <div class="p-logo">
+        <div class="p-mark"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20 20"></path><path d="M7.8 10.6l1.9 1.9 3.4-3.6"></path></svg></div>
+        <span class="p-name">Fact Check</span>
+      </div>
+      <button type="button" class="icon-btn" aria-label="Settings" data-act="settings">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9"></path><path d="M17 7h3"></path><circle cx="15" cy="7" r="2"></circle><path d="M4 17h3"></path><path d="M11 17h9"></path><circle cx="9" cy="17" r="2"></circle></svg>
+      </button>
+    </header>
+
+    <!-- empty state -->
+    <div class="p-empty" id="pEmpty">
+      <div class="e-top">
+        <div class="e-ico"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3F3F3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="M10 9.5v5l4.5-2.5z"></path></svg></div>
+        <h2>No video in this tab</h2>
+        <p>Open a live or recorded video, or paste a link. Facts and arguments show up here as they are said, first in gray, then with their rating.</p>
+        <div class="e-btns">
+          <button type="button" class="btn-dark" data-act="check-tab">Check the video in this tab</button>
+          <button type="button" class="btn-line" id="linkToggle" data-act="link-open" aria-expanded="false" aria-controls="linkForm">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1-1"></path></svg>Add a video link
+          </button>
+        </div>
+        <p class="e-msg" id="noVidMsg" role="status" hidden>No video found in this tab. Open the sample video on the left, or paste a link.</p>
+        <form class="link-form" id="linkForm" hidden novalidate>
+          <div class="lf-head">
+            <label for="videoLink">Video link</label>
+            <button type="button" class="lf-close" data-act="link-close" aria-label="Close link field"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6.5 6.5l11 11"></path><path d="M17.5 6.5l-11 11"></path></svg></button>
+          </div>
+          <div class="lf-row">
+            <input id="videoLink" type="url" inputmode="url" autocomplete="off" placeholder="https://youtube.com/watch?v=…" aria-describedby="linkHelp" aria-invalid="false">
+            <button type="submit" id="linkGo" disabled>Check</button>
+          </div>
+          <span class="lf-help" id="linkHelp">YouTube, Twitch, Vimeo or any page with a video.</span>
+        </form>
+      </div>
+
+      <section class="legend" aria-labelledby="howto">
+        <h3 id="howto">HOW TO READ THE RESULTS</h3>
+        <div class="lg-row"><span class="lg-badge" style="background:#17773F;color:#FFFFFF">70+</span><div><b>True · Sound</b><span>Matches the sources, or the reasoning holds up.</span></div></div>
+        <div class="lg-row"><span class="lg-badge" style="background:#F5B40B;color:#2E2000">40+</span><div><b>Misleading · Weak</b><span>Partly true, missing context, or the logic has gaps.</span></div></div>
+        <div class="lg-row"><span class="lg-badge" style="background:#C62828;color:#FFFFFF">0+</span><div><b>False · Fallacious</b><span>Contradicts the sources, or the argument is a fallacy.</span></div></div>
+        <div class="lg-row"><span class="lg-badge" style="background:#E6E6E1;color:#4A4A46;font-family:var(--font-body)">···</span><div><b>Analyzing</b><span>Claim detected, rating on the way.</span></div></div>
+      </section>
+    </div>
+
+    <!-- active state -->
+    <div class="p-active" id="pActive" hidden>
+      <section class="p-ctx">
+        <div class="ctx-row">
+          <span id="pBadge"></span>
+          <span class="ctx-clock mono" id="pClock">00:00</span>
+          <span class="ctx-dom">youtube.com</span>
+        </div>
+        <div class="ctx-title">Markets &amp; Science Podcast · Ep. 42: coffee myths, debunked</div>
+        <div class="tl" id="pTimeline" hidden>
+          <div class="tl-track" id="tlTrack">
+            <div class="tl-bg"></div>
+            <div class="tl-played" id="tlPlayed"></div>
+            <div id="tlMarkers"></div>
+            <div class="tl-head" id="tlHead"></div>
+          </div>
+          <div class="tl-ends mono"><span>00:00</span><span>05:00</span></div>
+        </div>
+        <div class="sum" id="pSum"></div>
+      </section>
+      <div class="tabs" role="group" aria-label="Filter items" id="pTabs"></div>
+      <div class="feed-wrap">
+        <div class="feed" id="pFeed"><div class="feed-inner" id="pFeedInner"></div></div>
+        <button type="button" class="new-pill" id="pNew" data-act="new-items" hidden></button>
+      </div>
+    </div>
+
+    <footer class="p-foot">
+      <div id="pFootRow"></div>
+      <p class="disclaimer">Automated AI assessment. It can be wrong: check the sources.</p>
+    </footer>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- scripted content ---------- */
+  var DURATION = 300;
+  var SEG = [
+    [0, "Host", "Welcome back to Markets & Science. Today: what is true and what is myth about coffee."],
+    [6, "Guest", "Happy to be here. I drink more coffee than I should, so this one is personal."],
+    [12, "Host", "Let's start with the big picture. Brazil is the world's largest coffee producer."],
+    [20, "Guest", "And it shows. Everyone I know runs on it."],
+    [27, "Host", "How many cups do you have a day?"],
+    [31, "Guest", "Five, like the rest of my team."],
+    [36, "Guest", "If everyone at the office drinks five coffees a day, it can't be bad for you."],
+    [45, "Host", "Some people say it dries you out, though. Is that real?"],
+    [57, "Guest", "Absolutely. Drinking coffee dehydrates you."],
+    [66, "Host", "Okay, we'll come back to that one."],
+    [76, "Host", "Speaking of myths, here's a classic."],
+    [83, "Host", "We only use 10% of our brains."],
+    [92, "Guest", "Ha. Maybe that explains my coffee habit."],
+    [100, "Guest", "Prices are another story. My usual bag almost doubled."],
+    [108, "Guest", "Coffee prices rose and consumption fell in the same year, so the price drove consumption down."],
+    [122, "Host", "Let's talk about where it all began."],
+    [133, "Host", "Ethiopia is considered the birthplace of Arabica coffee."],
+    [144, "Guest", "I've been switching to decaf at night, with mixed feelings."],
+    [158, "Guest", "Decaf has no benefits at all, because caffeine is what's good for you."],
+    [171, "Host", "Back to Brazil for a second."],
+    [183, "Host", "Brazil exports coffee to more than a hundred countries."],
+    [195, "Guest", "Which is why bad weather there hits everyone."],
+    [212, "Guest", "The drought shrank Brazil's harvest, and Brazil is the largest producer, so global coffee supply fell."],
+    [228, "Host", "Quick lightning round before we wrap up."],
+    [247, "Host", "Espresso has more caffeine than a regular cup of coffee."],
+    [259, "Guest", "Fun fact: coffee used to be banned in some places."],
+    [272, "Guest", "Coffee was banned in some countries in the past, so it must be dangerous."],
+    [287, "Host", "On that note, thanks for listening. See you next week."]
+  ];
+
+  var C = [
+    {id:1,time:16,delay:4,type:"fact",speaker:"Host",text:"Brazil is the world's largest coffee producer.",verdict:"green",score:94,why:"Brazil has led world production since the 19th century and today grows more than a third of the world's coffee.",sources:[{name:"USDA · Coffee: World Markets and Trade",url:"https://www.fas.usda.gov"},{name:"International Coffee Organization",url:"https://ico.org"}]},
+    {id:2,time:41,delay:5,type:"argument",speaker:"Guest",text:"If everyone at the office drinks five coffees a day, it can't be bad for you.",verdict:"red",score:18,pattern:"Appeal to popularity",why:"Lots of people doing something proves nothing about its health effects. The conclusion doesn't follow from the premise.",sources:[]},
+    {id:3,time:60,delay:3.5,type:"fact",speaker:"Guest",text:"Drinking coffee dehydrates you.",verdict:"yellow",score:46,why:"Caffeine is a mild diuretic, but studies of moderate intake found no dehydration: the fluid in the coffee itself offsets the loss.",sources:[{name:"Killer et al., PLOS ONE (2014)",url:"https://journals.plos.org/plosone"}]},
+    {id:4,time:86,delay:4.5,type:"fact",speaker:"Host",text:"We only use 10% of our brains.",verdict:"red",score:6,why:"Brain imaging shows activity in virtually every region over the course of a day. It's an old myth with no scientific basis.",sources:[{name:"Scientific American",url:"https://www.scientificamerican.com"}]},
+    {id:5,time:114,delay:6,type:"argument",speaker:"Guest",text:"Coffee prices rose and consumption fell in the same year, so the price drove consumption down.",verdict:"yellow",score:52,pattern:"Correlation treated as causation",why:"It might be true, but the argument only shows the two happened together. It ignores other factors, like income and weather, before concluding one caused the other.",sources:[]},
+    {id:6,time:137,delay:4,type:"fact",speaker:"Host",text:"Ethiopia is considered the birthplace of Arabica coffee.",verdict:"green",score:88,why:"Coffea arabica is native to the forests of southwestern Ethiopia, where it still grows wild.",sources:[{name:"Royal Botanic Gardens, Kew",url:"https://www.kew.org"}]},
+    {id:7,time:163,delay:5,type:"argument",speaker:"Guest",text:"Decaf has no benefits at all, because caffeine is what's good for you.",verdict:"yellow",score:44,pattern:"Questionable premise",why:"Decaf keeps much of coffee's polyphenols, which are also linked to health benefits. The argument rests on an incomplete premise.",sources:[]},
+    {id:8,time:187,delay:3.5,type:"fact",speaker:"Host",text:"Brazil exports coffee to more than a hundred countries.",verdict:"green",score:82,why:"Brazilian exporters ship to well over 100 destination countries each year, led by the United States and Germany.",sources:[{name:"Cecafé (Brazilian Coffee Exporters Council)",url:"https://www.cecafe.com.br"}]},
+    {id:9,time:219,delay:5.5,type:"argument",speaker:"Guest",text:"The drought shrank Brazil's harvest, and Brazil is the largest producer, so global coffee supply fell.",verdict:"green",score:81,why:"The premises support the conclusion: a smaller crop from the largest producer reduces global supply, unless other countries fully make up the gap.",sources:[]},
+    {id:10,time:251,delay:4,type:"fact",speaker:"Host",text:"Espresso has more caffeine than a regular cup of coffee.",verdict:"yellow",score:48,why:"True per ounce, but a single espresso shot usually has less caffeine than a typical cup of drip coffee.",sources:[{name:"Mayo Clinic · Caffeine content for coffee, tea, soda and more",url:"https://www.mayoclinic.org"}]},
+    {id:11,time:278,delay:4.5,type:"argument",speaker:"Guest",text:"Coffee was banned in some countries in the past, so it must be dangerous.",verdict:"red",score:15,pattern:"Appeal to history",why:"Past bans reflected the politics and religion of their time, not evidence about health. A ban in the past says nothing about whether coffee is dangerous today.",sources:[]}
+  ];
+  var BY_ID = {}; C.forEach(function (c) { BY_ID[c.id] = c; });
+  var FACT = {green:"True", yellow:"Misleading", red:"False"};
+  var ARG = {green:"Sound", yellow:"Weak", red:"Fallacious"};
+  var DOT = {pending:"#B9B9B3", green:"#17773F", yellow:"#F5B40B", red:"#C62828"};
+  var LINK_RE = /^https?:\/\/[^\s\/.]+\.[^\s]{2,}$/i;
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- icons ---------- */
+  var I = {
+    play: '<svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>',
+    playBig: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>',
+    pauseBig: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>',
+    replay: '<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"></path><path d="M4 4v4.5h4.5"></path></svg>',
+    check: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>',
+    warn: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9 16H3z"></path><path d="M12 10v4"></path><path d="M12 17.2v.3"></path></svg>',
+    x: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6.5 6.5l11 11"></path><path d="M17.5 6.5l-11 11"></path></svg>',
+    spin: '<svg class="spin" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"></path></svg>',
+    chev: '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>',
+    ext: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"></path><path d="M20 4l-9 9"></path><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>',
+    down: '<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M6 13l6 6 6-6"></path></svg>'
+  };
+  var VICON = {pending: I.spin, green: I.check, yellow: I.warn, red: I.x};
+
+  /* ---------- state ---------- */
+  var S;
+  function freshState(keepVideo) {
+    return {
+      mode: S ? S.mode : "live",
+      speed: S ? S.speed : 1,
+      videoOpen: keepVideo ? S.videoOpen : false,
+      playing: false, ended: false, t: 0, dragging: false,
+      paused: false, filter: "all", open: null,
+      disputed: {}, seen: {}, skipped: {},
+      unseen: 0, nearBottom: true
+    };
+  }
+  S = freshState(false);
+  var sig = {};
+  var prevStatus = {};
+
+  var $ = function (id) { return document.getElementById(id); };
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return pad(Math.floor(s / 60)) + ":" + pad(s % 60); }
+  function now() { return performance.now(); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  /* ---------- claim lifecycle ---------- */
+  function detect() {
+    C.forEach(function (c) {
+      if (c.time <= S.t && !S.seen[c.id] && !S.skipped[c.id]) {
+        if (S.paused) S.skipped[c.id] = true;
+        else S.seen[c.id] = { resolveAt: now() + c.delay * 1000 / S.speed };
+      }
+    });
+  }
+  function isPending(c) { return now() < S.seen[c.id].resolveAt; }
+  function visible() { return C.filter(function (c) { return S.seen[c.id] && c.time <= S.t; }); }
+
+  /* ---------- toast ---------- */
+  var toastTimer;
+  function toast(msg) {
+    var el = $("toast"); el.textContent = msg; el.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+
+  /* ---------- left: player ---------- */
+  function currentSeg() {
+    var s = SEG[0];
+    for (var i = 0; i < SEG.length; i++) { if (SEG[i][0] <= S.t) s = SEG[i]; }
+    return s;
+  }
+  function renderPlayer() {
+    var open = S.videoOpen;
+    if (sig.open !== open) {
+      sig.open = open;
+      $("noVideo").hidden = open; $("player").hidden = !open;
+      $("tabTitle").textContent = open ? "Markets & Science Podcast · Ep. 42" : "New tab";
+      $("tabIco").className = open ? "" : "blank";
+      $("addrTxt").textContent = open ? "youtube.com/watch?v=mkts-sci-ep42" : "Search or type a URL";
+      $("pEmpty").hidden = open; $("pActive").hidden = !open;
+    }
+    if (!open) return;
+    var live = S.mode === "live";
+    var k = [S.playing, S.ended, live].join();
+    if (sig.ctl !== k) {
+      sig.ctl = k;
+      $("playBtn").innerHTML = S.playing ? I.pauseBig : I.playBig;
+      $("playBtn").setAttribute("aria-label", S.playing ? "Pause video" : "Play video");
+      var big = $("bigPlay");
+      big.hidden = S.playing;
+      big.innerHTML = S.ended ? I.replay : '<svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>';
+      big.setAttribute("aria-label", S.ended ? "Replay video" : "Play video");
+      $("vLive").hidden = !live;
+      $("seek").hidden = live; $("liveBar").hidden = !live;
+    }
+    $("vTime").textContent = live ? (S.ended ? "Stream ended" : "LIVE · " + fmt(S.t)) : fmt(S.t) + " / " + fmt(DURATION);
+    if (!live && !S.dragging) $("seek").value = Math.floor(S.t);
+    var seg = currentSeg();
+    var showCap = S.t > 0 || S.playing;
+    var capKey = showCap ? seg[0] : -1;
+    if (sig.cap !== capKey) {
+      sig.cap = capKey;
+      $("caption").hidden = !showCap;
+      $("capWho").textContent = seg[1];
+      $("capTxt").textContent = seg[2];
+      $("spkHost").classList.toggle("on", showCap && seg[1] === "Host");
+      $("spkGuest").classList.toggle("on", showCap && seg[1] === "Guest");
+    }
+  }
+
+  /* ---------- right: panel ---------- */
+  function renderPanel() {
+    if (!S.videoOpen) return;
+    var vis = visible();
+    var st = vis.map(function (c) { return isPending(c) ? "p" : "r"; });
+    var live = S.mode === "live";
+
+    // mode-dependent chrome
+    if (sig.mode !== S.mode) {
+      sig.mode = S.mode;
+      $("pBadge").innerHTML = live
+        ? '<span class="badge live"><span class="dot pulse"></span>LIVE</span>'
+        : '<span class="badge rec"><svg aria-hidden="true" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4v16l14-8z"></path></svg>RECORDED</span>';
+      $("pTimeline").hidden = live;
+    }
+    $("pClock").textContent = live ? fmt(S.t) : fmt(S.t) + " / " + fmt(DURATION);
+
+    // summary
+    var sum = { green: 0, yellow: 0, red: 0, pending: 0 };
+    vis.forEach(function (c, i) { if (st[i] === "p") sum.pending++; else sum[c.verdict]++; });
+    var k = [sum.green, sum.yellow, sum.red, sum.pending].join();
+    if (sig.sum !== k) {
+      sig.sum = k;
+      var done = sum.green + sum.yellow + sum.red;
+      var pc = function (n) { return done ? (n / done * 100) + "%" : "0%"; };
+      $("pSum").innerHTML =
+        '<div class="sum-bar" aria-hidden="true"><div style="background:#17773F;width:' + pc(sum.green) + '"></div><div style="background:#F5B40B;width:' + pc(sum.yellow) + '"></div><div style="background:#C62828;width:' + pc(sum.red) + '"></div></div>' +
+        '<div class="sum-txt">' +
+        '<span><span style="color:#17773F;display:inline-flex">' + I.check + '</span><b>' + sum.green + '</b> reliable</span>' +
+        '<span><span style="color:#B07D00;display:inline-flex">' + I.warn + '</span><b>' + sum.yellow + '</b> with caveats</span>' +
+        '<span><span style="color:#C62828;display:inline-flex">' + I.x + '</span><b>' + sum.red + '</b> problematic</span>' +
+        '<span><span style="width:9px;height:9px;border-radius:50%;background:#B9B9B3"></span><b>' + sum.pending + '</b> analyzing</span></div>';
+    }
+
+    // tabs
+    var nf = vis.filter(function (c) { return c.type === "fact"; }).length;
+    var counts = { all: vis.length, fact: nf, argument: vis.length - nf };
+    k = [counts.all, counts.fact, S.filter].join();
+    if (sig.tabs !== k) {
+      sig.tabs = k;
+      $("pTabs").innerHTML = [["all", "All"], ["fact", "Facts"], ["argument", "Arguments"]].map(function (p) {
+        return '<button type="button" data-act="filter" data-f="' + p[0] + '" aria-pressed="' + (S.filter === p[0]) + '">' + p[1] + '<span class="n">' + counts[p[0]] + '</span></button>';
+      }).join("");
+    }
+
+    // timeline (recorded)
+    if (!live) {
+      var p = (S.t / DURATION * 100) + "%";
+      $("tlPlayed").style.width = p; $("tlHead").style.left = "calc(" + p + " - 1px)";
+      k = vis.map(function (c, i) { return c.id + st[i]; }).join();
+      if (sig.tl !== k) {
+        sig.tl = k;
+        $("tlMarkers").innerHTML = vis.map(function (c, i) {
+          var col = st[i] === "p" ? DOT.pending : DOT[c.verdict];
+          return '<button type="button" class="tl-mk" data-act="seek-to" data-id="' + c.id + '" aria-label="Jump to ' + fmt(c.time) + '" style="left:calc(' + (c.time / DURATION * 100) + '% - 7px);background:' + col + '"></button>';
+        }).join("");
+      }
+    }
+
+    // feed
+    var items = [], ist = [];
+    vis.forEach(function (c, i) { if (S.filter === "all" || c.type === S.filter) { items.push(c); ist.push(st[i]); } });
+    k = items.map(function (c, i) { return c.id + ist[i]; }).join() + "|" + S.open + "|" + Object.keys(S.disputed).join() + "|" + (items.length ? "" : (S.t === 0 && !S.playing));
+    if (sig.feed !== k) { sig.feed = k; rebuildFeed(items, ist); }
+
+    // footer
+    k = S.mode + S.paused + S.ended;
+    if (sig.foot !== k) {
+      sig.foot = k;
+      $("pFootRow").innerHTML = live
+        ? '<div class="f-row"><span class="f-dot ' + (S.paused || S.ended ? "" : "pulse") + '" style="background:' + (S.paused || S.ended ? "#B9B9B3" : "#17773F") + '"></span><span class="f-txt">' + (S.ended ? "Stream ended" : S.paused ? "Analysis paused: new claims are skipped" : "Listening and checking in real time") + '</span>' + (S.ended ? "" : '<button type="button" class="f-btn" data-act="pause-analysis">' + (S.paused ? "Resume" : "Pause") + '</button>') + '</div>'
+        : '<div class="f-row"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3F3F3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"></path><path d="M20 4v4.7h-4.7"></path><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"></path><path d="M4 20v-4.7h4.7"></path></svg><span class="f-txt">Synced: only shows what has already been said</span></div>';
+    }
+  }
+
+  function card(c, pending, extraCls) {
+    var isArg = c.type === "argument";
+    var v = pending ? "pending" : c.verdict;
+    var open = !pending && S.open === c.id;
+    var disp = !!S.disputed[c.id];
+    var label = pending ? "Analyzing…" : (isArg ? ARG[v] : FACT[v]);
+    var h = '<article class="card ' + v + (open ? " open" : "") + (extraCls ? " " + extraCls : "") + '">';
+    h += '<div class="c-top"><button type="button" class="ts" data-act="jump" data-id="' + c.id + '" aria-label="Jump to ' + fmt(c.time) + ' in the video">' + I.play + fmt(c.time) + '</button>';
+    h += '<span class="tag ' + (isArg ? "arg" : "fact") + '">' + (isArg ? "ARGUMENT" : "FACT") + '</span><span class="who">' + c.speaker + '</span></div>';
+    h += '<button type="button" class="c-main" data-act="toggle" data-id="' + c.id + '" aria-expanded="' + open + '"' + (pending ? " disabled" : "") + '>';
+    h += '<span class="c-row"><span class="quote">“' + esc(c.text) + '”</span>';
+    h += pending ? '<span class="score shimmer" role="img" aria-label="Score pending"></span>' : '<span class="score" role="img" aria-label="Score ' + c.score + ' out of 100">' + c.score + '</span>';
+    h += '</span><span class="c-row2"><span class="chip">' + VICON[v] + label + '</span>';
+    if (!pending) h += '<span class="crit">' + (isArg ? "Logical soundness" : "Accuracy") + '</span><span class="more">' + (open ? "Close" : "View analysis") + I.chev + '</span>';
+    h += '</span></button>';
+    if (open) {
+      h += '<div class="detail">';
+      if (c.pattern) h += '<div class="pattern"><b>Pattern detected:</b><span class="pat">' + c.pattern + '</span></div>';
+      h += '<p>' + esc(c.why) + '</p>';
+      if (c.sources.length) {
+        h += '<div class="sources"><span class="lbl">SOURCES</span>' + c.sources.map(function (s) {
+          return '<a href="' + s.url + '" target="_blank" rel="noopener">' + I.ext + '<span>' + esc(s.name) + '</span></a>';
+        }).join("") + '</div>';
+      }
+      h += '<div class="d-actions"><button type="button" class="btn-dark" data-act="jump" data-id="' + c.id + '">' + I.play + 'Jump to ' + fmt(c.time) + '</button>';
+      h += '<button type="button" class="btn-line" data-act="dispute" data-id="' + c.id + '"' + (disp ? " disabled" : "") + '>' + (disp ? "Disputed" : "Dispute") + '</button></div>';
+      if (disp) h += '<p class="thanks" role="status">Thanks. This rating was flagged for review.</p>';
+      h += '</div>';
+    }
+    return h + '</article>';
+  }
+
+  var userAction = false;
+  function rebuildFeed(items, ist) {
+    var feed = $("pFeed"), inner = $("pFeedInner");
+    var wasNear = S.nearBottom, prevTop = feed.scrollTop;
+    var act = document.activeElement, focusKey = null;
+    if (act && inner.contains(act) && act.dataset.act) focusKey = [act.dataset.act, act.dataset.id];
+
+    var newCount = 0, next = {};
+    var html = items.map(function (c, i) {
+      var cls = "";
+      if (!(c.id in prevStatus)) { cls = "enter"; newCount++; }
+      else if (prevStatus[c.id] === "p" && ist[i] === "r") cls = "resolved-now";
+      next[c.id] = ist[i];
+      return card(c, ist[i] === "p", cls);
+    }).join("");
+    prevStatus = next;
+    inner.innerHTML = html || '<div class="listening"><svg class="spin" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8A84" stroke-width="2.4" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"></path></svg>' +
+      (S.t === 0 && !S.playing ? "Press play. The first checkable claim will show up here." : "Listening to the video. The first checkable claim will show up here.") + '</div>';
+
+    if (focusKey) {
+      var el = inner.querySelector('[data-act="' + focusKey[0] + '"][data-id="' + focusKey[1] + '"]');
+      if (el) el.focus({ preventScroll: true });
+    }
+    if (userAction) {
+      feed.scrollTop = prevTop;
+      var openEl = inner.querySelector(".card.open");
+      if (openEl) openEl.scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+      userAction = false;
+      return;
+    }
+    if (wasNear) toBottom(newCount > 0);
+    else {
+      feed.scrollTop = prevTop;
+      if (newCount) { S.unseen += newCount; renderPill(); }
+    }
+  }
+  var autoScrollUntil = 0;
+  function toBottom(smooth) {
+    var f = $("pFeed");
+    S.nearBottom = true;
+    autoScrollUntil = now() + (smooth && !reduceMotion ? 700 : 50);
+    f.scrollTo({ top: f.scrollHeight, behavior: smooth && !reduceMotion ? "smooth" : "auto" });
+  }
+  function renderPill() {
+    var b = $("pNew");
+    b.hidden = S.unseen === 0;
+    b.innerHTML = I.down + (S.unseen === 1 ? "1 new item" : S.unseen + " new items");
+  }
+  $("pFeed").addEventListener("scroll", function () {
+    if (now() < autoScrollUntil) return;
+    var f = $("pFeed");
+    S.nearBottom = f.scrollHeight - f.scrollTop - f.clientHeight < 48;
+    if (S.nearBottom && S.unseen) { S.unseen = 0; renderPill(); }
+  });
+
+  /* ---------- actions ---------- */
+  function setPressed(selector, attr, val) {
+    document.querySelectorAll(selector).forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset[attr] === String(val))); });
+  }
+  function resetSession(keepVideo) {
+    S = freshState(keepVideo);
+    sig = {}; prevStatus = {};
+    $("pFeedInner").innerHTML = ""; renderPill();
+  }
+  function openVideo(autoplay) {
+    S.videoOpen = true;
+    $("noVidMsg").hidden = true;
+    if (autoplay) { S.playing = true; S.ended = false; }
+  }
+  function playToggle() {
+    if (S.ended) {
+      if (S.mode === "live") { resetSession(true); S.playing = true; return; }
+      S.t = 0; S.ended = false; S.playing = true; return;
+    }
+    S.playing = !S.playing;
+  }
+  function seekTo(t) {
+    if (S.mode === "live") { toast("This is a live stream: you can only follow along. Switch to Recorded to jump around."); return; }
+    S.t = Math.max(0, Math.min(DURATION, t)); S.ended = false;
+  }
+  function closeLinkForm() {
+    $("linkForm").hidden = true; $("linkToggle").hidden = false;
+    $("linkToggle").setAttribute("aria-expanded", "false");
+    $("videoLink").value = ""; setLinkHelp("idle"); $("linkGo").disabled = true;
+  }
+  function setLinkHelp(state) {
+    var h = $("linkHelp"), inp = $("videoLink");
+    inp.setAttribute("aria-invalid", String(state === "err"));
+    h.className = "lf-help" + (state === "err" ? " err" : state === "ok" ? " ok" : "");
+    h.setAttribute("role", state === "err" ? "alert" : "status");
+    h.innerHTML = state === "err" ? I.warn + "That does not look like a link. Paste the full address, starting with https://"
+      : state === "ok" ? I.spin + "Opening the video and starting the check…"
+      : "YouTube, Twitch, Vimeo or any page with a video.";
+  }
+
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]");
+    if (!el || el.disabled) return;
+    var a = el.dataset.act, id = el.dataset.id ? +el.dataset.id : null;
+    switch (a) {
+      case "mode":
+        if (S.mode === el.dataset.mode) return;
+        var keep = S.videoOpen; S.mode = el.dataset.mode; resetSession(keep);
+        setPressed('[data-act="mode"]', "mode", S.mode);
+        toast(S.mode === "live" ? "Live mode: follow along as it happens." : "Recorded mode: drag the bar or click a marker to jump around.");
+        break;
+      case "speed":
+        S.speed = +el.dataset.speed; setPressed('[data-act="speed"]', "speed", S.speed); break;
+      case "restart":
+        resetSession(false); closeLinkForm(); $("noVidMsg").hidden = true; break;
+      case "open-sample": openVideo(false); break;
+      case "play": playToggle(); break;
+      case "check-tab": $("noVidMsg").hidden = false; break;
+      case "link-open":
+        $("linkForm").hidden = false; el.hidden = true; el.setAttribute("aria-expanded", "true");
+        $("noVidMsg").hidden = true; $("videoLink").focus(); break;
+      case "link-close": closeLinkForm(); $("linkToggle").focus(); break;
+      case "filter": S.filter = el.dataset.f; S.nearBottom = true; break;
+      case "toggle": userAction = true; S.open = S.open === id ? null : id; break;
+      case "jump": case "seek-to": seekTo(BY_ID[id].time - 2); break;
+      case "dispute": userAction = true; S.disputed[id] = true; break;
+      case "pause-analysis":
+        S.paused = !S.paused;
+        toast(S.paused ? "Paused: claims said now will not be checked." : "Checking again.");
+        break;
+      case "new-items": toBottom(true); S.unseen = 0; renderPill(); break;
+      case "settings": toast("Settings are not part of this demo."); break;
+    }
+  });
+
+  $("videoLink").addEventListener("input", function () {
+    $("linkGo").disabled = this.value.trim() === "";
+    setLinkHelp("idle");
+  });
+  $("linkForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("videoLink").value.trim();
+    if (!LINK_RE.test(v)) { setLinkHelp("err"); $("videoLink").focus(); return; }
+    setLinkHelp("ok"); $("linkGo").disabled = true;
+    setTimeout(function () {
+      closeLinkForm(); openVideo(true);
+      toast("Demo: any link loads the sample episode.");
+    }, 1100);
+  });
+
+  var seek = $("seek");
+  seek.addEventListener("pointerdown", function () { S.dragging = true; });
+  seek.addEventListener("input", function () { S.t = +seek.value; S.ended = false; });
+  seek.addEventListener("change", function () { S.dragging = false; });
+  seek.addEventListener("pointerup", function () { S.dragging = false; });
+
+  /* ---------- loop ---------- */
+  var last = now();
+  function frame() {
+    var n = now(), dt = Math.min(0.25, (n - last) / 1000); last = n;
+    if (S.videoOpen && S.playing) {
+      S.t = Math.min(DURATION, S.t + dt * S.speed);
+      if (S.t >= DURATION) { S.playing = false; S.ended = true; }
+    }
+    if (S.videoOpen) detect();
+    renderPlayer();
+    renderPanel();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

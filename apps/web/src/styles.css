@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;450;500;600;650;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -418,4 +417,216 @@ button:disabled {
 }
 .checkability-notice p {
   margin: 6px 0 0;
+}
+
+.explanation-language {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid #dde3df;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.explanation-language select {
+  padding: 6px;
+  margin-left: 8px;
+  border: 1px solid #cdd4cf;
+  border-radius: 5px;
+  background: white;
+  font: inherit;
+}
+.explanation-language p {
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.retry-action {
+  margin: 10px 0 16px;
+}
+.retry-action button,
+.explanation-language button {
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid #bfcfc5;
+  background: #f4f8f5;
+  color: #214e38;
+  font: inherit;
+  cursor: pointer;
+}
+.retry-action button:disabled,
+.explanation-language button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Fact Check workspace: reference panel visual system, adapted to full text. */
+body {
+  background: #f5f5f1;
+  color: #1b1b19;
+}
+.site-header {
+  padding: 16px 5%;
+  background: #fff;
+  border-color: #ededea;
+}
+.brand {
+  font-size: 20px;
+  gap: 10px;
+}
+.page {
+  max-width: 1040px;
+  padding: 48px 28px;
+}
+.intro {
+  margin-bottom: 26px;
+}
+h1 {
+  font-weight: 700;
+  font-size: clamp(30px, 4vw, 42px);
+  letter-spacing: -0.04em;
+}
+.intro p {
+  font-size: 15px;
+  color: #5f5f5a;
+}
+.surface {
+  border-color: #e4e4e0;
+  box-shadow: none;
+  border-radius: 14px;
+}
+button {
+  background: #1b1b19;
+  border-color: #1b1b19;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 44px;
+}
+button:hover {
+  background: #33332f;
+}
+textarea {
+  border-color: #cfcfc9;
+  background: #fafaf8;
+  color: #1b1b19;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+textarea::placeholder {
+  color: #8a8a84;
+}
+.saved-label {
+  color: #5f5f5a;
+}
+.status-note {
+  background: #fff;
+  border: 1px solid #e4e4e0;
+  border-radius: 12px;
+  font-size: 13px;
+}
+.status-note p {
+  color: #5f5f5a;
+}
+.status-dot {
+  background: #b9b9b3;
+}
+.back-link {
+  color: #1f4fd1;
+  margin-bottom: 24px;
+}
+.saved-text {
+  margin-top: 24px;
+}
+.saved-text > p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.claims-list > .filters {
+  margin: 16px 0;
+}
+.filters button {
+  min-height: 36px;
+  background: transparent;
+  border: 0;
+}
+.filters button:hover {
+  background: #e9e9e4;
+}
+.claim-overview {
+  padding: 14px 0;
+}
+.claim-context summary,
+.calculation summary,
+.claim-occurrences summary {
+  cursor: pointer;
+}
+.transcript-import {
+  padding: 16px;
+  background: #fafaf8;
+  border: 1px solid #ededea;
+  border-radius: 10px;
+}
+.transcript-import input::file-selector-button {
+  background: white;
+  border: 1px solid #dadad5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-right: 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.submission-options {
+  border-top: 1px solid #ededea;
+  padding-top: 16px;
+}
+.submission-options summary {
+  font-size: 13px;
+}
+.submission-options input,
+.submission-options select {
+  border-color: #cfcfc9;
+  border-radius: 9px;
+}
+.extraction-warnings {
+  padding: 14px;
+  border: 1px solid #f0d486;
+  border-radius: 10px;
+  background: #fff9e8;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.extraction-warnings ul {
+  padding-left: 20px;
+}
+.error {
+  color: #a31f1f;
+}
+.saved-text a {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .page {
+    padding: 28px 16px;
+  }
+  .site-header {
+    padding: 12px 16px;
+  }
+  .surface {
+    padding: 18px;
+  }
+  .intro {
+    margin-bottom: 22px;
+  }
+  .explanation-language label {
+    margin: 0;
+    font-size: 13px;
+  }
+  .explanation-language select {
+    max-width: 100%;
+    margin-top: 6px;
+  }
+  .form-bottom button {
+    width: 100%;
+  }
+  .claim .evidence-metadata {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
 }

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { Effect, Schema } from "effect";
-import { Submission, normalizeSubmission } from "@council/contracts";
+import { Submission, normalizeSubmission, RetryCommand, LanguageCommand } from "@council/contracts";
 import type { Env } from "../env";
 import { createRun, getRun, coordinator } from "../services/run-store";
 
@@ -65,4 +65,37 @@ runs.get("/:runId/claims/:claimId", async (c) => {
   return detail
     ? c.body(detail, 200, { "Content-Type": "application/json" })
     : c.json({ error: "Claim not found." }, 404);
+});
+
+runs.post("/:runId/retry", async (c) => {
+  const id = Schema.decodeUnknownOption(Schema.UUID)(c.req.param("runId"));
+  if (id._tag === "None") return c.json({ error: "Submission not found." }, 404);
+  const command = Schema.decodeUnknownEither(RetryCommand)(await c.req.json().catch(() => null));
+  if (command._tag === "Left")
+    return c.json({ error: "Send a retry command with a valid commandId." }, 400);
+  const result = await coordinator(c.env, id.value.toLowerCase()).requestRetry(
+    command.right.commandId.toLowerCase(),
+    command.right.claimId,
+  );
+  return result.status === 202
+    ? c.json({ runId: result.runId, commandId: result.commandId }, 202)
+    : c.json({ error: result.error }, result.status);
+});
+
+runs.post("/:runId/language", async (c) => {
+  const id = Schema.decodeUnknownOption(Schema.UUID)(c.req.param("runId"));
+  if (id._tag === "None") return c.json({ error: "Submission not found." }, 404);
+  const command = Schema.decodeUnknownEither(LanguageCommand)(await c.req.json().catch(() => null));
+  if (command._tag === "Left")
+    return c.json(
+      { error: "Send a language command with a valid commandId and en, es or ca." },
+      400,
+    );
+  const result = await coordinator(c.env, id.value.toLowerCase()).requestLanguage(
+    command.right.commandId.toLowerCase(),
+    command.right.language,
+  );
+  return result.status === 202
+    ? c.json({ runId: result.runId, commandId: result.commandId }, 202)
+    : c.json({ error: result.error }, result.status);
 });

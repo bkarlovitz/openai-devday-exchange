@@ -104,3 +104,25 @@
 - **Summary:** Fetched and merged86b3562, the teammate's LiveFact YouTube playback/timeline client, after its last-minute arrival. Built and typechecked it, added reproducible packaging alongside Council Check, and exposed its ZIP through the existing install page. Root typecheck now covers both extension workspaces. Merged-source lint and all58 tests passed.
 - **Live caption evidence:** A later AP segment imported654 characters and19 timed passages via the deployed private container, producing run88e6e2b5-d527-4b97-a5f6-511e8e0072d4. Its checking pipeline completed with six claims and one technical claim error. This is a meaningful timed-caption handoff, while the recording/no-caption and retrieval-failure limits above remain applicable.
 - **Demo:** The teammate's YouTube speech runbook is linked from docs/demo-plan.md. Replay examples are labelled separately from fresh live-caption checking. Audio transcription remains out of scope.
+
+### TASK-006: Recover failed stages without disturbing sibling claims
+
+- **Timestamp:** 2026-11-21T14:02:00Z
+- **Outcome:** done (user-approved pre-TASK-005 recovery slice)
+- **Summary:** Added command-deduplicated retry endpoint/client/UI, independent claim attempt ownership, extraction checkpoint copying, evidence reuse for failed explanations, durable launch intent/alarm recovery and stale-writer rejection. Completed and active siblings remain unchanged. Future deep-budget records are not reset.
+- **Validation:** Live scoped retry7c9ae7fe-e9f3-4e9b-b611-42aa1f96effe recovered claim0-12 to Supported while32siblings remained byte-identical; duplicate command returned the same receipt. Previously failed extraction6d9d3d33-7567-4deb-b5ca-cd1175cd9fb7 recovered to35terminal claims with no technical errors. Real-coordinator tests cover concurrent extraction/claim jobs, active siblings, stale publication, lost create responses, queued-launch recovery and command reuse conflict.
+
+### TASK-008: Cached en/es/ca explanation switching
+
+- **Timestamp:** 2026-11-21T14:02:00Z
+- **Outcome:** done
+- **Summary:** Added translation Workflow, version-pinned cache, language generation/source guards, latest-language assessment publication, UI progress/error retry and transport command replay. Only explanatory fields are translated. Legacy undeclared explanation-language metadata is not trusted.
+- **Validation:** Live housing run32f5b2c7-32c2-4bcf-8f28-b9b8a41b5c28 switched through English/Spanish/Catalan; evidence, quote, verdicts and calculations stayed unchanged. An observed legacy English-as-Catalan issue was fixed and retested. Live runfc9b241d-3c6c-44a9-a950-7959a1bc006d switched es→ca during assessment and finished Supported in Catalan at generation2. Tests cover stale generations/sources, cached restoration, malformed translations, translation failure and legacy handling. Web/Council browser fixtures verify replay IDs and polling after run completion.
+
+### TASK-014: Apply the latest supplied Fact Check reference
+
+- **Timestamp:** 2026-11-21T14:02:00Z
+- **Outcome:** done (real-client visual adaptation)
+- **Summary:** Preserved original56KB HTML and reviewed all820lines, every scripted state,11cards and desktop/mobile interactions. Applied matching typography, black mark, neutral/blue palette, card geometry, colored categorical states, filters, counters, clocks and source expansion across web and both panels. Bundled fonts and OFL licenses. Retained real evidence, commands and existing capture/seek bridges; omitted unsupported numeric scores/disputes/simulated player behavior.
+- **Validation:** Desktop1440/mobile390 and panel400/320 browser fixtures passed all verdict families, collapsed/expanded cards, filters, local font loading, no horizontal overflow and no page errors. Retry/language regression checks passed after styling. LiveFact link import and seek messages remained correct. Deployed web browser loaded Inter and used the live language selector. Hosted ZIPs match local archives and each includes all3font licenses. Root typecheck, lint and84tests passed; all three client builds and Worker dry-run passed.
+- **Integration:** Fetched/merged latest teammate1266416 (YouTube link mode and selectable interval), preserved its behavior, and deployed on Cloudflare with Neon and the caption container. Full TASK-011 roadmap evaluation and TASK-005 deeper research remain separate backlog work.

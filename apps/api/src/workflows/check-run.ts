@@ -10,11 +10,24 @@ import { extractClaims } from "../services/extract-claims";
 import { researchClaim } from "../research/research-claim";
 import { assessClaim } from "../services/assess";
 import { classifyPassage } from "../services/decisions";
+import {
+  copyExtractionCheckpoint,
+  retainedResearch,
+  selectRecoveryClaims,
+} from "../services/retry-run";
 
-export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeResearch?: boolean }> {
-  async run(event: WorkflowEvent<{ runId: string; resumeResearch?: boolean }>, step: WorkflowStep) {
+interface CheckRunParams {
+  runId: string;
+  resumeResearch?: boolean;
+  claimIds?: string[];
+  reuseExtractionAttemptId?: string;
+}
+
+export class CheckRun extends WorkflowEntrypoint<Env, CheckRunParams> {
+  async run(event: WorkflowEvent<CheckRunParams>, step: WorkflowStep) {
     const runId = event.payload.runId;
     const attemptId = event.instanceId;
+    const scopedClaims = event.payload.claimIds;
     const owner = coordinator(this.env, runId);
     const lanes = [Promise.resolve(), Promise.resolve()];
     const laneErrors: unknown[] = [];
@@ -38,9 +51,23 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
       if (!object) throw new Error("Saved submission is missing.");
       const submission = Schema.decodeUnknownSync(Submission)(await object.json());
       if (event.payload.resumeResearch) {
-        const run = await owner.getRun();
-        if (!run) throw new Error("Run disappeared before research.");
-        enqueue(run, run.claims);
+        const selected = await step.do("recovery-selection", async () => {
+          const run = await owner.getRun();
+          if (!run) throw new Error("Run disappeared before research.");
+          return {
+            detectedLanguage: run.detectedLanguage,
+            explanationLanguage: run.explanationLanguage,
+            claims: scopedClaims
+              ? selectRecoveryClaims(run.claims, scopedClaims)
+              : run.claims.filter(
+                  (claim) =>
+                    !["complete", "error", "not_checkable", "researching", "assessing"].includes(
+                      claim.status,
+                    ),
+                ),
+          };
+        });
+        enqueue({ runId, submission, ...selected }, selected.claims);
       } else {
         const chunks = chunkText(submission.text);
         let detectedLanguage: "en" | "es" | "ca" | undefined;
@@ -70,7 +97,16 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
             `extract-${chunk.index}`,
             { retries: { limit: 0, delay: "1 second" }, timeout: "40 seconds" },
             async () => {
-              if (await this.env.SUBMISSIONS.head(key)) return key;
+              if (
+                await copyExtractionCheckpoint(
+                  this.env.SUBMISSIONS,
+                  runId,
+                  attemptId,
+                  event.payload.reuseExtractionAttemptId,
+                  chunk.index,
+                )
+              )
+                return key;
               const result = await Effect.runPromise(
                 extractClaims(this.env, chunk, submission, runId),
               );
@@ -113,11 +149,13 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
       }
     } catch (error) {
       extractionError = error;
-      await owner
-        .failExtraction(attemptId, error instanceof Error ? error.message : "Extraction failed.")
-        .catch((recordError) => {
-          laneErrors.push(recordError);
-        });
+      if (!event.payload.resumeResearch) {
+        await owner
+          .failExtraction(attemptId, error instanceof Error ? error.message : "Extraction failed.")
+          .catch((recordError) => {
+            laneErrors.push(recordError);
+          });
+      }
     }
     // Do not abandon already-published claims if a later extraction section fails.
     await Promise.all(lanes);
@@ -126,10 +164,11 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
       await owner.finishFailedRun(
         attemptId,
         failure instanceof Error ? failure.message : "Processing failed.",
+        scopedClaims,
       );
       throw failure;
     }
-    await step.do("finish-research", () => owner.finishResearch(attemptId));
+    await step.do("finish-research", () => owner.finishResearch(attemptId, scopedClaims));
     return { runId, status: "complete" };
   }
 
@@ -145,7 +184,10 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
     const researchKey = `${prefix}/research.json`;
     const detailKey = `${prefix}/detail.json`;
     try {
-      await step.do(`begin-claim-${index}`, () => owner.beginResearch(attemptId, claim.claimId));
+      const started = await step.do(`begin-claim-${index}`, () =>
+        owner.beginResearch(attemptId, claim.claimId),
+      );
+      if (started === false) return;
       await step.do(
         `research-${index}`,
         {
@@ -154,7 +196,13 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
         },
         async () => {
           if (await this.env.SUBMISSIONS.head(researchKey)) return researchKey;
-          const result = await Effect.runPromise(researchClaim(this.env, claim, run.submission));
+          const priorJson = await owner.getClaimJson(claim.claimId);
+          const prior = priorJson
+            ? Schema.decodeUnknownSync(ClaimDetail)(JSON.parse(priorJson))
+            : null;
+          const result =
+            retainedResearch(prior) ??
+            (await Effect.runPromise(researchClaim(this.env, claim, run.submission)));
           const research = Schema.decodeUnknownSync(ResearchResult)(result);
           await this.env.SUBMISSIONS.put(researchKey, JSON.stringify(research));
           return researchKey;
@@ -165,7 +213,11 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
       const research = Schema.decodeUnknownSync(ResearchResult)(await researchObject.json());
       await step.do(`publish-evidence-${index}`, async () => {
         const detail: ClaimDetail = {
-          claim: { ...claim, status: research.checkable ? "assessing" : "not_checkable" },
+          claim: {
+            ...claim,
+            error: undefined,
+            status: research.checkable ? "assessing" : "not_checkable",
+          },
           evidence: research.evidence,
           research,
         };
@@ -181,13 +233,24 @@ export class CheckRun extends WorkflowEntrypoint<Env, { runId: string; resumeRes
         },
         async () => {
           if (await this.env.SUBMISSIONS.head(detailKey)) return detailKey;
-          const language = run.explanationLanguage ?? run.detectedLanguage ?? "en";
+          const latestRun = await owner.getRun();
+          const language =
+            latestRun?.explanationLanguage ??
+            run.explanationLanguage ??
+            run.detectedLanguage ??
+            "en";
           const result = await Effect.runPromise(
             assessClaim(this.env, claim, research.evidence, language, research.decision),
           );
           const assessment = Schema.decodeUnknownSync(Assessment)(result);
           const detail: ClaimDetail = {
-            claim: { ...claim, status: "complete", verdict: assessment.verdict },
+            claim: {
+              ...claim,
+              status: "complete",
+              error: undefined,
+              verdict: assessment.verdict,
+              explanationLanguage: language,
+            },
             evidence: research.evidence,
             research,
             assessment,

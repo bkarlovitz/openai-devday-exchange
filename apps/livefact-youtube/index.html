@@ -2,18 +2,33 @@
 <html lang="es">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LiveFact</title>
+  <title>Fact Check · LiveFact</title>
   <link rel="stylesheet" href="./panel.css" />
   <script src="/status.js"></script>
   <body>
     <header class="brand">
-      <h1><span class="brand-icon" aria-hidden="true">✓</span> LiveFact</h1>
+      <h1>
+        <span class="brand-icon" aria-hidden="true"
+          ><svg viewBox="0 0 24 24" width="21" height="21" fill="none">
+            <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8" />
+            <path
+              d="m15.5 15.5 5 5M7.5 10.5l2 2 4-4"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            /></svg
+        ></span>
+        Fact Check
+      </h1>
       <label class="toggle">Avisos <input id="enabled" type="checkbox" role="switch" /></label>
     </header>
-    <main>
+    <main id="workspace">
       <section aria-labelledby="video" class="video">
         <div class="video-type">
-          <span aria-hidden="true">▶</span> <span id="mode">YouTube</span>
+          <span class="source-badge"
+            ><span class="source-dot" aria-hidden="true"></span><span id="mode">YOUTUBE</span></span
+          ><span class="context-domain">youtube.com</span>
         </div>
         <h2 id="video">Abre un vídeo de YouTube</h2>
       </section>
@@ -79,6 +94,15 @@
           <div id="marks" aria-label="Afirmaciones en el vídeo"></div>
         </div>
         <div class="times"><span id="start">0:00</span><span id="end">—</span></div>
+        <section
+          class="review-summary"
+          id="review-summary"
+          aria-label="Resumen de la revisión"
+          hidden
+        >
+          <div class="summary-track" id="summary-track" aria-hidden="true"></div>
+          <div class="summary-counts" id="summary-counts"></div>
+        </section>
         <div id="filters" class="filters" role="group" aria-label="Tipo de afirmación" hidden>
           <button type="button" data-filter="all" aria-pressed="true">Todo <span>0</span></button>
           <button type="button" data-filter="fact" aria-pressed="false">
@@ -90,7 +114,32 @@
         </div>
         <ol id="entries"></ol>
       </section>
+      <div class="empty-mark" id="empty-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="38" height="38" fill="none">
+          <rect x="5" y="8" width="38" height="28" rx="5" stroke="currentColor" stroke-width="2" />
+          <path
+            d="m21 17 10 6-10 6V17Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M18 42h12M24 36v6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </div>
       <p class="empty" id="empty">Las citas y sus fuentes aparecerán aquí mientras ves el vídeo.</p>
+    </main>
+    <button class="new-items" id="new-items" type="button" hidden>Nuevas afirmaciones ↓</button>
+    <footer class="panel-footer">
+      <div class="footer-state">
+        <span class="footer-dot" id="footer-dot"></span
+        ><span id="footer-status">Abre un vídeo para comenzar</span
+        ><span class="client-name">LiveFact</span>
+      </div>
       <section class="controls" aria-label="Controles de verificación" id="controls" hidden>
         <button id="live" class="primary" disabled>Iniciar análisis en directo</button>
         <details class="options">
@@ -106,7 +155,8 @@
           <button id="demo" class="secondary" disabled>Probar con un ejemplo</button>
         </details>
       </section>
-    </main>
+      <p class="disclaimer">Revisión asistida por IA. Consulta las fuentes y sus límites.</p>
+    </footer>
     <script type="module" src="./panel.ts"></script>
   </body>
 </html>

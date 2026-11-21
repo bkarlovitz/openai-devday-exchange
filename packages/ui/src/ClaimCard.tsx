@@ -49,6 +49,14 @@ export function ClaimCard({
           </ol>
         </details>
       ) : null}
+      {claim.translationStatus ? (
+        <p className={claim.translationStatus === "error" ? "error" : "muted"} role="status">
+          {claim.translationStatus === "error"
+            ? (claim.translationError ??
+              "Explanation update failed. The previous explanation remains available.")
+            : "Updating explanation language…"}
+        </p>
+      ) : null}
       {claim.error ? (
         <p className="error" role="alert">
           {claim.error}
@@ -57,6 +65,11 @@ export function ClaimCard({
       {detailError ? (
         <p className="error" role="alert">
           {detailError}
+        </p>
+      ) : null}
+      {detail?.assessment && claim.explanationLanguage ? (
+        <p className="muted">
+          Explanation: {{ en: "English", es: "Español", ca: "Català" }[claim.explanationLanguage]}
         </p>
       ) : null}
       {detail?.assessment ? <AssessmentView assessment={detail.assessment} /> : null}

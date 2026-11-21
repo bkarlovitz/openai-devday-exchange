@@ -61,6 +61,8 @@ const live = el<HTMLButtonElement>("live");
 const capture = el<HTMLButtonElement>("capture");
 const backend = el<HTMLSelectElement>("backend");
 const filters = el("filters");
+const workspace = el("workspace");
+const newItems = el<HTMLButtonElement>("new-items");
 let filter: Filter = "all";
 let panelMode: "live" | "link" = "live";
 let activeTab: number | undefined;
@@ -228,6 +230,7 @@ function renderEntry(item: Entry, opened: Set<string>) {
   const row = document.createElement("li");
   row.className = "row";
   row.dataset.kind = item.kind;
+  row.dataset.status = item.status;
   row.style.setProperty("--state", status.color);
   row.style.setProperty("--wash", status.wash);
   row.style.setProperty("--edge", status.edge);
@@ -275,7 +278,14 @@ function renderEntry(item: Entry, opened: Set<string>) {
   const summaryFooter = document.createElement("span");
   summaryFooter.className = "summary-footer";
   summaryFooter.append(state, action);
-  summary.append(assertion, summaryFooter);
+  const claimLine = document.createElement("span");
+  claimLine.className = "claim-line";
+  const symbol = document.createElement("span");
+  symbol.className = "status-symbol";
+  symbol.textContent = status.icon;
+  symbol.setAttribute("aria-hidden", "true");
+  claimLine.append(assertion, symbol);
+  summary.append(claimLine, summaryFooter);
 
   const detail = document.createElement("div");
   detail.className = "detail";
@@ -321,9 +331,10 @@ function syncFilters(items: Entry[]) {
   const mixed =
     items.some((item) => item.kind === "argument") && items.some((item) => item.kind === "fact");
   if (!mixed) filter = "all";
-  filters.hidden = !mixed;
+  filters.hidden = items.length === 0;
   for (const button of filters.querySelectorAll("button")) {
     const category = button.dataset.filter;
+    button.hidden = category === "argument" && !items.some((item) => item.kind === "argument");
     button.setAttribute("aria-pressed", String(category === filter));
     button.querySelector("span")!.textContent = String(
       category === "all" ? items.length : items.filter((item) => item.kind === category).length,
@@ -331,6 +342,36 @@ function syncFilters(items: Entry[]) {
   }
   for (const row of entries.querySelectorAll<HTMLElement>(".row")) {
     row.hidden = filter !== "all" && filter !== row.dataset.kind;
+  }
+}
+
+function syncSummary(items: Entry[]) {
+  el("review-summary").hidden = items.length === 0;
+  const track = el("summary-track");
+  const counts = el("summary-counts");
+  track.replaceChildren();
+  counts.replaceChildren();
+  const groups = new Map<Status, number>();
+  for (const item of items) groups.set(item.status, (groups.get(item.status) ?? 0) + 1);
+  const labels: Record<Status, string> = {
+    supported: "Respaldadas",
+    contradicted: "Contradichas",
+    mixed: "Evidencia mixta",
+    context: "Falta contexto",
+    pending: "Comprobando",
+    unavailable: "Sin comprobar",
+  };
+  for (const [status, count] of groups) {
+    const color = liveFactStatuses[status].color;
+    const segment = document.createElement("span");
+    segment.style.width = `${(count / items.length) * 100}%`;
+    segment.style.background = color;
+    track.append(segment);
+    const label = document.createElement("span");
+    const dot = document.createElement("i");
+    dot.style.background = color;
+    label.append(dot, `${count} ${labels[status]}`);
+    counts.append(label);
   }
 }
 
@@ -403,6 +444,19 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
     claimDetails.clear();
   }
   const items = snapshot?.entries ?? [];
+  const follow = workspace.scrollTop < 100;
+  const priorCount = entries.children.length;
+  document.body.dataset.live = String(Boolean(snapshot?.live));
+  document.body.dataset.busy = String(Boolean(snapshot?.busy));
+  el("footer-status").textContent = !snapshot?.ready
+    ? "Abre un vídeo para comenzar"
+    : snapshot.busy
+      ? "Comprobando afirmaciones…"
+      : snapshot.live
+        ? "Leyendo subtítulos visibles"
+        : items.length
+          ? `${items.length} afirmaciones · consulta las fuentes`
+          : "Listo para analizar subtítulos";
   const clock = snapshot?.clock ?? { position: 0, start: 0, end: null };
   const rangeChanged = clock.start !== range.start || clock.end !== range.end;
   const entriesChanged = key !== lastKey || snapshot?.revision !== lastRevision;
@@ -436,7 +490,10 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
   el("start").textContent = time(clock.start);
   el("end").textContent = clock.end === null ? "—" : time(clock.end);
   el("empty").hidden = items.length > 0;
+  el("empty-mark").hidden = items.length > 0;
   if (entriesChanged) {
+    const focused = document.activeElement?.closest<HTMLDetailsElement>(".row > details")?.id;
+    const savedScroll = workspace.scrollTop;
     const open = new Set(Array.from(entries.querySelectorAll("details[open]"), (node) => node.id));
     entries.replaceChildren(
       ...items.map((item) => renderEntry(item, key === lastKey ? open : new Set())),
@@ -449,6 +506,14 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
         feedback.textContent?.startsWith(prefix),
       );
     syncFilters(items);
+    syncSummary(items);
+    if (focused)
+      document.getElementById(focused)?.querySelector("summary")?.focus({ preventScroll: true });
+    if (key === lastKey && items.length > priorCount) {
+      if (follow) workspace.scrollTop = 0;
+      else newItems.hidden = false;
+    } else workspace.scrollTop = savedScroll;
+    if (key !== lastKey) newItems.hidden = true;
   }
   if (rangeChanged || entriesChanged) syncMarkers(items, clock.start, clock.end);
   range = clock;
@@ -459,6 +524,14 @@ function render(snapshot: Snapshot | undefined, tabId: number | undefined) {
   lastKey = key;
   lastRevision = snapshot?.revision ?? -1;
 }
+
+newItems.addEventListener("click", () => {
+  workspace.scrollTo({ top: 0, behavior: "smooth" });
+  newItems.hidden = true;
+});
+workspace.addEventListener("scroll", () => {
+  if (workspace.scrollTop < 100) newItems.hidden = true;
+});
 
 async function refresh() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });

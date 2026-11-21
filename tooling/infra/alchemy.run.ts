@@ -40,6 +40,10 @@ const workflow = Workflow("check-run", {
   workflowName: `${name}-check-run`,
   className: "CheckRun",
 });
+const translations = Workflow("translate-claim", {
+  workflowName: `${name}-translate-claim`,
+  className: "TranslateClaim",
+});
 const evidenceOrigin = app.local
   ? process.env.LOCAL_EVIDENCE_DATABASE_URL ||
     "postgresql://council:council_local@127.0.0.1:5432/council"
@@ -87,6 +91,7 @@ const worker = await Worker("app", {
     SUBMISSIONS: submissions,
     RUN_COORDINATOR: coordinator,
     CHECK_RUN: workflow,
+    TRANSLATE_CLAIM: translations,
     EXTRACT_MODEL: process.env.EXTRACT_MODEL ?? "gpt-5.4-mini",
     DECISION_MODEL: process.env.DECISION_MODEL ?? "gpt-6-luna",
     RESEARCH_MODEL: process.env.RESEARCH_MODEL ?? "gpt-5.4-mini",

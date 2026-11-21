@@ -16,6 +16,11 @@
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RunCoordinator"] }],
   "workflows": [
+    {
+      "binding": "TRANSLATE_CLAIM",
+      "name": "council-checker-dev-translate-claim",
+      "class_name": "TranslateClaim",
+    },
     { "binding": "CHECK_RUN", "name": "council-checker-dev-check-run", "class_name": "CheckRun" },
   ],
 }

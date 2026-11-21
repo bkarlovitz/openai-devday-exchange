@@ -14,6 +14,7 @@ export const claimDetailState = Atom.family((_key: string) =>
 
 export function needsRunPolling(run: Run) {
   return (
+    run.translation?.status === "processing" ||
     run.status === "queued" ||
     run.status === "awaiting_processing" ||
     run.status === "extracting" ||

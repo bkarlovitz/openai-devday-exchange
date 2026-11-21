@@ -45,7 +45,7 @@
     "id": "TASK-006",
     "title": "Retry failed stages while preserving completed claim results",
     "milestone": "M3: Bounded deeper research",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-006.md"
   },
   {
@@ -59,7 +59,7 @@
     "id": "TASK-008",
     "title": "Switch explanation language using retained evidence",
     "milestone": "M4: Multilingual long-text checking",
-    "done": false,
+    "done": true,
     "task_file": ".viktor/tasks/TASK-008.md"
   },
   {
@@ -89,5 +89,12 @@
     "milestone": "M7: Verified development build",
     "done": false,
     "task_file": ".viktor/tasks/TASK-011.md"
+  },
+  {
+    "id": "TASK-014",
+    "title": "Match the supplied Fact Check interface across real clients",
+    "milestone": "M8: Reference design parity",
+    "done": true,
+    "task_file": ".viktor/tasks/TASK-014.md"
   }
 ]

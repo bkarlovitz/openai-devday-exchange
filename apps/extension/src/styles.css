@@ -578,3 +578,174 @@ summary:focus-visible {
 .checkability-notice p {
   margin: 6px 0 0;
 }
+
+.explanation-language {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid #dde3df;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.explanation-language select {
+  padding: 6px;
+  margin-left: 8px;
+  border: 1px solid #cdd4cf;
+  border-radius: 5px;
+  background: white;
+  font: inherit;
+}
+.explanation-language p {
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.retry-action {
+  margin: 10px 0 16px;
+}
+.retry-action button,
+.explanation-language button {
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid #bfcfc5;
+  background: #f4f8f5;
+  color: #214e38;
+  font: inherit;
+  cursor: pointer;
+}
+.retry-action button:disabled,
+.explanation-language button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Reference panel proportions: Chrome owns the available width and height. */
+.panel-header {
+  padding: 8px 8px 8px 16px;
+  min-height: 61px;
+  border-color: #ededea;
+}
+.panel-header .brand {
+  font-size: 17px;
+}
+.brand-mark {
+  background: transparent;
+}
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+.source-context {
+  padding: 14px 16px 12px;
+}
+.source-title {
+  margin: 12px 0 0;
+}
+.check-overview {
+  padding: 0 16px 14px;
+  border-color: #ededea;
+}
+.check-overview .claim-overview {
+  padding-top: 4px;
+}
+.results {
+  padding: 6px 16px 90px;
+}
+.filters {
+  margin: 12px 16px 6px;
+}
+.panel-footer {
+  padding: 8px 16px 12px;
+  min-height: 60px;
+  border-color: #ededea;
+  font-size: 11px;
+  background: #fff;
+}
+.panel-footer a {
+  color: #1f4fd1;
+}
+.footer-state {
+  color: #3f3f3b;
+}
+.composer {
+  padding: 36px 24px 24px;
+}
+.composer h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: #1b1b19;
+}
+.composer .muted {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.composer label {
+  font-size: 12.5px;
+}
+.composer textarea {
+  background: #fafaf8;
+  border-color: #cfcfc9;
+  font-size: 14px;
+  border-radius: 10px;
+}
+.composer .primary {
+  background: #1b1b19;
+  border-radius: 10px;
+  min-height: 44px;
+  font-size: 13px;
+}
+.composer select {
+  border-color: #cfcfc9;
+  color: #3f3f3b;
+}
+.character-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.panel > .explanation-language {
+  margin: 0 16px 12px;
+  padding: 10px;
+  font-size: 12px;
+}
+.panel > .retry-action {
+  margin: 0 16px 12px;
+}
+.panel > .checkability-notice {
+  margin: 0 16px 12px;
+  padding: 10px;
+  font-size: 12px;
+}
+.web-handoff a {
+  color: #1f4fd1;
+}
+.pipeline-status {
+  font-size: 11px;
+  line-height: 1.6;
+}
+.claim .muted {
+  color: #5f5f5a;
+}
+.claim .uncertainty {
+  color: #5f5f5a;
+  font-size: 12px;
+}
+.empty-state {
+  color: #5f5f5a;
+}
+.extraction-warnings {
+  border: 1px solid #f0d486;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff9e8;
+}
+.extraction-warnings ul {
+  padding-left: 16px;
+}
+.detail-retry {
+  margin: 12px;
+  border: 1px solid #dadad5;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+  color: #1f4fd1;
+}
