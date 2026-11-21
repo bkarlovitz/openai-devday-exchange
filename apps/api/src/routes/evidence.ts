@@ -1,7 +1,6 @@
-import { ReadDocumentPassageInput, SearchDocumentsInput } from "@council/contracts";
 import { Hono } from "hono";
 import type { Context } from "hono";
-import { Effect, ParseResult, Schema } from "effect";
+import { Effect, ParseResult } from "effect";
 import type { DatabaseError } from "../db/client";
 import {
   EvidenceNotFound,
@@ -114,27 +113,22 @@ evidence.post("/query", async (c) => {
   return toolResponse(c, () => queryDataset(c.env, input));
 });
 
-evidence.get("/documents", async (c) => {
-  const decoded = Schema.decodeUnknownEither(SearchDocumentsInput)({
-    query: c.req.query("q"),
-    datasetId: c.req.query("datasetId"),
-    snapshotId: c.req.query("snapshotId"),
-  });
-  if (decoded._tag === "Left") {
-    return c.json({ error: "Invalid document search." }, 400);
-  }
-  return c.json(await searchDocuments(c.env.EVIDENCE_DB!, decoded.right));
-});
+evidence.get("/documents", (c) =>
+  toolResponse(c, () =>
+    searchDocuments(c.env, {
+      query: c.req.query("q"),
+      datasetId: c.req.query("datasetId"),
+      snapshotId: c.req.query("snapshotId"),
+    }),
+  ),
+);
 
-evidence.get("/documents/:snapshotId/:passageNumber", async (c) => {
+evidence.get("/documents/:snapshotId/:passageNumber", (c) => {
   const { snapshotId, passageNumber } = c.req.param();
-  const decoded = Schema.decodeUnknownEither(ReadDocumentPassageInput)({
-    snapshotId,
-    passageNumber: /^[1-9]\d{0,9}$/.test(passageNumber) ? Number(passageNumber) : undefined,
-  });
-  if (decoded._tag === "Left") {
-    return c.json({ error: "Invalid snapshot or passage identifier." }, 400);
-  }
-  const passage = await readDocumentPassage(c.env.EVIDENCE_DB!, decoded.right);
-  return passage ? c.json(passage) : c.json({ error: "Passage not found." }, 404);
+  return toolResponse(c, () =>
+    readDocumentPassage(c.env, {
+      snapshotId,
+      passageNumber: /^[1-9]\d{0,9}$/.test(passageNumber) ? Number(passageNumber) : undefined,
+    }),
+  );
 });
