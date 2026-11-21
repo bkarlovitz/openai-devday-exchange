@@ -10,6 +10,8 @@ Para compilar desde el repositorio, ejecuta `npm ci` y `npm run build --workspac
 
 ## Probar la extensión
 
+Activa **Opciones y ensayo → Sonido de avisos** si quieres oír un arrullo breve al aparecer un resultado. Pulsa el reproductor una vez y deja el vídeo con volumen. Puedes probarlo con **Probar aviso**.
+
 En un vídeo de YouTube, activa **Avisos** y pulsa **Probar aviso** para ver la última tarjeta o, si la lista está vacía, un ejemplo identificado. El aviso también funciona en pausa.
 
 - En **Opciones y ensayo → Probar con un ejemplo**, reproduce el vídeo para ver avisos y marcas de ejemplo. La cronología incluye un dato respaldado, un dato contradicho y un argumento que necesita contexto. Todos están identificados como ensayo.

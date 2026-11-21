@@ -52,6 +52,7 @@ function el<T extends HTMLElement>(id: string) {
 }
 
 const enabled = el<HTMLInputElement>("enabled");
+const noticeSound = el<HTMLInputElement>("notice-sound");
 const previewNotice = el<HTMLButtonElement>("preview-notice");
 const seek = el<HTMLInputElement>("seek");
 const marks = el("marks");
@@ -583,6 +584,13 @@ backend.addEventListener("change", () => {
   void chrome.storage.local.set({ backend: backend.value });
   syncCapture();
 });
+noticeSound.addEventListener("change", () => {
+  void chrome.storage.local.set({ noticeSound: noticeSound.checked });
+});
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes.noticeSound)
+    noticeSound.checked = changes.noticeSound.newValue === true;
+});
 previewNotice.addEventListener("click", async () => {
   if (!(await send<boolean>({ type: "previewNotice" }))) {
     feedback.hidden = false;
@@ -685,8 +693,11 @@ linkForm.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
-void chrome.storage.local.get({ enabled: true, backend: "team" }).then((settings) => {
-  enabled.checked = settings.enabled !== false;
-  backend.value = settings.backend === "local" ? "local" : "team";
-  void watch();
-});
+void chrome.storage.local
+  .get({ enabled: true, backend: "team", noticeSound: false })
+  .then((settings) => {
+    enabled.checked = settings.enabled !== false;
+    noticeSound.checked = settings.noticeSound === true;
+    backend.value = settings.backend === "local" ? "local" : "team";
+    void watch();
+  });
