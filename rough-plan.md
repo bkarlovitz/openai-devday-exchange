@@ -16,6 +16,14 @@ Paste in a Barcelona city council plenary session and get back a list of every n
 4. **3:30–4:15, honesty.** Show one claim marked can't be verified and the reason (no dataset, wrong period, a definition that doesn't match).
 5. **4:15–5:00, what's live and what's simulated,** then questions.
 
+## Client architecture
+
+The web app gives journalists a shareable claim page. An optional browser extension lets someone watching the plenary inspect the same evidence alongside the video. Both clients read the same session result, keyed by YouTube video ID, and reuse the TypeScript types, Effect Schema validation, and React claim cards. The processing CLI owns the model calls, official data lookups, and verdict calculation.
+
+- **Web app.** Serve the Vite/React app and prepared session results from Cloudflare Workers. Give each claim a stable URL that opens its quote, timestamp, source rows, and calculation.
+- **Extension option.** For the hackathon, assume desktop Chrome and a direct YouTube watch page. Clicking the extension icon opens a Manifest V3 side panel and uses the active tab URL to identify the video. The panel shows claims in timestamp order. Clicking a timestamp takes the current video tab to that moment. A separate link opens the shareable evidence page. For a video outside the prepared set, show “This video hasn’t been checked yet.” [Chrome side panel API](https://developer.chrome.com/docs/extensions/reference/api/sidePanel), [activeTab permission](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab)
+- **Demo milestone.** Once the first web claim card works, reuse it in an unpacked extension with the same prepared session JSON. Rehearse opening the panel on the demo recording, jumping to the quote, and sharing its evidence page. If judges need to submit fresh recordings, both clients can submit the video URL to one Hono endpoint and display progress from the same background processing job. Automatic highlighting during playback and support for embedded players are stretch goals.
+
 ## Pipeline
 
 Six steps take a session from video to verdicts. Steps 2–4 need AI; the verdict in step 5 is plain code, so it can be audited.
