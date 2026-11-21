@@ -1,5 +1,7 @@
 # Wingman
 
+**New teammate? Start with the [engineering handoff](docs/HANDOFF.md)** for architecture, setup, source data, API/client contracts, deployment, troubleshooting, and the remaining work.
+
 A text-based council claim checker. The web app extracts traceable factual claims in English, Spanish, and Catalan. OpenAI Decisions routes claims to official datasets or web research, then an evidence-grounded assessment publishes a verdict, cited sources, uncertainty, and code-computed calculations.
 
 ## Run the app locally
