@@ -1,4 +1,5 @@
-import { WingmanMascot, VerdictLegend } from "@council/ui";
+import { VerdictLegend } from "@council/ui";
+import studioUrl from "../wingman-studio.webp";
 import { useRef, useState } from "react";
 import type { Submission } from "@council/contracts";
 import { inferTranscriptPassages } from "../services/transcript";
@@ -76,9 +77,6 @@ export function SubmissionPage() {
     <main className="page submission-page">
       <section className="wingman-hero" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <span /> YOUR SECOND PAIR OF EYES
-          </p>
           <h1 id="hero-title">
             Every claim
             <br />
@@ -97,15 +95,9 @@ export function SubmissionPage() {
               Take Wingman with you <span aria-hidden="true">↗</span>
             </a>
           </div>
-          <p className="hero-caption">Select a statement. Open the exhibit.</p>
         </div>
         <div className="hero-stage">
-          <span className="stage-note">LET’S SEE THE EVIDENCE.</span>
-          <WingmanMascot />
-          <div className="judge-bench">
-            <span>THE EVIDENCE DESK</span>
-            <i aria-hidden="true">W</i>
-          </div>
+          <img src={studioUrl} alt="" width="1320" height="880" fetchPriority="high" />
         </div>
       </section>
       <VerdictLegend />

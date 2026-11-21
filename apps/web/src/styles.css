@@ -9,8 +9,8 @@ html {
 }
 body {
   margin: 0;
-  background: #fff5df;
-  color: #112344;
+  background: var(--desk);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
 button,
@@ -31,7 +31,8 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-bottom: 1px solid #ded8ca;
+  border-bottom: 3px solid var(--sky);
+  background: var(--ink);
 }
 .brand {
   min-width: 0;
@@ -47,13 +48,16 @@ a {
   font-weight: 500;
 }
 .header-nav a {
-  color: #112344;
+  color: var(--desk);
   text-decoration: none;
 }
 .header-extension {
   padding: 11px 17px;
-  border: 1px solid #112344;
+  border: 1px solid var(--steel);
   border-radius: 7px;
+}
+.site-header a:focus-visible {
+  outline-color: var(--sky);
 }
 .header-extension span {
   margin-left: 12px;
@@ -69,25 +73,20 @@ a {
 }
 .wingman-hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  min-height: 510px;
-  padding-top: 32px;
-  gap: 38px;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  min-height: 440px;
+  margin-top: 24px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--desk);
 }
 .hero-copy {
-  padding: 20px 0 34px;
-}
-.hero-copy .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-.hero-copy .eyebrow > span {
-  height: 7px;
-  width: 7px;
-  border-radius: 50%;
-  background: #47b1e4;
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  padding: clamp(24px, 4vw, 52px);
+  padding-right: 0;
 }
 h1 {
   font-size: clamp(34px, 4.8vw, 62px);
@@ -97,14 +96,18 @@ h1 {
   margin: 0 0 16px;
 }
 .hero-copy h1 {
-  margin-top: 23px;
-  font-size: clamp(44px, 5.3vw, 76px);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(45px, 6vw, 78px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 .hero-deck {
-  color: #45536a;
-  font-size: 19px;
+  max-width: 32ch;
+  margin: 20px 0 27px;
+  color: var(--sky-light);
+  font-size: 17px;
   line-height: 1.55;
-  margin: 23px 0 27px;
 }
 .hero-actions {
   display: flex;
@@ -120,10 +123,10 @@ button {
   gap: 12px;
   min-height: 46px;
   padding: 13px 21px;
-  border: 1px solid #112344;
+  border: 1px solid var(--ink);
   border-radius: 7px;
-  background: #112344;
-  color: #fff5df;
+  background: var(--ink);
+  color: var(--desk);
   font-weight: 600;
   font-size: 14px;
   text-decoration: none;
@@ -138,83 +141,50 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+.hero-actions .button-link {
+  border-color: var(--sky);
+  background: var(--sky);
+  color: var(--ink);
+}
+.hero-actions .button-link:hover {
+  background: var(--sky-light);
+}
+.hero-actions a:focus-visible {
+  outline-color: var(--sky);
+}
 .hero-secondary {
+  color: var(--sky-light);
   font-size: 13px;
   font-weight: 500;
-  color: #112344;
+}
+.hero-secondary:hover {
+  color: var(--desk);
 }
 .hero-secondary span {
   margin-left: 5px;
 }
-.hero-caption {
-  margin: 23px 0 0;
-  font: italic 15px var(--font-editorial);
-  color: #5b6575;
-}
 .hero-stage {
-  height: 465px;
   position: relative;
-  align-self: end;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  overflow: hidden;
-  border-radius: 150px 150px 0 0;
-  background: #e5f1ee;
-  background: linear-gradient(105deg, #d2eaf5, #e8f3f7 48%, #c7e6f5);
+  min-width: 0;
+  min-height: 100%;
 }
-.hero-stage::before {
-  content: "";
+.hero-stage img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+.hero-stage::after {
   position: absolute;
   inset: 0;
-  background: #fffaf0b5;
-  clip-path: polygon(34% 0, 65% 0, 100% 100%, 0 100%);
-}
-.hero-stage .wingman-mascot {
-  position: relative;
-  width: 440px;
-  height: 425px;
-  object-fit: contain;
-  object-position: center bottom;
-  margin-bottom: 25px;
-}
-.stage-note {
-  position: absolute;
-  top: 22px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font: 500 10px var(--font-mono);
-  letter-spacing: 0.15em;
-  z-index: 1;
-  color: #45536a;
-}
-.judge-bench {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 55px;
-  padding: 0 25px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #112344;
-  border-top: 5px solid #28486e;
-  color: #fff5df;
-}
-.judge-bench span {
-  font: 500 10px var(--font-mono);
-  letter-spacing: 0.16em;
-}
-.judge-bench i {
-  color: #47b1e4;
-  font: italic 28px var(--font-editorial);
+  background: linear-gradient(90deg, var(--ink), transparent 38%);
+  content: "";
 }
 .submission-page > .verdict-legend {
   padding: 24px 0;
-  border-top: 1px solid #ded8ca;
-  border-bottom: 1px solid #ded8ca;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   justify-content: center;
   gap: 24px 54px;
 }
@@ -242,13 +212,13 @@ button:disabled {
 }
 .surface {
   padding: 28px;
-  background: #fffdf7;
+  background: var(--paper);
   border: 1px solid #dfd9cc;
   border-radius: 12px;
   box-shadow: 0 5px 20px #11234405;
 }
 .submission-form {
-  border-top: 4px solid #112344;
+  border-top: 4px solid var(--ink);
 }
 label,
 h2 {
@@ -266,7 +236,7 @@ textarea {
   border-radius: 8px;
   background: #fffaf0;
   padding: 18px;
-  color: #112344;
+  color: var(--ink);
   font-size: 16px;
   line-height: 1.7;
 }
@@ -286,7 +256,7 @@ textarea::placeholder {
   line-height: 1.6;
 }
 .error {
-  color: #a22c24;
+  color: var(--contradicted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -315,8 +285,8 @@ textarea::placeholder {
   font-size: 12px;
 }
 .transcript-import input::file-selector-button {
-  background: #fffdf7;
-  color: #112344;
+  background: var(--paper);
+  color: var(--ink);
   padding: 8px 12px;
   border: 1px solid #a9bac3;
   border-radius: 5px;
@@ -330,7 +300,7 @@ textarea::placeholder {
 }
 .submission-options {
   padding-top: 16px;
-  border-top: 1px solid #e5dfd1;
+  border-top: 1px solid var(--line);
   margin: 16px 0;
 }
 .submission-options summary {
@@ -347,8 +317,8 @@ textarea::placeholder {
   padding: 11px;
   border: 1px solid #d9d4c9;
   border-radius: 6px;
-  background: #fffdf7;
-  color: #112344;
+  background: var(--paper);
+  color: var(--ink);
 }
 .intro {
   margin-bottom: 28px;
@@ -362,7 +332,7 @@ textarea::placeholder {
   position: relative;
   padding-right: 150px;
   min-height: 120px;
-  border-bottom: 1px solid #e5dfd1;
+  border-bottom: 1px solid var(--line);
   padding-bottom: 24px;
 }
 .report-intro h1 {
@@ -387,7 +357,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #26774f;
+  color: var(--supported);
   font-size: 12px;
   margin-bottom: 14px;
 }
@@ -410,7 +380,7 @@ textarea::placeholder {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #176a96;
+  background: var(--accent);
   margin-top: 6px;
   flex: none;
 }
@@ -442,7 +412,7 @@ textarea::placeholder {
 }
 .claim blockquote {
   padding-left: 16px;
-  border-left: 3px solid #47b1e4;
+  border-left: 3px solid var(--sky);
   white-space: pre-wrap;
   line-height: 1.7;
 }
@@ -479,7 +449,7 @@ textarea::placeholder {
 }
 .assessment {
   padding-top: 20px;
-  border-top: 1px solid #e5dfd1;
+  border-top: 1px solid var(--line);
   margin-top: 22px;
 }
 .assessment-explanation,
@@ -495,7 +465,7 @@ textarea::placeholder {
 }
 .evidence-item {
   padding: 17px 0;
-  border-bottom: 1px solid #e5dfd1;
+  border-bottom: 1px solid var(--line);
   font-size: 14px;
 }
 .evidence-heading {
@@ -612,24 +582,10 @@ textarea::placeholder {
     padding: 0 24px 40px;
   }
   .wingman-hero {
-    gap: 15px;
-    min-height: 420px;
+    min-height: 380px;
   }
-  .hero-stage {
-    height: 360px;
-    border-radius: 110px 110px 0 0;
-  }
-  .hero-stage .wingman-mascot {
-    height: 330px;
-  }
-  .hero-deck {
-    font-size: 16px;
-  }
-  .hero-actions {
-    gap: 16px;
-  }
-  .header-nav {
-    gap: 18px;
+  .hero-copy {
+    padding-left: 26px;
   }
   .check-heading h2 {
     font-size: 24px;
@@ -662,40 +618,25 @@ textarea::placeholder {
   }
   .wingman-hero {
     grid-template-columns: 1fr;
-    gap: 0;
-    padding-top: 20px;
+    margin-top: 16px;
   }
   .hero-copy {
-    padding: 10px 0 30px;
+    padding: 24px 20px 14px;
   }
   .hero-copy h1 {
-    font-size: 55px;
-    margin-top: 17px;
+    font-size: clamp(43px, 10vw, 58px);
   }
   .hero-deck {
-    margin: 18px 0 22px;
+    margin: 16px 0 20px;
   }
-  .hero-caption {
-    margin-top: 19px;
+  .hero-actions {
+    gap: 13px;
   }
   .hero-stage {
-    height: 285px;
-    max-width: 390px;
-    width: 100%;
-    justify-self: center;
-    border-radius: 120px 120px 0 0;
+    min-height: 235px;
   }
-  .hero-stage .wingman-mascot {
-    height: 272px;
-    width: 280px;
-    margin-bottom: 12px;
-  }
-  .stage-note {
-    top: 15px;
-    font-size: 8px;
-  }
-  .judge-bench {
-    height: 40px;
+  .hero-stage::after {
+    background: linear-gradient(180deg, var(--ink), transparent 30%);
   }
   .submission-page > .verdict-legend {
     gap: 15px;

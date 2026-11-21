@@ -2,7 +2,9 @@
 
 Applied on 2026-11-21 from Romina’s supplied pigeon judge references. The Chrome extensions were the priority deliverable.
 
-Ivory #fff5df, ink navy #112344 and sky #47b1e4. Local Archivo display, IBM Plex Sans body and Source Serif 4 italic editorial type, with bundled OFL licenses. Native SVG mark and PNG toolbar icons. The general extension is version 0.1.2, the YouTube extension 0.4.9. Existing extension identities and permissions are retained.
+The web app and both Chrome extensions use the [Night Broadcast brand identity](night-broadcast/Night%20Broadcast%20Brand%20Identity.pdf). Midnight ink, Exhibit ivory, and Broadcast blue anchor the shared palette. IBM Plex Sans Condensed Bold sets campaign headlines and short reactions. IBM Plex Sans sets the evidence and verdict labels. The finalized Wingman wordmark appears in the header, with the compact pigeon on browser and toolbar icons.
+
+Expanded verdicts use compact reactions derived from the supplied storyboards. Mixed evidence and insufficient evidence have distinct sequences. Reduced motion shows the last frame. Evidence text and source links come from the check.
 
 The four evidence verdicts retain their distinct labels. Branded phrases accompany them. Pending, technical failure and noncheckable states remain separate. No generated example claims or invented speaker scores were added to the product.
 

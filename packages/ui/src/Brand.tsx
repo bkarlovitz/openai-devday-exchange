@@ -1,5 +1,5 @@
 import judgeUrl from "../assets/wingman-judge.png";
-import logoUrl from "../assets/wingman-logo.svg";
+import logoUrl from "../assets/wingman-logo-dark.svg";
 
 export function BrandLogo() {
   return <img className="wingman-logo" src={logoUrl} width="508" height="112" alt="Wingman" />;
