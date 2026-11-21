@@ -2,7 +2,14 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { config } from "dotenv";
 import alchemy from "alchemy";
-import { Assets, DurableObjectNamespace, R2Bucket, Worker, Workflow } from "alchemy/cloudflare";
+import {
+  Assets,
+  DurableObjectNamespace,
+  Hyperdrive,
+  R2Bucket,
+  Worker,
+  Workflow,
+} from "alchemy/cloudflare";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 config({ path: path.join(root, ".env") });
@@ -24,6 +31,16 @@ const workflow = Workflow("check-run", {
   workflowName: `${name}-check-run`,
   className: "CheckRun",
 });
+const evidenceOrigin = app.local
+  ? process.env.LOCAL_EVIDENCE_DATABASE_URL
+  : process.env.HYPERDRIVE_ORIGIN;
+const evidenceDb = evidenceOrigin
+  ? await Hyperdrive("evidence-db", {
+      origin: alchemy.secret(evidenceOrigin),
+      caching: { disabled: true },
+    })
+  : undefined;
+
 const worker = await Worker("app", {
   name,
   entrypoint: path.join(root, "apps/api/src/index.ts"),
@@ -36,6 +53,8 @@ const worker = await Worker("app", {
     run_worker_first: ["/api/*"],
   },
   bindings: {
+    ...(evidenceDb ? { EVIDENCE_DB: evidenceDb } : {}),
+    ...(app.local ? { ENABLE_EVIDENCE_DEBUG: "true" } : {}),
     SUBMISSIONS: submissions,
     RUN_COORDINATOR: coordinator,
     CHECK_RUN: workflow,

@@ -4,5 +4,7 @@ export interface Env {
   SUBMISSIONS: R2Bucket;
   RUN_COORDINATOR: DurableObjectNamespace<RunCoordinator>;
   CHECK_RUN: Workflow<{ runId: string }>;
+  EVIDENCE_DB?: Hyperdrive;
+  ENABLE_EVIDENCE_DEBUG?: string;
   ASSETS: Fetcher;
 }

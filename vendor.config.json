@@ -28,6 +28,13 @@
       "repo": "https://github.com/TanStack/router",
       "ref": "5637925f4dc6d14525e3a497138fe163cfcc40bf",
       "dir": "tanstack-router"
+    },
+    {
+      "package": "drizzle-orm",
+      "version": "0.45.4",
+      "repo": "https://github.com/drizzle-team/drizzle-orm",
+      "ref": "eab8bedbb65d5429c54e612ddbd88aa23091d398",
+      "dir": "drizzle-orm"
     }
   ]
 }
