@@ -1,0 +1,81 @@
+{
+  "creativeDirection": "Night Broadcast",
+  "productName": null,
+  "campaignLine": "Every claim gets its turn.",
+  "palette": {
+    "Midnight ink": "#101F3C",
+    "Broadcast blue": "#38B4E7",
+    "Exhibit ivory": "#FBF3E1",
+    "Signal tint": "#D7EFF9",
+    "Steel feather": "#A6B8C8",
+    "Link ink": "#175572"
+  },
+  "verdicts": [
+    {
+      "label": "Supported",
+      "reaction": "Checks out.",
+      "colour": "#176144",
+      "symbol": "check"
+    },
+    {
+      "label": "Unresolved",
+      "reaction": "Jury’s still out.",
+      "colour": "#F1AD20",
+      "symbol": "question"
+    },
+    {
+      "label": "Contradicted",
+      "reaction": "Spectacular miss.",
+      "colour": "#AC2E23",
+      "symbol": "cross"
+    }
+  ],
+  "contrast": [
+    {
+      "pair": "Midnight ink on ivory",
+      "foreground": "#101F3C",
+      "background": "#FBF3E1",
+      "ratio": 14.81
+    },
+    {
+      "pair": "Midnight ink on blue",
+      "foreground": "#101F3C",
+      "background": "#38B4E7",
+      "ratio": 6.9
+    },
+    {
+      "pair": "Ivory on midnight ink",
+      "foreground": "#FBF3E1",
+      "background": "#101F3C",
+      "ratio": 14.81
+    },
+    {
+      "pair": "Link ink on ivory",
+      "foreground": "#175572",
+      "background": "#FBF3E1",
+      "ratio": 7.37
+    },
+    {
+      "pair": "White on supported",
+      "foreground": "#FFFFFF",
+      "background": "#176144",
+      "ratio": 7.42
+    },
+    {
+      "pair": "Ink on amber",
+      "foreground": "#0C182E",
+      "background": "#F1AD20",
+      "ratio": 9.06
+    },
+    {
+      "pair": "White on red",
+      "foreground": "#FFFFFF",
+      "background": "#AC2E23",
+      "ratio": 6.63
+    }
+  ],
+  "fonts": [
+    "IBM Plex Sans",
+    "IBM Plex Sans Condensed Bold"
+  ]
+}

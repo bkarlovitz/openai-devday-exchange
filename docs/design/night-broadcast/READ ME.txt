@@ -1,0 +1,13 @@
+NIGHT BROADCAST / BRAND ASSET KIT
+
+Night Broadcast is a creative direction. Product name open.
+Campaign line: Every claim gets its turn.
+
+Start with Night Broadcast Brand Identity.pdf.
+Marks contains editable SVGs plus browser tile PNGs.
+Artwork contains the generated studio, mascot and civic campaign studies, plus an example verdict share card.
+Motion contains a still storyboard and links back to the supplied timing boards in References.
+Type includes IBM Plex and the applicable SIL Open Font License.
+References are the original supplied concepts. Several contain pink accents or placeholder copy from their earlier versions. Use the PDF and brand-palette.json for current colours and labels.
+
+This package contains still artwork and visual direction. The storyboard can guide animation. The UI design system and the final product wordmark follow this handoff.
