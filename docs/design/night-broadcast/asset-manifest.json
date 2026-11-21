@@ -1,0 +1,150 @@
+{
+  "recorded_date": "2026-11-21",
+  "base_commit": "f26b2301266ef0ae915580f04339520fc6e73982",
+  "hash_algorithm": "SHA-256",
+  "path_base": "repository root",
+  "assets": [
+    {
+      "repository_path": "docs/design/night-broadcast/References/04-supported-motion.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "Wingman-animation storyboard - checks out.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4380762,
+      "sha256": "c1159cc7f750bfb5724aac122cc6983540421c5b66dfab413f5515b6b6030b83"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/09-civic-photography-study.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-364d7884-812b-4678-a0ac-96bd3f0fad2e.png",
+      "status": "supplied original; already present",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 5577923,
+      "sha256": "029666d5b9d9725d84543d140a5e5e46a58bdd4435903e201071bc0caa47648c"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/06-shareable-verdict.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-3cc18eae-6232-456d-a41a-ca06066b4985.png",
+      "status": "supplied original; already present",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3724986,
+      "sha256": "76faf956725920b26b585a1d25693ea78579e4e1c91fb9373badfc485e2c7dcf"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/11-side-panel-and-states.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-4d3b89c1-d8fc-48d4-b9fd-30e9a0572fb3.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4821346,
+      "sha256": "b981a7f1935d76b2f92c6a58521422bd75fe694314f7b339c9d955dc0eaf4bec"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/12-source-asset-overview.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-e39bd28a-b01a-4955-9c3d-92802f9a49ae.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4672116,
+      "sha256": "d874b0352cddb3ce78425e0879ab682a8b06d43a96e8a824f84e32318b721380"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/08-landing-and-hero.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-eff232fb-ae4a-4dee-9c58-2bd3ca19d4bd.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4104898,
+      "sha256": "3fc33f5629155f6d30850675291b9c5e2c2797083e18c353581610dfdc85c357"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/10-vertical-campaign-study.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "generate_image_v2-f6869471-1eea-405f-9dbd-ee69bcf1fe8f.png",
+      "status": "supplied original; already present",
+      "width": 1536,
+      "height": 2752,
+      "bytes": 5424550,
+      "sha256": "8c7c41afa413b50f397105f363a641e6b964b1e226c78c5b62ea4c3cfcf21380"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/05-unresolved-motion.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "wingman - animation - undecided uncertain.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4720867,
+      "sha256": "30d100a058fbe651b3ff5a6fa84ad681d60b0eda20c4c5fcec52e40d487c9131"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/07-post-debate-report.png",
+      "origin": "supplied wingman media folder",
+      "source_filename": "wingman - report design elements.png",
+      "status": "supplied original; already present",
+      "width": 2752,
+      "height": 1536,
+      "bytes": 4019305,
+      "sha256": "a46d41a4ed0e2d7c171d8728e776b1733f9ee75a227108f0aa694a51a9cedca0"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/13-character-expressions.png",
+      "origin": "owner attachment",
+      "source_filename": "wingman - Character Expressions.png",
+      "status": "supplied original; preserved unchanged",
+      "width": 2216,
+      "height": 1238,
+      "bytes": 4101634,
+      "sha256": "febbf543a897cd33c5d3a6979309bf926c57e6f2d10b368ffd80f8c7d814a4df"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/14-character-turnaround.png",
+      "origin": "owner attachment",
+      "source_filename": "Screenshot 2026-11-21 at 16.32.23.png",
+      "status": "supplied original; preserved unchanged",
+      "width": 2226,
+      "height": 1236,
+      "bytes": 3927310,
+      "sha256": "0774a06f7d7bc9257200bc09eb03ae40d6a566b7738f9b93cdc160d0a326d360"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/15-character-construction-and-props.png",
+      "origin": "owner attachment",
+      "source_filename": "Screenshot 2026-11-21 at 16.33.30.png",
+      "status": "supplied original; preserved unchanged",
+      "width": 2234,
+      "height": 1248,
+      "bytes": 4195180,
+      "sha256": "458f245bae6264c818c0d57266c3bb7cf6dcea77e1266ef6bda54309006402b8"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/wingman-side-panel-character-corrected.png",
+      "origin": "built-in imagegen",
+      "source_filename": "exec-079bd67f-305a-4c23-8c1a-44681e254abd.png",
+      "status": "earlier generated draft",
+      "width": 1678,
+      "height": 937,
+      "bytes": 1768739,
+      "sha256": "cc093f652eefbafb5630ed67c1ee8d82ada627a118b2ce932331bb11e2095523",
+      "prompt_path": "docs/design/night-broadcast/References/wingman-side-panel-character-corrected-prompt.txt"
+    },
+    {
+      "repository_path": "docs/design/night-broadcast/References/16-side-panel-expressions-v2.png",
+      "origin": "built-in imagegen",
+      "source_filename": "exec-f9ce108c-ce0e-4723-820d-25d32ef5da63.png",
+      "status": "generated side-panel layout mockup",
+      "width": 1678,
+      "height": 937,
+      "bytes": 1788689,
+      "sha256": "2d9b86d04b33e8bd7b2a7e419a61db2acfbedc26e8c3924fa0f61b0006a6ab6c",
+      "prompt_path": "docs/design/night-broadcast/References/16-side-panel-expressions-v2.prompt.txt"
+    }
+  ]
+}
